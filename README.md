@@ -26,8 +26,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/secure-guardian-pro.git
-cd secure-guardian-pro
+git clone https://github.com/hlias123/antitheft-pro.git
+cd antitheft-pro
 
 # Install dependencies
 npm install

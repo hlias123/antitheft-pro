@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/secure-guardian-pro.git"
+    "url": "git+https://github.com/hlias123/antitheft-pro.git"
   },
   "keywords": [
     "security",
@@ -30,9 +30,9 @@
   "author": "Secure Guardian Pro Team",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yourusername/secure-guardian-pro/issues"
+    "url": "https://github.com/hlias123/antitheft-pro/issues"
   },
-  "homepage": "https://github.com/yourusername/secure-guardian-pro#readme",
+  "homepage": "https://github.com/hlias123/antitheft-pro#readme",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",

@@ -13,7 +13,7 @@
 
 #### الطريقة الثانية: رابط مباشر / Method 2: Direct Link / Μέθοδος 2: Άμεσος Σύνδεσμος
 ```
-https://vercel.com/new/git/external?repository-url=https://github.com/yourusername/secure-guardian-pro
+https://vercel.com/new/git/external?repository-url=https://github.com/hlias123/antitheft-pro
 ```
 
 ### 2. Railway
