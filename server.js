@@ -26,7 +26,12 @@ app.use(express.static('public'));
 
 // Redirect root to app.html
 app.get('/', (req, res) => {
-    res.redirect('/app.html');
+    res.sendFile(path.join(__dirname, 'public', 'app.html'));
+});
+
+// Explicit route for app.html
+app.get('/app.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'app.html'));
 });
 
 // Database setup
@@ -166,6 +171,22 @@ app.get('/health', (req, res) => {
         status: 'healthy', 
         timestamp: new Date().toISOString(),
         service: 'Secure Guardian Pro API'
+    });
+});
+
+// Debug route to check files
+app.get('/debug', (req, res) => {
+    const publicPath = path.join(__dirname, 'public');
+    const appHtmlPath = path.join(__dirname, 'public', 'app.html');
+    
+    res.json({
+        __dirname: __dirname,
+        publicPath: publicPath,
+        appHtmlPath: appHtmlPath,
+        publicExists: fs.existsSync(publicPath),
+        appHtmlExists: fs.existsSync(appHtmlPath),
+        publicContents: fs.existsSync(publicPath) ? fs.readdirSync(publicPath) : 'Directory not found',
+        cwd: process.cwd()
     });
 });
 
