@@ -21,7 +21,7 @@
 
         body {
             font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
             margin: 0;
@@ -60,28 +60,31 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 45px;
             width: 100%;
-            max-width: 450px;
+            max-width: 420px;
             text-align: center;
             margin: 50px auto;
         }
 
         .logo {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: #667eea;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: #1e3c72;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 1.8rem;
-            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 35px;
+            font-size: 1.9rem;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .form-group {
@@ -114,21 +117,23 @@
 
         .btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 16px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4);
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
         }
 
         .google-btn {
@@ -322,12 +327,19 @@
             <div class="logo">🛡️</div>
             <h1 id="login-title">Secure Guardian Pro</h1>
 
-            <!-- Quick Start Info -->
-            <div class="quick-start">
-                <div id="quick-start-text" style="font-weight: bold; margin-bottom: 10px;">🚀 للبدء السريع:</div>
-                <div><span id="quick-email-text">📧 البريد:</span> <code>user@test.com</code></div>
-                <div><span id="quick-password-text">🔒 كلمة المرور:</span> <code>12345678</code></div>
-                <div id="quick-or-text" style="margin-top: 8px; color: #666;">أو أنشئ حساب جديد ↓</div>
+            <!-- Professional Description -->
+            <div class="professional-desc">
+                <p id="system-desc" style="color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                    نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع وكشف الحركة التلقائي
+                </p>
+                <div style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72; border-left: 4px solid #1e3c72;">
+                    <strong>⚠️ تنبيه:</strong> يجب أن يكون البريد الإلكتروني موثقاً للدخول إلى النظام
+                </div>
+                <div style="background: rgba(40, 167, 69, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 25px; font-size: 12px; color: #28a745; text-align: left;">
+                    <strong>Demo Account:</strong><br>
+                    📧 admin@secureguardian.com<br>
+                    🔒 SecurePass2024
+                </div>
             </div>
 
             <!-- Login Form -->
@@ -654,10 +666,7 @@
             const t = texts[lang];
             if (t) {
                 updateElementText('login-title', t.title);
-                updateElementText('quick-start-text', t.quickStart);
-                updateElementText('quick-email-text', t.quickEmail);
-                updateElementText('quick-password-text', t.quickPassword);
-                updateElementText('quick-or-text', t.quickOr);
+                updateElementText('system-desc', t.systemDesc || 'Advanced security system with real-time monitoring, location tracking and automatic motion detection');
                 updateElementText('email-label', t.email);
                 updateElementText('password-label', t.password);
                 updateElementText('name-label', t.fullName);
@@ -717,23 +726,56 @@
         function handleLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-
-            if (email === 'user@test.com' && password === '12345678') {
-                showMessage(window.messages?.loginSuccess || 'تم تسجيل الدخول بنجاح!', 'success');
-                setTimeout(() => {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard-screen').classList.remove('hidden');
-                    initializeDashboard();
-                }, 1000);
-            } else {
-                showMessage(window.messages?.loginError || 'بيانات تسجيل الدخول غير صحيحة', 'error');
+            
+            // Validation
+            if (!email || !password) {
+                showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور / Please enter email and password', 'error');
+                return;
             }
+            
+            if (!email.includes('@') || !email.includes('.')) {
+                showMessage('يرجى إدخال بريد إلكتروني صحيح / Please enter a valid email address', 'error');
+                return;
+            }
+            
+            // Simulate login process
+            showMessage('🔄 جاري التحقق من البيانات... / Verifying credentials...', 'success');
+            
+            setTimeout(() => {
+                // Simulate email verification check
+                if (!isEmailVerified(email)) {
+                    showMessage('❌ البريد الإلكتروني غير موثق. يرجى التحقق من بريدك الإلكتروني أولاً / Email not verified. Please verify your email first', 'error');
+                    return;
+                }
+                
+                // Demo credentials for testing
+                if (email === 'admin@secureguardian.com' && password === 'SecurePass2024') {
+                    showMessage(window.messages?.loginSuccess || 'تم تسجيل الدخول بنجاح!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('dashboard-screen').classList.remove('hidden');
+                        initializeDashboard();
+                    }, 1000);
+                } else {
+                    showMessage(window.messages?.loginError || 'بيانات تسجيل الدخول غير صحيحة أو الحساب غير موجود', 'error');
+                }
+            }, 2000);
+        }
+        
+        function isEmailVerified(email) {
+            // Simulate email verification check
+            const verifiedEmails = [
+                'admin@secureguardian.com',
+                'user@gmail.com',
+                'test@example.com'
+            ];
+            return verifiedEmails.includes(email);
         }
 
         function handleGoogleLogin() {
             // Simulate Google OAuth process
             showMessage('🔄 جاري الاتصال بـ Google... / Connecting to Google...', 'success');
-            
+
             setTimeout(() => {
                 // Simulate successful Google login
                 const googleUser = {
@@ -741,13 +783,13 @@
                     email: 'user@gmail.com',
                     picture: 'https://via.placeholder.com/40'
                 };
-                
+
                 // Update user info
                 document.getElementById('user-name').textContent = googleUser.name;
                 document.getElementById('user-email').textContent = googleUser.email;
-                
+
                 showMessage(window.messages?.googleLoginSuccess || 'تم تسجيل الدخول بـ Google بنجاح!', 'success');
-                
+
                 setTimeout(() => {
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('dashboard-screen').classList.remove('hidden');
@@ -760,33 +802,33 @@
             const name = document.getElementById('register-name').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
-            
+
             // Validation
             if (!name || name.length < 2) {
                 showMessage('الاسم يجب أن يكون حرفين على الأقل / Name must be at least 2 characters', 'error');
                 return;
             }
-            
+
             if (!email || !email.includes('@')) {
                 showMessage('يرجى إدخال بريد إلكتروني صحيح / Please enter a valid email', 'error');
                 return;
             }
-            
+
             if (!password || password.length < 8) {
                 showMessage('كلمة المرور يجب أن تكون 8 أحرف على الأقل / Password must be at least 8 characters', 'error');
                 return;
             }
-            
+
             // Simulate registration process
             showMessage('🔄 جاري إنشاء الحساب... / Creating account...', 'success');
-            
+
             setTimeout(() => {
                 // Simulate successful registration
                 showMessage(window.messages?.registerSuccess || 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول', 'success');
-                
+
                 // Pre-fill login form
                 document.getElementById('login-email').value = email;
-                
+
                 setTimeout(() => {
                     showLoginForm();
                 }, 1500);
@@ -826,11 +868,11 @@
             startBatteryMonitoring();
             startLocationUpdates();
             startMotionDetection();
-            
+
             // Update user info
             document.getElementById('user-name').textContent = 'المستخدم';
             document.getElementById('user-email').textContent = 'user@test.com';
-            
+
             // Initialize statistics
             document.getElementById('location-count').textContent = '0';
             document.getElementById('photo-count').textContent = '0';
@@ -944,7 +986,7 @@
 
         function capturePhoto() {
             const video = document.getElementById('camera-video');
-            
+
             if (cameraStream) {
                 // Create canvas to capture photo
                 const canvas = document.createElement('canvas');
@@ -952,30 +994,30 @@
                 canvas.height = video.videoHeight || 480;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0);
-                
+
                 // Convert to blob and simulate saving
                 canvas.toBlob(blob => {
                     const url = URL.createObjectURL(blob);
-                    
+
                     // Create download link (for demo)
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = `thief-photo-${new Date().getTime()}.jpg`;
                     a.click();
-                    
+
                     // Clean up
                     setTimeout(() => URL.revokeObjectURL(url), 1000);
                 }, 'image/jpeg', 0.8);
-                
+
                 showMessage('📸 تم التقاط صورة السارق وحفظها! / Thief photo captured and saved!', 'success');
             } else {
                 // Demo mode - simulate photo capture
                 showMessage('📸 تم التقاط صورة تجريبية للسارق! / Demo thief photo captured!', 'success');
             }
-            
+
             const count = parseInt(document.getElementById('photo-count').textContent) + 1;
             document.getElementById('photo-count').textContent = count;
-            
+
             // Log security event
             logSecurityEvent('Photo captured', 'Thief detection photo taken');
         }
@@ -986,7 +1028,7 @@
                 if (Math.random() > 0.95) { // 5% chance every 10 seconds
                     capturePhoto();
                     showMessage('🚨 تم اكتشاف حركة مشبوهة! تم التقاط صورة تلقائياً / Suspicious motion detected! Auto-captured photo', 'error');
-                    
+
                     const alertCount = parseInt(document.getElementById('alert-count').textContent) + 1;
                     document.getElementById('alert-count').textContent = alertCount;
                 }
@@ -997,7 +1039,7 @@
         function logSecurityEvent(type, description) {
             const timestamp = new Date().toLocaleString();
             console.log(`[${timestamp}] Security Event: ${type} - ${description}`);
-            
+
             // Update last activity
             document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
         }
