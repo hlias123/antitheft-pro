@@ -332,13 +332,13 @@
                 <p id="system-desc" style="color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
                     نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع وكشف الحركة التلقائي
                 </p>
-                <div style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72; border-left: 4px solid #1e3c72;">
+                <div
+                    style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72; border-left: 4px solid #1e3c72;">
                     <strong>⚠️ تنبيه:</strong> يجب أن يكون البريد الإلكتروني موثقاً للدخول إلى النظام
                 </div>
-                <div style="background: rgba(40, 167, 69, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 25px; font-size: 12px; color: #28a745; text-align: left;">
-                    <strong>Demo Account:</strong><br>
-                    📧 admin@secureguardian.com<br>
-                    🔒 SecurePass2024
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 25px; padding: 12px; background: rgba(40, 167, 69, 0.1); border-radius: 8px; font-size: 13px; color: #28a745;">
+                    <div style="width: 8px; height: 8px; background: #28a745; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                    <span id="sync-status">متزامن مع التطبيق الحقيقي</span>
                 </div>
             </div>
 
@@ -550,6 +550,8 @@
                     quickEmail: '� االبريد:',
                     quickPassword: '🔒 كلمة المرور:',
                     quickOr: 'أو أنشئ حساب جديد ↓',
+                    systemDesc: 'نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع وكشف الحركة التلقائي',
+                    syncStatus: 'متزامن مع التطبيق الحقيقي',
                     email: 'البريد الإلكتروني:',
                     password: 'كلمة المرور:',
                     fullName: 'الاسم الكامل:',
@@ -589,6 +591,8 @@
                     quickEmail: '📧 Email:',
                     quickPassword: '🔒 Password:',
                     quickOr: 'Or create a new account ↓',
+                    systemDesc: 'Advanced security system with real-time monitoring, location tracking and automatic motion detection',
+                    syncStatus: 'Synced with real app',
                     email: 'Email:',
                     password: 'Password:',
                     fullName: 'Full Name:',
@@ -628,6 +632,8 @@
                     quickEmail: '📧 Email:',
                     quickPassword: '🔒 Κωδικός:',
                     quickOr: 'Ή δημιουργήστε νέο λογαριασμό ↓',
+                    systemDesc: 'Προηγμένο σύστημα ασφαλείας με παρακολούθηση σε πραγματικό χρόνο, εντοπισμό τοποθεσίας και αυτόματη ανίχνευση κίνησης',
+                    syncStatus: 'Συγχρονισμένο με την πραγματική εφαρμογή',
                     email: 'Email:',
                     password: 'Κωδικός:',
                     fullName: 'Πλήρες Όνομα:',
@@ -667,6 +673,7 @@
             if (t) {
                 updateElementText('login-title', t.title);
                 updateElementText('system-desc', t.systemDesc || 'Advanced security system with real-time monitoring, location tracking and automatic motion detection');
+                updateElementText('sync-status', t.syncStatus || 'Synced with real app');
                 updateElementText('email-label', t.email);
                 updateElementText('password-label', t.password);
                 updateElementText('name-label', t.fullName);
@@ -726,28 +733,28 @@
         function handleLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
+
             // Validation
             if (!email || !password) {
                 showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور / Please enter email and password', 'error');
                 return;
             }
-            
+
             if (!email.includes('@') || !email.includes('.')) {
                 showMessage('يرجى إدخال بريد إلكتروني صحيح / Please enter a valid email address', 'error');
                 return;
             }
-            
+
             // Simulate login process
             showMessage('🔄 جاري التحقق من البيانات... / Verifying credentials...', 'success');
-            
+
             setTimeout(() => {
                 // Simulate email verification check
                 if (!isEmailVerified(email)) {
                     showMessage('❌ البريد الإلكتروني غير موثق. يرجى التحقق من بريدك الإلكتروني أولاً / Email not verified. Please verify your email first', 'error');
                     return;
                 }
-                
+
                 // Demo credentials for testing
                 if (email === 'admin@secureguardian.com' && password === 'SecurePass2024') {
                     showMessage(window.messages?.loginSuccess || 'تم تسجيل الدخول بنجاح!', 'success');
@@ -761,7 +768,7 @@
                 }
             }, 2000);
         }
-        
+
         function isEmailVerified(email) {
             // Simulate email verification check
             const verifiedEmails = [
