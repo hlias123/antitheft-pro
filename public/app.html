@@ -334,10 +334,13 @@
                 </p>
                 <div
                     style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72; border-left: 4px solid #1e3c72;">
-                    <strong>⚠️ تنبيه:</strong> يجب أن يكون البريد الإلكتروني موثقاً للدخول إلى النظام
+                    <span id="warning-text">⚠️ تنبيه: يجب أن يكون البريد الإلكتروني موثقاً للدخول إلى النظام</span>
                 </div>
-                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 25px; padding: 12px; background: rgba(40, 167, 69, 0.1); border-radius: 8px; font-size: 13px; color: #28a745;">
-                    <div style="width: 8px; height: 8px; background: #28a745; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                <div
+                    style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 25px; padding: 12px; background: rgba(40, 167, 69, 0.1); border-radius: 8px; font-size: 13px; color: #28a745;">
+                    <div
+                        style="width: 8px; height: 8px; background: #28a745; border-radius: 50%; animation: pulse 2s infinite;">
+                    </div>
                     <span id="sync-status">متزامن مع التطبيق الحقيقي</span>
                 </div>
             </div>
@@ -583,7 +586,12 @@
                     registerSuccess: 'تم إنشاء الحساب بنجاح!',
                     loginError: 'بيانات تسجيل الدخول غير صحيحة',
                     registerError: 'يرجى ملء جميع الحقول بشكل صحيح',
-                    logoutSuccess: 'تم تسجيل الخروج بنجاح'
+                    logoutSuccess: 'تم تسجيل الخروج بنجاح',
+                    emailPlaceholder: 'أدخل بريدك الإلكتروني',
+                    passwordPlaceholder: 'أدخل كلمة المرور',
+                    namePlaceholder: 'أدخل اسمك الكامل',
+                    registerPasswordPlaceholder: 'أدخل كلمة مرور قوية (8 أحرف على الأقل)',
+                    warningText: '⚠️ تنبيه: يجب أن يكون البريد الإلكتروني موثقاً للدخول إلى النظام'
                 },
                 en: {
                     title: 'Secure Guardian Pro',
@@ -624,7 +632,12 @@
                     registerSuccess: 'Account created successfully!',
                     loginError: 'Invalid login credentials',
                     registerError: 'Please fill all fields correctly',
-                    logoutSuccess: 'Logout successful'
+                    logoutSuccess: 'Logout successful',
+                    emailPlaceholder: 'Enter your email address',
+                    passwordPlaceholder: 'Enter your password',
+                    namePlaceholder: 'Enter your full name',
+                    registerPasswordPlaceholder: 'Enter a strong password (at least 8 characters)',
+                    warningText: '⚠️ Warning: Email must be verified to access the system'
                 },
                 el: {
                     title: 'Secure Guardian Pro',
@@ -665,7 +678,12 @@
                     registerSuccess: 'Ο λογαριασμός δημιουργήθηκε επιτυχώς!',
                     loginError: 'Μη έγκυρα διαπιστευτήρια σύνδεσης',
                     registerError: 'Παρακαλώ συμπληρώστε όλα τα πεδία σωστά',
-                    logoutSuccess: 'Επιτυχής αποσύνδεση'
+                    logoutSuccess: 'Επιτυχής αποσύνδεση',
+                    emailPlaceholder: 'Εισάγετε τη διεύθυνση email σας',
+                    passwordPlaceholder: 'Εισάγετε τον κωδικό σας',
+                    namePlaceholder: 'Εισάγετε το πλήρες όνομά σας',
+                    registerPasswordPlaceholder: 'Εισάγετε έναν ισχυρό κωδικό (τουλάχιστον 8 χαρακτήρες)',
+                    warningText: '⚠️ Προειδοποίηση: Το email πρέπει να επαληθευτεί για πρόσβαση στο σύστημα'
                 }
             };
 
@@ -701,6 +719,16 @@
                 updateElementText('stats-title', t.stats);
                 updateElementText('logout-btn', t.logout);
 
+                // Update placeholders
+                updateElementPlaceholder('login-email', t.emailPlaceholder);
+                updateElementPlaceholder('login-password', t.passwordPlaceholder);
+                updateElementPlaceholder('register-name', t.namePlaceholder);
+                updateElementPlaceholder('register-email', t.emailPlaceholder);
+                updateElementPlaceholder('register-password', t.registerPasswordPlaceholder);
+                
+                // Update warning text
+                updateElementText('warning-text', t.warningText);
+
                 window.currentLang = lang;
                 window.messages = {
                     loginSuccess: t.loginSuccess,
@@ -716,6 +744,11 @@
         function updateElementText(id, text) {
             const element = document.getElementById(id);
             if (element) element.textContent = text;
+        }
+
+        function updateElementPlaceholder(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.placeholder = text;
         }
 
         // Form switching
