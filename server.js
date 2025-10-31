@@ -74,39 +74,61 @@ db.serialize(() => {
         FOREIGN KEY (user_id) REFERENCES users (id)
     )`);
 
-    // Create test users if they don't exist
+    // Create test users if they don't exist - Fixed version
     const testUsers = [
         { name: 'Test User', email: 'test@example.com', password: 'password123' },
         { name: 'Gmail User', email: 'user@gmail.com', password: 'password123' },
         { name: 'Real User', email: 'hlias.antitheft@gmail.com', password: 'password123' }
     ];
 
-    testUsers.forEach(async (testUser) => {
-        db.get('SELECT id FROM users WHERE email = ?', [testUser.email], async (err, user) => {
-            if (err) {
-                console.error(`Error checking user ${testUser.email}:`, err);
-                return;
-            }
-
-            if (!user) {
-                try {
-                    const passwordHash = await bcrypt.hash(testUser.password, 12);
-                    const userId = uuidv4();
-
-                    db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
-                        [userId, testUser.name, testUser.email, passwordHash, 1], (err) => {
-                            if (err) {
-                                console.error(`Error creating user ${testUser.email}:`, err);
-                            } else {
-                                console.log(`✅ User created: ${testUser.email} / ${testUser.password}`);
-                            }
-                        });
-                } catch (error) {
-                    console.error(`Error hashing password for ${testUser.email}:`, error);
+    // Create users synchronously to avoid async issues
+    const createTestUser = async (testUser) => {
+        return new Promise((resolve, reject) => {
+            db.get('SELECT id FROM users WHERE email = ?', [testUser.email], async (err, user) => {
+                if (err) {
+                    console.error(`Error checking user ${testUser.email}:`, err);
+                    reject(err);
+                    return;
                 }
-            }
+
+                if (!user) {
+                    try {
+                        const passwordHash = await bcrypt.hash(testUser.password, 12);
+                        const userId = uuidv4();
+
+                        db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
+                            [userId, testUser.name, testUser.email, passwordHash, 1], (err) => {
+                                if (err) {
+                                    console.error(`Error creating user ${testUser.email}:`, err);
+                                    reject(err);
+                                } else {
+                                    console.log(`✅ User created: ${testUser.email} / ${testUser.password}`);
+                                    resolve();
+                                }
+                            });
+                    } catch (error) {
+                        console.error(`Error hashing password for ${testUser.email}:`, error);
+                        reject(error);
+                    }
+                } else {
+                    console.log(`✅ User already exists: ${testUser.email}`);
+                    resolve();
+                }
+            });
         });
-    });
+    };
+
+    // Create all test users
+    (async () => {
+        try {
+            for (const testUser of testUsers) {
+                await createTestUser(testUser);
+            }
+            console.log('✅ All test users processed successfully');
+        } catch (error) {
+            console.error('❌ Error creating test users:', error);
+        }
+    })();
 
     console.log('✅ Database initialized successfully');
 });
@@ -345,26 +367,38 @@ app.post('/auth/login', async (req, res) => {
                 });
             }
 
-            // Generate MFA code
-            const code = generateVerificationCode();
-            const codeId = uuidv4();
-            const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+            // Generate JWT token for direct login (no MFA required for verified users)
+            const token = jwt.sign(
+                { 
+                    userId: user.id, 
+                    email: user.email,
+                    name: user.name
+                },
+                JWT_SECRET,
+                { expiresIn: '24h' }
+            );
 
-            db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
-                [codeId, user.id, code, 'login', expiresAt], async (err) => {
+            // Create session
+            const sessionId = uuidv4();
+            const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+            db.run('INSERT INTO sessions (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)',
+                [sessionId, user.id, token, expiresAt], (err) => {
                     if (err) {
-                        return res.status(500).json({ error: 'فشل في إرسال رمز التحقق' });
+                        console.error('Session creation error:', err);
                     }
-
-                    const emailSent = await sendVerificationEmail(email, code, 'login');
 
                     res.json({
                         success: true,
-                        message: 'تم إرسال رمز التحقق',
-                        userId: user.id,
-                        requiresMFA: true,
-                        emailSent: emailSent,
-                        verificationCode: emailSent ? null : code
+                        message: 'تم تسجيل الدخول بنجاح',
+                        token: token,
+                        requiresMFA: false, // No MFA required for verified users
+                        user: {
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            isVerified: true
+                        }
                     });
                 });
         });

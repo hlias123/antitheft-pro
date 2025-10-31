@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار تسجيل الدخول المحسن</title>
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #1e3c72;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #1e3c72;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #2a5298;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-accounts {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .test-accounts h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .account-item {
+            margin: 5px 0;
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ اختبار تسجيل الدخول المحسن</h1>
+        
+        <div class="test-accounts">
+            <h3>حسابات تجريبية متاحة:</h3>
+            <div class="account-item">📧 test@example.com | 🔑 password123</div>
+            <div class="account-item">📧 user@gmail.com | 🔑 password123</div>
+            <div class="account-item">📧 hlias.antitheft@gmail.com | 🔑 password123</div>
+        </div>
+
+        <div class="form-group">
+            <label>اختر حساب تجريبي:</label>
+            <select id="test-account" onchange="fillCredentials()">
+                <option value="">-- اختر حساب --</option>
+                <option value="test@example.com">Test User (test@example.com)</option>
+                <option value="user@gmail.com">Gmail User (user@gmail.com)</option>
+                <option value="hlias.antitheft@gmail.com">Real User (hlias.antitheft@gmail.com)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+        </div>
+
+        <button onclick="testLogin()">🔐 اختبار تسجيل الدخول</button>
+        <button onclick="checkServerStatus()" style="background: #28a745;">🔍 فحص حالة الخادم</button>
+        <button onclick="clearDebug()" style="background: #6c757d;">🧹 مسح السجل</button>
+
+        <div id="message" class="message"></div>
+        <div id="debug" class="debug-info"></div>
+    </div>
+
+    <script>
+        function fillCredentials() {
+            const select = document.getElementById('test-account');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            
+            if (select.value) {
+                email.value = select.value;
+                password.value = 'password123';
+                addDebug('✅ تم ملء بيانات الحساب: ' + select.value);
+            }
+        }
+
+        function addDebug(message) {
+            const debug = document.getElementById('debug');
+            const timestamp = new Date().toLocaleTimeString();
+            debug.innerHTML += `[${timestamp}] ${message}\n`;
+            debug.scrollTop = debug.scrollHeight;
+        }
+
+        function clearDebug() {
+            document.getElementById('debug').innerHTML = '';
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function checkServerStatus() {
+            addDebug('🔍 فحص حالة الخادم...');
+            
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addDebug('✅ الخادم يعمل بشكل طبيعي');
+                    addDebug('📊 معلومات الخادم: ' + JSON.stringify(data, null, 2));
+                    showMessage('✅ الخادم يعمل بشكل طبيعي', 'success');
+                } else {
+                    addDebug('❌ مشكلة في الخادم: ' + response.status);
+                    showMessage('❌ مشكلة في الخادم', 'error');
+                }
+            } catch (error) {
+                addDebug('❌ خطأ في الاتصال: ' + error.message);
+                showMessage('❌ لا يمكن الاتصال بالخادم', 'error');
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                return;
+            }
+
+            addDebug('🔐 محاولة تسجيل الدخول...');
+            addDebug('📧 البريد الإلكتروني: ' + email);
+            addDebug('🔑 كلمة المرور: ' + '*'.repeat(password.length));
+
+            showMessage('🔄 جاري التحقق من البيانات...', 'success');
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                addDebug('📡 حالة الاستجابة: ' + response.status);
+                
+                const data = await response.json();
+                addDebug('📊 بيانات الاستجابة: ' + JSON.stringify(data, null, 2));
+
+                if (response.ok && data.success) {
+                    addDebug('✅ تم تسجيل الدخول بنجاح!');
+                    showMessage('✅ تم تسجيل الدخول بنجاح! مرحباً ' + (data.user?.name || 'بك'), 'success');
+                    
+                    if (data.token) {
+                        addDebug('🔑 تم الحصول على رمز المصادقة');
+                        addDebug('👤 معلومات المستخدم: ' + JSON.stringify(data.user, null, 2));
+                        
+                        // Store token for testing
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userInfo', JSON.stringify(data.user));
+                        addDebug('💾 تم حفظ بيانات الجلسة');
+                        
+                        // Test redirect to main app
+                        setTimeout(() => {
+                            if (confirm('هل تريد الانتقال إلى التطبيق الرئيسي؟')) {
+                                window.location.href = '/app.html';
+                            }
+                        }, 2000);
+                    }
+                } else {
+                    addDebug('❌ فشل تسجيل الدخول: ' + (data.error || 'خطأ غير معروف'));
+                    showMessage('❌ ' + (data.error || 'بيانات تسجيل الدخول غير صحيحة'), 'error');
+                }
+            } catch (error) {
+                addDebug('🚨 خطأ في الشبكة: ' + error.message);
+                showMessage('❌ خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            addDebug('🚀 تم تحميل صفحة الاختبار');
+            checkServerStatus();
+        });
+    </script>
+</body>
+</html>

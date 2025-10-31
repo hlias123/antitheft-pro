@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الدخول المباشر</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .login-section {
+            margin-bottom: 30px;
+        }
+        .dashboard-section {
+            display: none;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .test-accounts {
+            background: #e2e3e5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .dashboard-content {
+            text-align: center;
+            padding: 20px;
+        }
+        .welcome-message {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 اختبار الدخول المباشر للواجهة الرئيسية</h1>
+        
+        <!-- Login Section -->
+        <div id="login-section" class="login-section">
+            <div class="test-accounts">
+                <h3>حسابات الاختبار:</h3>
+                <p><strong>1.</strong> test@example.com / password123</p>
+                <p><strong>2.</strong> user@gmail.com / password123</p>
+                <p><strong>3.</strong> hlias.antitheft@gmail.com / password123</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني:</label>
+                    <input type="email" id="email" value="test@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">كلمة المرور:</label>
+                    <input type="password" id="password" value="password123" required>
+                </div>
+                
+                <button type="submit">تسجيل الدخول</button>
+            </form>
+
+            <div id="message" class="message"></div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="dashboard-section">
+            <div class="dashboard-content">
+                <div class="welcome-message">🎉 مرحباً بك في الواجهة الرئيسية!</div>
+                
+                <div class="user-info">
+                    <h3>معلومات المستخدم:</h3>
+                    <p><strong>الاسم:</strong> <span id="user-name">-</span></p>
+                    <p><strong>الإيميل:</strong> <span id="user-email">-</span></p>
+                    <p><strong>الحالة:</strong> <span id="user-status">موثق ✅</span></p>
+                </div>
+                
+                <button onclick="logout()" style="background: #dc3545; margin-top: 20px;">
+                    تسجيل الخروج
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function showDashboard(userData) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            
+            // Update user info
+            if (userData) {
+                document.getElementById('user-name').textContent = userData.name || 'غير محدد';
+                document.getElementById('user-email').textContent = userData.email || 'غير محدد';
+            }
+        }
+
+        function logout() {
+            document.getElementById('dashboard-section').style.display = 'none';
+            document.getElementById('login-section').style.display = 'block';
+            
+            // Clear stored data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userInfo');
+            
+            showMessage('تم تسجيل الخروج بنجاح', 'success');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            showMessage('🔄 جاري التحقق من البيانات...', 'info');
+            
+            try {
+                console.log('Login attempt:', { email, password: '***' });
+                
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', { status: response.status, data });
+                
+                if (response.ok) {
+                    if (data.requiresMFA) {
+                        showMessage('✅ تم إرسال رمز التحقق - يرجى التحقق من الإيميل', 'success');
+                        console.log('MFA required - verification code:', data.verificationCode);
+                    } else {
+                        // Direct login success
+                        showMessage('✅ تم تسجيل الدخول بنجاح! جاري التوجيه...', 'success');
+                        
+                        // Store token
+                        if (data.token) {
+                            localStorage.setItem('authToken', data.token);
+                            localStorage.setItem('userInfo', JSON.stringify(data.user));
+                        }
+                        
+                        setTimeout(() => {
+                            showDashboard(data.user);
+                        }, 1000);
+                    }
+                } else {
+                    if (data.requiresVerification) {
+                        showMessage('❌ الحساب غير موثق - يرجى التحقق من الإيميل أولاً', 'error');
+                    } else {
+                        showMessage(`❌ ${data.error}`, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('❌ خطأ في الاتصال: ' + error.message, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
