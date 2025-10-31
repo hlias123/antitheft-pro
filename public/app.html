@@ -97,8 +97,18 @@
     <div id="login-screen">
         <div class="container">
             <!-- Language Switcher -->
-            <div style="position: absolute; top: 20px; right: 20px;">
-                <select id="language-selector" onchange="changeLanguage()" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px;">
+            <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
+                <select id="language-selector" onchange="changeLanguage()" style="
+                    padding: 10px 15px; 
+                    border-radius: 8px; 
+                    border: 2px solid #667eea; 
+                    font-size: 14px; 
+                    font-weight: 600;
+                    background: white;
+                    color: #667eea;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                ">
                     <option value="ar">🇸🇦 العربية</option>
                     <option value="en">🇺🇸 English</option>
                 </select>
@@ -208,8 +218,26 @@
     <!-- Dashboard Screen -->
     <div id="dashboard-screen" class="dashboard hidden">
         <div class="container" style="max-width: 1200px;">
+            <!-- Language Switcher for Dashboard -->
+            <div style="position: absolute; top: 15px; right: 15px; z-index: 1000;">
+                <select id="language-selector-dashboard" onchange="changeLanguageFromDashboard()" style="
+                    padding: 8px 12px; 
+                    border-radius: 6px; 
+                    border: 2px solid #667eea; 
+                    font-size: 13px; 
+                    font-weight: 600;
+                    background: white;
+                    color: #667eea;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                ">
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="en">🇺🇸 English</option>
+                </select>
+            </div>
+            
             <div class="logo">🛡️</div>
-            <h1>لوحة التحكم</h1>
+            <h1 id="dashboard-title">لوحة التحكم</h1>
 
             <div class="user-info">
                 <h3>مرحباً، <span id="user-name">المستخدم</span></h3>
@@ -827,7 +855,11 @@
                 emailPlaceholder: 'أدخل بريدك الإلكتروني',
                 passwordPlaceholder: 'أدخل كلمة المرور',
                 namePlaceholder: 'أدخل اسمك الكامل',
-                codePlaceholder: 'أدخل رمز التحقق'
+                codePlaceholder: 'أدخل رمز التحقق',
+                dashboardTitle: 'لوحة التحكم',
+                welcome: 'مرحباً',
+                emailLabel: 'البريد الإلكتروني',
+                verificationStatus: 'حالة التحقق: ✅ مؤكد'
             },
             en: {
                 title: 'Secure Guardian Pro',
@@ -845,7 +877,11 @@
                 emailPlaceholder: 'Enter your email',
                 passwordPlaceholder: 'Enter your password',
                 namePlaceholder: 'Enter your full name',
-                codePlaceholder: 'Enter verification code'
+                codePlaceholder: 'Enter verification code',
+                dashboardTitle: 'Dashboard',
+                welcome: 'Welcome',
+                emailLabel: 'Email',
+                verificationStatus: 'Verification Status: ✅ Verified'
             }
         };
 
@@ -854,21 +890,69 @@
             const lang = document.getElementById('language-selector').value;
             const t = translations[lang];
             
+            console.log('🌐 Changing language to:', lang);
+            
             // Update direction and language
             document.documentElement.lang = lang;
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             
             // Update text content
-            document.getElementById('app-title').textContent = t.title;
+            const appTitle = document.getElementById('app-title');
+            if (appTitle) appTitle.textContent = t.title;
+            
+            const dashboardTitle = document.getElementById('dashboard-title');
+            if (dashboardTitle) dashboardTitle.textContent = t.dashboardTitle;
+            
+            // Update form labels and placeholders
+            const elements = {
+                'login-email': { placeholder: t.emailPlaceholder },
+                'login-password': { placeholder: t.passwordPlaceholder },
+                'register-name': { placeholder: t.namePlaceholder },
+                'register-email': { placeholder: t.emailPlaceholder },
+                'register-password': { placeholder: t.passwordPlaceholder },
+                'verification-code': { placeholder: t.codePlaceholder }
+            };
+            
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element && elements[id].placeholder) {
+                    element.placeholder = elements[id].placeholder;
+                }
+            });
+            
+            // Update button texts
+            const loginBtn = document.getElementById('login-text');
+            if (loginBtn) loginBtn.textContent = t.loginBtn;
+            
+            const registerBtn = document.getElementById('register-text');
+            if (registerBtn) registerBtn.textContent = t.registerBtn;
             
             // Store language preference
             localStorage.setItem('preferredLanguage', lang);
+            
+            console.log('✅ Language changed successfully');
+        }
+
+        // Change language from dashboard
+        function changeLanguageFromDashboard() {
+            const dashboardSelector = document.getElementById('language-selector-dashboard');
+            const loginSelector = document.getElementById('language-selector');
+            
+            if (dashboardSelector && loginSelector) {
+                loginSelector.value = dashboardSelector.value;
+                changeLanguage();
+            }
         }
 
         // Load saved language
         function loadSavedLanguage() {
             const savedLang = localStorage.getItem('preferredLanguage') || 'ar';
-            document.getElementById('language-selector').value = savedLang;
+            const loginSelector = document.getElementById('language-selector');
+            const dashboardSelector = document.getElementById('language-selector-dashboard');
+            
+            if (loginSelector) loginSelector.value = savedLang;
+            if (dashboardSelector) dashboardSelector.value = savedLang;
+            
             changeLanguage();
         }
 
