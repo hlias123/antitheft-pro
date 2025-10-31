@@ -74,33 +74,38 @@ db.serialize(() => {
         FOREIGN KEY (user_id) REFERENCES users (id)
     )`);
 
-    // Create a test user if it doesn't exist
-    db.get('SELECT id FROM users WHERE email = ?', ['test@example.com'], async (err, user) => {
-        if (err) {
-            console.error('Error checking test user:', err);
-            return;
-        }
+    // Create test users if they don't exist
+    const testUsers = [
+        { name: 'Test User', email: 'test@example.com', password: 'password123' },
+        { name: 'Gmail User', email: 'user@gmail.com', password: 'password123' },
+        { name: 'Real User', email: 'hlias.antitheft@gmail.com', password: 'password123' }
+    ];
 
-        if (!user) {
-            try {
-                const testPassword = 'password123';
-                const passwordHash = await bcrypt.hash(testPassword, 12);
-                const userId = uuidv4();
-
-                db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
-                    [userId, 'Test User', 'test@example.com', passwordHash, 1], (err) => {
-                        if (err) {
-                            console.error('Error creating test user:', err);
-                        } else {
-                            console.log('✅ Test user created:');
-                            console.log('   Email: test@example.com');
-                            console.log('   Password: password123');
-                        }
-                    });
-            } catch (error) {
-                console.error('Error hashing test password:', error);
+    testUsers.forEach(async (testUser) => {
+        db.get('SELECT id FROM users WHERE email = ?', [testUser.email], async (err, user) => {
+            if (err) {
+                console.error(`Error checking user ${testUser.email}:`, err);
+                return;
             }
-        }
+
+            if (!user) {
+                try {
+                    const passwordHash = await bcrypt.hash(testUser.password, 12);
+                    const userId = uuidv4();
+
+                    db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
+                        [userId, testUser.name, testUser.email, passwordHash, 1], (err) => {
+                            if (err) {
+                                console.error(`Error creating user ${testUser.email}:`, err);
+                            } else {
+                                console.log(`✅ User created: ${testUser.email} / ${testUser.password}`);
+                            }
+                        });
+                } catch (error) {
+                    console.error(`Error hashing password for ${testUser.email}:`, error);
+                }
+            }
+        });
     });
 
     console.log('✅ Database initialized successfully');
@@ -229,6 +234,7 @@ app.get('/api', (req, res) => {
             'POST /auth/login': 'Login user',
             'POST /auth/verify': 'Verify MFA code',
             'POST /auth/resend-verification': 'Resend verification code',
+            'POST /auth/create-test-user': 'Create test user (development only)',
             'GET /auth/profile': 'Get user profile',
             'POST /auth/logout': 'Logout user',
             'GET /health': 'Health check'
@@ -497,6 +503,58 @@ app.post('/auth/resend-verification', async (req, res) => {
         });
     } catch (error) {
         console.error('Resend verification error:', error);
+        res.status(500).json({ error: 'خطأ في الخادم' });
+    }
+});
+
+// Create test user (development only)
+app.post('/auth/create-test-user', async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ error: 'الاسم والإيميل وكلمة المرور مطلوبة' });
+        }
+
+        // Check if user already exists
+        db.get('SELECT id FROM users WHERE email = ?', [email], async (err, existingUser) => {
+            if (err) {
+                return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
+            }
+
+            if (existingUser) {
+                return res.status(400).json({ error: 'المستخدم موجود بالفعل' });
+            }
+
+            try {
+                const passwordHash = await bcrypt.hash(password, 12);
+                const userId = uuidv4();
+
+                db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
+                    [userId, name, email, passwordHash, 1], (err) => {
+                        if (err) {
+                            return res.status(500).json({ error: 'فشل في إنشاء المستخدم' });
+                        }
+
+                        console.log(`✅ Test user created via API: ${email}`);
+                        res.json({
+                            success: true,
+                            message: 'تم إنشاء المستخدم التجريبي بنجاح',
+                            user: {
+                                id: userId,
+                                name,
+                                email,
+                                isVerified: true
+                            }
+                        });
+                    });
+            } catch (error) {
+                console.error('Error hashing password:', error);
+                res.status(500).json({ error: 'خطأ في تشفير كلمة المرور' });
+            }
+        });
+    } catch (error) {
+        console.error('Create test user error:', error);
         res.status(500).json({ error: 'خطأ في الخادم' });
     }
 });
