@@ -198,12 +198,15 @@
             }
         }
 
-        // Handle login
+        // Handle login - Fixed version based on working debug test
         async function handleLogin() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
 
+            console.log('🚀 handleLogin called with:', { email, password: '***' });
+
             if (!email || !password) {
+                console.log('❌ Validation failed: missing email or password');
                 showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
                 return;
             }
@@ -212,67 +215,82 @@
             showMessage('🔄 جاري التحقق من البيانات...', 'success');
 
             try {
-                console.log('🔐 Attempting login with:', { email, password: '***' });
-                console.log('🌐 Request URL:', '/auth/login');
-                console.log('📤 Request body:', JSON.stringify({ email, password: '***' }));
+                console.log('🔐 Sending login request...');
+                console.log('📤 Request details:', {
+                    url: '/auth/login',
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: { email, password: '***' }
+                });
                 
                 const response = await fetch('/auth/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ email, password })
                 });
 
-                console.log('📡 Response received:');
-                console.log('  - Status:', response.status);
-                console.log('  - Status Text:', response.statusText);
-                console.log('  - OK:', response.ok);
-                console.log('  - Headers:', Object.fromEntries(response.headers.entries()));
+                console.log('📡 Response received:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok,
+                    headers: Object.fromEntries(response.headers.entries())
+                });
 
                 const data = await response.json();
                 console.log('📊 Response data:', data);
-                console.log('📊 Response data (stringified):', JSON.stringify(data, null, 2));
 
-                // Debug logging
-                console.log('🔍 Debug info:');
-                console.log('  - response.ok:', response.ok);
-                console.log('  - response.status:', response.status);
-                console.log('  - data.success:', data.success);
-                console.log('  - typeof data.success:', typeof data.success);
-                console.log('  - condition (response.ok && data.success):', response.ok && data.success);
-                
-                if (response.ok && data.success === true) {
-                    console.log('✅ Login successful!');
+                if (response.ok && data.success) {
+                    console.log('✅ Login condition met - proceeding with success flow');
                     
                     // Store token and user info
                     if (data.token) {
                         localStorage.setItem('authToken', data.token);
                         localStorage.setItem('userInfo', JSON.stringify(data.user));
-                        console.log('💾 Stored token and user info');
+                        console.log('💾 Stored auth data successfully');
                     }
                     
                     showMessage('✅ تم تسجيل الدخول بنجاح!', 'success');
                     
                     // Update user info
                     if (data.user) {
-                        document.getElementById('user-name').textContent = data.user.name;
-                        document.getElementById('user-email').textContent = data.user.email;
-                        console.log('👤 Updated user info in dashboard');
+                        const nameEl = document.getElementById('user-name');
+                        const emailEl = document.getElementById('user-email');
+                        if (nameEl) nameEl.textContent = data.user.name;
+                        if (emailEl) emailEl.textContent = data.user.email;
+                        console.log('👤 Updated user info elements');
                     }
                     
                     // Switch to dashboard
                     setTimeout(() => {
-                        console.log('🔄 Switching to dashboard...');
-                        document.getElementById('login-screen').classList.add('hidden');
-                        document.getElementById('dashboard-screen').classList.remove('hidden');
-                        initializeDashboard();
+                        console.log('🔄 Attempting to switch to dashboard...');
+                        const loginScreen = document.getElementById('login-screen');
+                        const dashboardScreen = document.getElementById('dashboard-screen');
+                        
+                        if (loginScreen && dashboardScreen) {
+                            loginScreen.classList.add('hidden');
+                            dashboardScreen.classList.remove('hidden');
+                            console.log('✅ Successfully switched screens');
+                            
+                            if (typeof initializeDashboard === 'function') {
+                                initializeDashboard();
+                                console.log('✅ Dashboard initialized');
+                            } else {
+                                console.log('⚠️ initializeDashboard function not found');
+                            }
+                        } else {
+                            console.error('❌ Screen elements not found:', { loginScreen, dashboardScreen });
+                        }
                     }, 1000);
                     
                 } else {
-                    console.log('❌ Login failed - Debug info:');
-                    console.log('  - response.ok:', response.ok);
-                    console.log('  - data.success:', data.success);
-                    console.log('  - data.error:', data.error);
-                    console.log('  - full data:', data);
+                    console.log('❌ Login failed:', {
+                        responseOk: response.ok,
+                        dataSuccess: data.success,
+                        error: data.error,
+                        fullData: data
+                    });
                     showMessage('❌ ' + (data.error || 'بيانات تسجيل الدخول غير صحيحة'), 'error');
                 }
                 
@@ -281,6 +299,7 @@
                 showMessage('❌ خطأ في الاتصال بالخادم', 'error');
             } finally {
                 setLoading(false);
+                console.log('🏁 Login process completed');
             }
         }
 
