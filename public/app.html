@@ -464,10 +464,10 @@
                                 <strong>⚠️ ${data.error}</strong><br>
                                 <div style="margin-top: 10px;">
                                     <button onclick="showVerificationForm()" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
-                                        التحقق الآن
+                                        ${getMessage('verifyNowBtn')}
                                     </button>
                                     <button onclick="resendVerificationCode()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
-                                        إرسال رمز جديد
+                                        ${getMessage('sendNewCodeBtn')}
                                     </button>
                                 </div>
                             </div>
@@ -604,10 +604,10 @@
                                 <strong>⚠️ ${data.error}</strong><br>
                                 <div style="margin-top: 10px;">
                                     <button onclick="showVerificationForm()" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
-                                        التحقق الآن
+                                        ${getMessage('verifyNowBtn')}
                                     </button>
                                     <button onclick="resendVerificationCode()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
-                                        إرسال رمز جديد
+                                        ${getMessage('sendNewCodeBtn')}
                                     </button>
                                 </div>
                             </div>
@@ -619,20 +619,20 @@
                                 <strong>ℹ️ ${data.error}</strong><br>
                                 <div style="margin-top: 10px;">
                                     <button onclick="showLoginForm()" style="background: #17a2b8; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
-                                        تسجيل الدخول
+                                        ${getMessage('loginNowBtn')}
                                     </button>
                                 </div>
                             </div>
                         `;
                         showMessage(loginMessage, 'warning');
                     } else {
-                        showMessage('❌ ' + (data.error || 'فشل في إنشاء الحساب'), 'error');
+                        showMessage('❌ ' + (data.error || getMessage('accountCreationFailed')), 'error');
                     }
                 }
                 
             } catch (error) {
                 console.error('🚨 Registration error:', error);
-                showMessage('❌ خطأ في الاتصال بالخادم', 'error');
+                showMessage('❌ ' + getMessage('serverError'), 'error');
             } finally {
                 // Reset loading state
                 if (btn && registerText && registerLoading) {
@@ -962,7 +962,10 @@
                 cameraStarted: 'Camera started',
                 cameraAccessDenied: 'Camera access denied',
                 cameraStopped: 'Camera stopped',
-                yourCurrentLocation: 'Your Current Location'
+                yourCurrentLocation: 'Your Current Location',
+                verifyNowBtn: 'Verify Now',
+                sendNewCodeBtn: 'Send New Code',
+                loginNowBtn: 'Login Now'
             },
             el: {
                 title: 'Secure Guardian Pro',
@@ -1023,7 +1026,10 @@
                 cameraStarted: 'Η κάμερα ξεκίνησε',
                 cameraAccessDenied: 'Άρνηση πρόσβασης στην κάμερα',
                 cameraStopped: 'Η κάμερα σταμάτησε',
-                yourCurrentLocation: 'Η τρέχουσα τοποθεσία σας'
+                yourCurrentLocation: 'Η τρέχουσα τοποθεσία σας',
+                verifyNowBtn: 'Επαλήθευση Τώρα',
+                sendNewCodeBtn: 'Αποστολή Νέου Κωδικού',
+                loginNowBtn: 'Σύνδεση Τώρα'
             }
         };
 
