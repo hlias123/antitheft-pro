@@ -111,6 +111,7 @@
                 ">
                     <option value="ar">🇸🇦 العربية</option>
                     <option value="en">🇺🇸 English</option>
+                    <option value="el">🇬🇷 Ελληνικά</option>
                 </select>
             </div>
             
@@ -118,12 +119,11 @@
             <h1 id="app-title">Secure Guardian Pro</h1>
             
             <div style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72;">
-                🔐 نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع
+                🔐 <span id="security-description">نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع</span>
             </div>
             
             <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #2e7d32;">
-                <strong>💡 للمستخدمين الجدد:</strong><br>
-                إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه
+                <strong>💡 <span id="new-users-info">للمستخدمين الجدد: إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه</span></strong>
             </div>
 
             <div id="login-form">
@@ -143,7 +143,7 @@
                 </button>
                 
                 <div style="text-align: center; margin-top: 15px;">
-                    <span style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showRegisterForm()">
+                    <span id="no-account-link" style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showRegisterForm()">
                         ليس لديك حساب؟ إنشاء حساب جديد
                     </span>
                 </div>
@@ -172,7 +172,7 @@
                 </button>
                 
                 <div style="text-align: center; margin-top: 15px;">
-                    <span style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showLoginForm()">
+                    <span id="has-account-link" style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showLoginForm()">
                         لديك حساب بالفعل؟ تسجيل الدخول
                     </span>
                 </div>
@@ -233,6 +233,7 @@
                 ">
                     <option value="ar">🇸🇦 العربية</option>
                     <option value="en">🇺🇸 English</option>
+                    <option value="el">🇬🇷 Ελληνικά</option>
                 </select>
             </div>
             
@@ -240,31 +241,31 @@
             <h1 id="dashboard-title">لوحة التحكم</h1>
 
             <div class="user-info">
-                <h3>مرحباً، <span id="user-name">المستخدم</span></h3>
-                <p>البريد الإلكتروني: <span id="user-email">user@test.com</span></p>
-                <p>حالة التحقق: <span id="verification-status">✅ مؤكد</span></p>
+                <h3><span id="welcome-text">مرحباً</span>، <span id="user-name">المستخدم</span></h3>
+                <p><span id="email-label-text">البريد الإلكتروني</span>: <span id="user-email">user@test.com</span></p>
+                <p><span id="verification-status-text">حالة التحقق: ✅ مؤكد</span></p>
             </div>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h4>📍 الموقع الحالي</h4>
+                    <h4>📍 <span id="current-location-title">الموقع الحالي</span></h4>
                     <div id="map"></div>
-                    <button class="btn" onclick="updateLocation()" style="margin-top: 10px;">تحديث الموقع</button>
+                    <button id="update-location-btn" class="btn" onclick="updateLocation()" style="margin-top: 10px;">تحديث الموقع</button>
                 </div>
 
                 <div class="feature-card">
-                    <h4>📷 مراقبة الكاميرا</h4>
+                    <h4>📷 <span id="camera-title">مراقبة الكاميرا</span></h4>
                     <div id="camera-container">
                         <video id="camera-video" autoplay muted></video>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button class="btn" onclick="startCamera()" style="flex: 1;">تشغيل الكاميرا</button>
-                        <button class="btn" onclick="stopCamera()" style="flex: 1; background: #e74c3c;">إيقاف الكاميرا</button>
+                        <button id="start-camera-btn" class="btn" onclick="startCamera()" style="flex: 1;">تشغيل الكاميرا</button>
+                        <button id="stop-camera-btn" class="btn" onclick="stopCamera()" style="flex: 1; background: #e74c3c;">إيقاف الكاميرا</button>
                     </div>
                 </div>
             </div>
 
-            <button class="btn" onclick="handleLogout()" style="background: #dc3545; margin-top: 30px;">تسجيل الخروج</button>
+            <button id="logout-btn" class="btn" onclick="handleLogout()" style="background: #dc3545; margin-top: 30px;">تسجيل الخروج</button>
         </div>
     </div>
 
@@ -859,7 +860,15 @@
                 dashboardTitle: 'لوحة التحكم',
                 welcome: 'مرحباً',
                 emailLabel: 'البريد الإلكتروني',
-                verificationStatus: 'حالة التحقق: ✅ مؤكد'
+                verificationStatus: 'حالة التحقق: ✅ مؤكد',
+                currentLocation: 'الموقع الحالي',
+                updateLocation: 'تحديث الموقع',
+                cameraFeed: 'تغذية الكاميرا',
+                startCamera: 'تشغيل الكاميرا',
+                stopCamera: 'إيقاف الكاميرا',
+                logout: 'تسجيل الخروج',
+                securitySystem: 'نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع',
+                newUsersInfo: 'للمستخدمين الجدد: إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه'
             },
             en: {
                 title: 'Secure Guardian Pro',
@@ -881,7 +890,45 @@
                 dashboardTitle: 'Dashboard',
                 welcome: 'Welcome',
                 emailLabel: 'Email',
-                verificationStatus: 'Verification Status: ✅ Verified'
+                verificationStatus: 'Verification Status: ✅ Verified',
+                currentLocation: 'Current Location',
+                updateLocation: 'Update Location',
+                cameraFeed: 'Camera Feed',
+                startCamera: 'Start Camera',
+                stopCamera: 'Stop Camera',
+                logout: 'Logout',
+                securitySystem: 'Advanced security system with live monitoring and location tracking',
+                newUsersInfo: 'For new users: If you don\'t have an account, you can create a new account below'
+            },
+            el: {
+                title: 'Secure Guardian Pro',
+                loginTitle: 'Σύνδεση',
+                registerTitle: 'Δημιουργία Νέου Λογαριασμού',
+                email: 'Email:',
+                password: 'Κωδικός Πρόσβασης:',
+                name: 'Πλήρες Όνομα:',
+                loginBtn: 'Σύνδεση',
+                registerBtn: 'Δημιουργία Λογαριασμού',
+                noAccount: 'Δεν έχετε λογαριασμό; Δημιουργήστε νέο λογαριασμό',
+                hasAccount: 'Έχετε λογαριασμό; Σύνδεση',
+                verificationCode: 'Κωδικός Επαλήθευσης:',
+                verifyBtn: 'Επαλήθευση Κωδικού',
+                emailPlaceholder: 'Εισάγετε το email σας',
+                passwordPlaceholder: 'Εισάγετε τον κωδικό πρόσβασης',
+                namePlaceholder: 'Εισάγετε το πλήρες όνομά σας',
+                codePlaceholder: 'Εισάγετε τον κωδικό επαλήθευσης',
+                dashboardTitle: 'Πίνακας Ελέγχου',
+                welcome: 'Καλώς ήρθατε',
+                emailLabel: 'Email',
+                verificationStatus: 'Κατάσταση Επαλήθευσης: ✅ Επαληθευμένο',
+                currentLocation: 'Τρέχουσα Τοποθεσία',
+                updateLocation: 'Ενημέρωση Τοποθεσίας',
+                cameraFeed: 'Τροφοδοσία Κάμερας',
+                startCamera: 'Εκκίνηση Κάμερας',
+                stopCamera: 'Διακοπή Κάμερας',
+                logout: 'Αποσύνδεση',
+                securitySystem: 'Προηγμένο σύστημα ασφαλείας με ζωντανή παρακολούθηση και εντοπισμό τοποθεσίας',
+                newUsersInfo: 'Για νέους χρήστες: Εάν δεν έχετε λογαριασμό, μπορείτε να δημιουργήσετε έναν νέο λογαριασμό παρακάτω'
             }
         };
 
@@ -926,6 +973,45 @@
             
             const registerBtn = document.getElementById('register-text');
             if (registerBtn) registerBtn.textContent = t.registerBtn;
+            
+            // Update static text elements
+            const staticTexts = {
+                'security-description': t.securitySystem,
+                'new-users-info': t.newUsersInfo,
+                'current-location-title': t.currentLocation,
+                'update-location-btn': t.updateLocation,
+                'camera-title': t.cameraFeed,
+                'start-camera-btn': t.startCamera,
+                'stop-camera-btn': t.stopCamera,
+                'logout-btn': t.logout,
+                'welcome-text': t.welcome,
+                'email-label-text': t.emailLabel,
+                'verification-status-text': t.verificationStatus,
+                'no-account-link': t.noAccount,
+                'has-account-link': t.hasAccount
+            };
+            
+            Object.keys(staticTexts).forEach(id => {
+                const element = document.getElementById(id);
+                if (element && staticTexts[id]) {
+                    element.textContent = staticTexts[id];
+                }
+            });
+            
+            // Update labels
+            const labels = document.querySelectorAll('label');
+            labels.forEach(label => {
+                const forAttr = label.getAttribute('for');
+                if (forAttr === 'login-email' || forAttr === 'register-email') {
+                    label.textContent = t.email;
+                } else if (forAttr === 'login-password' || forAttr === 'register-password') {
+                    label.textContent = t.password;
+                } else if (forAttr === 'register-name') {
+                    label.textContent = t.name;
+                } else if (forAttr === 'verification-code') {
+                    label.textContent = t.verificationCode;
+                }
+            });
             
             // Store language preference
             localStorage.setItem('preferredLanguage', lang);
