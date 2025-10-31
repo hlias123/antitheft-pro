@@ -199,7 +199,6 @@ app.get('/api', (req, res) => {
             'POST /auth/register': 'Register new user',
             'POST /auth/login': 'Login user',
             'POST /auth/verify': 'Verify MFA code',
-            'POST /auth/google': 'Google OAuth login',
             'GET /auth/profile': 'Get user profile',
             'POST /auth/logout': 'Logout user',
             'GET /health': 'Health check'
@@ -400,85 +399,7 @@ app.post('/auth/verify', (req, res) => {
     }
 });
 
-// Google OAuth (Demo)
-app.post('/auth/google', async (req, res) => {
-    try {
-        // For demo purposes, we'll simulate Google login
-        const mockGoogleUser = {
-            email: 'demo@google.com',
-            name: 'Google Demo User',
-            googleId: 'google_demo_123'
-        };
 
-        // Check if user exists
-        db.get('SELECT * FROM users WHERE email = ?', [mockGoogleUser.email], (err, user) => {
-            if (err) {
-                return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
-            }
-
-            if (user) {
-                // User exists, generate token
-                const token = jwt.sign(
-                    { 
-                        userId: user.id, 
-                        email: user.email,
-                        name: user.name
-                    },
-                    JWT_SECRET,
-                    { expiresIn: '24h' }
-                );
-
-                res.json({
-                    success: true,
-                    message: 'تم تسجيل الدخول بنجاح',
-                    token: token,
-                    user: {
-                        id: user.id,
-                        name: user.name,
-                        email: user.email,
-                        isVerified: true
-                    }
-                });
-            } else {
-                // Create new user
-                const userId = uuidv4();
-                const passwordHash = bcrypt.hashSync(uuidv4(), 12); // Random password for Google users
-
-                db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, 1)',
-                    [userId, mockGoogleUser.name, mockGoogleUser.email, passwordHash], function(err) {
-                        if (err) {
-                            return res.status(500).json({ error: 'فشل في إنشاء الحساب' });
-                        }
-
-                        const token = jwt.sign(
-                            { 
-                                userId: userId, 
-                                email: mockGoogleUser.email,
-                                name: mockGoogleUser.name
-                            },
-                            JWT_SECRET,
-                            { expiresIn: '24h' }
-                        );
-
-                        res.json({
-                            success: true,
-                            message: 'تم إنشاء الحساب وتسجيل الدخول بنجاح',
-                            token: token,
-                            user: {
-                                id: userId,
-                                name: mockGoogleUser.name,
-                                email: mockGoogleUser.email,
-                                isVerified: true
-                            }
-                        });
-                    });
-            }
-        });
-    } catch (error) {
-        console.error('Google OAuth error:', error);
-        res.status(500).json({ error: 'خطأ في الخادم' });
-    }
-});
 
 // Get profile
 app.get('/auth/profile', authenticateToken, (req, res) => {

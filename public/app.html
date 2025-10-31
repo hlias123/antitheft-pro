@@ -136,28 +136,7 @@
             background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
         }
 
-        .google-btn {
-            width: 100%;
-            padding: 15px;
-            background: white;
-            color: #333;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
 
-        .google-btn:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-        }
 
         .toggle-form {
             color: #667eea;
@@ -359,19 +338,7 @@
 
                 <button id="login-btn" class="btn" onclick="handleLogin()">تسجيل الدخول</button>
 
-                <button class="google-btn" onclick="handleGoogleLogin()">
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                        <path fill="currentColor"
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="currentColor"
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="currentColor"
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                        <path fill="currentColor"
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                    </svg>
-                    <span id="google-btn-text">تسجيل الدخول بـ Google</span>
-                </button>
+
 
                 <div id="create-account-link" class="toggle-form" onclick="showRegisterForm()">
                     إنشاء حساب جديد
@@ -559,7 +526,7 @@
                     password: 'كلمة المرور:',
                     fullName: 'الاسم الكامل:',
                     login: 'تسجيل الدخول',
-                    googleLogin: 'تسجيل الدخول بـ Google',
+
                     createAccount: 'إنشاء حساب جديد',
                     register: 'إنشاء الحساب',
                     haveAccount: 'لديك حساب بالفعل؟ تسجيل الدخول',
@@ -582,7 +549,7 @@
                     stats: 'إحصائيات الحماية',
                     logout: 'تسجيل الخروج',
                     loginSuccess: 'تم تسجيل الدخول بنجاح!',
-                    googleLoginSuccess: 'تم تسجيل الدخول بـ Google بنجاح!',
+
                     registerSuccess: 'تم إنشاء الحساب بنجاح!',
                     loginError: 'بيانات تسجيل الدخول غير صحيحة',
                     registerError: 'يرجى ملء جميع الحقول بشكل صحيح',
@@ -605,7 +572,7 @@
                     password: 'Password:',
                     fullName: 'Full Name:',
                     login: 'Login',
-                    googleLogin: 'Login with Google',
+
                     createAccount: 'Create New Account',
                     register: 'Create Account',
                     haveAccount: 'Already have an account? Login',
@@ -628,7 +595,7 @@
                     stats: 'Protection Statistics',
                     logout: 'Logout',
                     loginSuccess: 'Login successful!',
-                    googleLoginSuccess: 'Google login successful!',
+
                     registerSuccess: 'Account created successfully!',
                     loginError: 'Invalid login credentials',
                     registerError: 'Please fill all fields correctly',
@@ -651,7 +618,7 @@
                     password: 'Κωδικός:',
                     fullName: 'Πλήρες Όνομα:',
                     login: 'Σύνδεση',
-                    googleLogin: 'Σύνδεση με Google',
+
                     createAccount: 'Δημιουργία Νέου Λογαριασμού',
                     register: 'Δημιουργία Λογαριασμού',
                     haveAccount: 'Έχετε ήδη λογαριασμό; Σύνδεση',
@@ -674,7 +641,7 @@
                     stats: 'Στατιστικά Προστασίας',
                     logout: 'Αποσύνδεση',
                     loginSuccess: 'Επιτυχής σύνδεση!',
-                    googleLoginSuccess: 'Επιτυχής σύνδεση με Google!',
+
                     registerSuccess: 'Ο λογαριασμός δημιουργήθηκε επιτυχώς!',
                     loginError: 'Μη έγκυρα διαπιστευτήρια σύνδεσης',
                     registerError: 'Παρακαλώ συμπληρώστε όλα τα πεδία σωστά',
@@ -696,7 +663,7 @@
                 updateElementText('password-label', t.password);
                 updateElementText('name-label', t.fullName);
                 updateElementText('login-btn', t.login);
-                updateElementText('google-btn-text', t.googleLogin);
+
                 updateElementText('create-account-link', t.createAccount);
                 updateElementText('register-btn', t.register);
                 updateElementText('have-account-link', t.haveAccount);
@@ -732,7 +699,7 @@
                 window.currentLang = lang;
                 window.messages = {
                     loginSuccess: t.loginSuccess,
-                    googleLoginSuccess: t.googleLoginSuccess,
+
                     registerSuccess: t.registerSuccess,
                     loginError: t.loginError,
                     registerError: t.registerError,
@@ -812,31 +779,7 @@
             return verifiedEmails.includes(email);
         }
 
-        function handleGoogleLogin() {
-            // Simulate Google OAuth process
-            showMessage('🔄 جاري الاتصال بـ Google... / Connecting to Google...', 'success');
 
-            setTimeout(() => {
-                // Simulate successful Google login
-                const googleUser = {
-                    name: 'Google User',
-                    email: 'user@gmail.com',
-                    picture: 'https://via.placeholder.com/40'
-                };
-
-                // Update user info
-                document.getElementById('user-name').textContent = googleUser.name;
-                document.getElementById('user-email').textContent = googleUser.email;
-
-                showMessage(window.messages?.googleLoginSuccess || 'تم تسجيل الدخول بـ Google بنجاح!', 'success');
-
-                setTimeout(() => {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard-screen').classList.remove('hidden');
-                    initializeDashboard();
-                }, 1000);
-            }, 2000);
-        }
 
         function handleRegister() {
             const name = document.getElementById('register-name').value;
