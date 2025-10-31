@@ -109,7 +109,6 @@
                     cursor: pointer;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 ">
-                    <option value="ar">🇸🇦 العربية</option>
                     <option value="en">🇺🇸 English</option>
                     <option value="el">🇬🇷 Ελληνικά</option>
                 </select>
@@ -119,32 +118,32 @@
             <h1 id="app-title">Secure Guardian Pro</h1>
             
             <div style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72;">
-                🔐 <span id="security-description">نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع</span>
+                🔐 <span id="security-description">Advanced security system with live monitoring and location tracking</span>
             </div>
             
             <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #2e7d32;">
-                <strong>💡 <span id="new-users-info">للمستخدمين الجدد: إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه</span></strong>
+                <strong>💡 <span id="new-users-info">For new users: If you don't have an account, you can create a new account below</span></strong>
             </div>
 
             <div id="login-form">
                 <div class="form-group">
-                    <label for="login-email">البريد الإلكتروني:</label>
-                    <input type="email" id="login-email" placeholder="أدخل بريدك الإلكتروني" required>
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="login-password">كلمة المرور:</label>
-                    <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
                 </div>
 
                 <button id="login-btn" class="btn" onclick="handleLogin()">
-                    <span id="login-text">تسجيل الدخول</span>
-                    <span id="loading-text" style="display: none;">🔄 جاري التحقق...</span>
+                    <span id="login-text">Login</span>
+                    <span id="loading-text" style="display: none;">🔄 Checking...</span>
                 </button>
                 
                 <div style="text-align: center; margin-top: 15px;">
                     <span id="no-account-link" style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showRegisterForm()">
-                        ليس لديك حساب؟ إنشاء حساب جديد
+                        Don't have an account? Create new account
                     </span>
                 </div>
             </div>
@@ -152,28 +151,28 @@
             <!-- Register Form -->
             <div id="register-form" class="hidden">
                 <div class="form-group">
-                    <label for="register-name">الاسم الكامل:</label>
-                    <input type="text" id="register-name" placeholder="أدخل اسمك الكامل" required>
+                    <label for="register-name">Full Name:</label>
+                    <input type="text" id="register-name" placeholder="Enter your full name" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="register-email">البريد الإلكتروني:</label>
-                    <input type="email" id="register-email" placeholder="أدخل بريدك الإلكتروني" required>
+                    <label for="register-email">Email:</label>
+                    <input type="email" id="register-email" placeholder="Enter your email" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="register-password">كلمة المرور:</label>
-                    <input type="password" id="register-password" placeholder="أدخل كلمة مرور قوية (8 أحرف على الأقل)" required>
+                    <label for="register-password">Password:</label>
+                    <input type="password" id="register-password" placeholder="Enter a strong password (at least 8 characters)" required>
                 </div>
 
                 <button id="register-btn" class="btn" onclick="handleRegister()">
-                    <span id="register-text">إنشاء الحساب</span>
-                    <span id="register-loading" style="display: none;">🔄 جاري الإنشاء...</span>
+                    <span id="register-text">Create Account</span>
+                    <span id="register-loading" style="display: none;">🔄 Creating...</span>
                 </button>
                 
                 <div style="text-align: center; margin-top: 15px;">
                     <span id="has-account-link" style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showLoginForm()">
-                        لديك حساب بالفعل؟ تسجيل الدخول
+                        Have an account? Login
                     </span>
                 </div>
             </div>
@@ -182,31 +181,31 @@
             <div id="verification-form" class="hidden">
                 <div style="text-align: center; margin-bottom: 20px;">
                     <div style="font-size: 2rem; margin-bottom: 10px;">📧</div>
-                    <h3 id="verify-email-title">تحقق من بريدك الإلكتروني</h3>
+                    <h3 id="verify-email-title">Check Your Email</h3>
                     <p id="verify-email-desc" style="color: #666; font-size: 14px;">
-                        تم إرسال رمز التحقق إلى بريدك الإلكتروني
+                        A verification code has been sent to your email
                     </p>
                 </div>
 
                 <div class="form-group">
-                    <label for="verification-code" id="verify-code-label">رمز التحقق (6 أرقام):</label>
-                    <input type="text" id="verification-code" placeholder="أدخل رمز التحقق" maxlength="6" required>
+                    <label for="verification-code" id="verify-code-label">Verification Code (6 digits):</label>
+                    <input type="text" id="verification-code" placeholder="Enter verification code" maxlength="6" required>
                 </div>
 
                 <button id="verify-btn" class="btn" onclick="handleVerification()">
-                    <span id="verify-text">تحقق من الرمز</span>
-                    <span id="verify-loading" style="display: none;">🔄 جاري التحقق...</span>
+                    <span id="verify-text">Verify Code</span>
+                    <span id="verify-loading" style="display: none;">🔄 Verifying...</span>
                 </button>
                 
                 <div style="text-align: center; margin-top: 15px;">
                     <span id="resend-code-link" style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="resendVerificationCode()">
-                        لم تستلم الرمز؟ إعادة الإرسال
+                        Didn't receive the code? Resend
                     </span>
                 </div>
                 
                 <div style="text-align: center; margin-top: 10px;">
                     <span id="back-to-login-link" style="color: #999; cursor: pointer; font-size: 14px;" onclick="showLoginForm()">
-                        العودة لتسجيل الدخول
+                        Back to Login
                     </span>
                 </div>
             </div>
@@ -231,41 +230,40 @@
                     cursor: pointer;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 ">
-                    <option value="ar">🇸🇦 العربية</option>
                     <option value="en">🇺🇸 English</option>
                     <option value="el">🇬🇷 Ελληνικά</option>
                 </select>
             </div>
             
             <div class="logo">🛡️</div>
-            <h1 id="dashboard-title">لوحة التحكم</h1>
+            <h1 id="dashboard-title">Dashboard</h1>
 
             <div class="user-info">
-                <h3><span id="welcome-text">مرحباً</span>، <span id="user-name">المستخدم</span></h3>
-                <p><span id="email-label-text">البريد الإلكتروني</span>: <span id="user-email">user@test.com</span></p>
-                <p id="verification-status-text">حالة التحقق: ✅ مؤكد</p>
+                <h3><span id="welcome-text">Welcome</span>, <span id="user-name">User</span></h3>
+                <p><span id="email-label-text">Email</span>: <span id="user-email">user@test.com</span></p>
+                <p id="verification-status-text">Verification Status: ✅ Verified</p>
             </div>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h4>📍 <span id="current-location-title">الموقع الحالي</span></h4>
+                    <h4>📍 <span id="current-location-title">Current Location</span></h4>
                     <div id="map"></div>
-                    <button id="update-location-btn" class="btn" onclick="updateLocation()" style="margin-top: 10px;">تحديث الموقع</button>
+                    <button id="update-location-btn" class="btn" onclick="updateLocation()" style="margin-top: 10px;">Update Location</button>
                 </div>
 
                 <div class="feature-card">
-                    <h4>📷 <span id="camera-title">مراقبة الكاميرا</span></h4>
+                    <h4>📷 <span id="camera-title">Camera Feed</span></h4>
                     <div id="camera-container">
                         <video id="camera-video" autoplay muted></video>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button id="start-camera-btn" class="btn" onclick="startCamera()" style="flex: 1;">تشغيل الكاميرا</button>
-                        <button id="stop-camera-btn" class="btn" onclick="stopCamera()" style="flex: 1; background: #e74c3c;">إيقاف الكاميرا</button>
+                        <button id="start-camera-btn" class="btn" onclick="startCamera()" style="flex: 1;">Start Camera</button>
+                        <button id="stop-camera-btn" class="btn" onclick="stopCamera()" style="flex: 1; background: #e74c3c;">Stop Camera</button>
                     </div>
                 </div>
             </div>
 
-            <button id="logout-btn" class="btn" onclick="handleLogout()" style="background: #dc3545; margin-top: 30px;">تسجيل الخروج</button>
+            <button id="logout-btn" class="btn" onclick="handleLogout()" style="background: #dc3545; margin-top: 30px;">Logout</button>
         </div>
     </div>
 
@@ -742,7 +740,7 @@
             console.log('🚀 Initializing dashboard...');
             
             // Update language for dashboard
-            const savedLang = localStorage.getItem('preferredLanguage') || 'ar';
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
             const dashboardSelector = document.getElementById('language-selector-dashboard');
             if (dashboardSelector) {
                 dashboardSelector.value = savedLang;
@@ -856,66 +854,6 @@
 
         // Language translations
         const translations = {
-            ar: {
-                title: 'Secure Guardian Pro',
-                loginTitle: 'تسجيل الدخول',
-                registerTitle: 'إنشاء حساب جديد',
-                email: 'البريد الإلكتروني:',
-                password: 'كلمة المرور:',
-                name: 'الاسم الكامل:',
-                loginBtn: 'تسجيل الدخول',
-                registerBtn: 'إنشاء الحساب',
-                noAccount: 'ليس لديك حساب؟ إنشاء حساب جديد',
-                hasAccount: 'لديك حساب؟ تسجيل الدخول',
-                verificationCode: 'رمز التحقق:',
-                verifyBtn: 'تحقق من الرمز',
-                emailPlaceholder: 'أدخل بريدك الإلكتروني',
-                passwordPlaceholder: 'أدخل كلمة المرور',
-                namePlaceholder: 'أدخل اسمك الكامل',
-                codePlaceholder: 'أدخل رمز التحقق',
-                dashboardTitle: 'لوحة التحكم',
-                welcome: 'مرحباً',
-                emailLabel: 'البريد الإلكتروني',
-                verificationStatus: 'حالة التحقق: ✅ مؤكد',
-                currentLocation: 'الموقع الحالي',
-                updateLocation: 'تحديث الموقع',
-                cameraFeed: 'تغذية الكاميرا',
-                startCamera: 'تشغيل الكاميرا',
-                stopCamera: 'إيقاف الكاميرا',
-                logout: 'تسجيل الخروج',
-                securitySystem: 'نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع',
-                newUsersInfo: 'للمستخدمين الجدد: إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه',
-                verifyEmailTitle: 'تحقق من بريدك الإلكتروني',
-                verifyEmailDesc: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
-                verifyCodeLabel: 'رمز التحقق (6 أرقام):',
-                resendCodeLink: 'لم تستلم الرمز؟ إعادة الإرسال',
-                backToLoginLink: 'العودة لتسجيل الدخول',
-                verifyingText: 'جاري التحقق...',
-                // Messages
-                enterEmailPassword: 'يرجى إدخال البريد الإلكتروني وكلمة المرور',
-                checkingData: 'جاري التحقق من البيانات...',
-                loginSuccess: 'تم تسجيل الدخول بنجاح!',
-                loginDataIncorrect: 'بيانات تسجيل الدخول غير صحيحة',
-                serverError: 'خطأ في الاتصال بالخادم',
-                nameMinLength: 'الاسم يجب أن يكون حرفين على الأقل',
-                validEmail: 'يرجى إدخال بريد إلكتروني صحيح',
-                passwordMinLength: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
-                accountCreatedEmailSent: 'تم إنشاء الحساب بنجاح! تم إرسال رمز التحقق إلى بريدك الإلكتروني',
-                accountCreatedSuccess: 'تم إنشاء الحساب بنجاح!',
-                accountCreationFailed: 'فشل في إنشاء الحساب',
-                enterSixDigitCode: 'يرجى إدخال رمز التحقق المكون من 6 أرقام',
-                userIdMissing: 'خطأ: معرف المستخدم غير موجود',
-                verificationSuccess: 'تم التحقق بنجاح! يمكنك الآن تسجيل الدخول',
-                verificationCodeIncorrect: 'رمز التحقق غير صحيح',
-                codeResentEmail: 'تم إعادة إرسال رمز التحقق إلى بريدك الإلكتروني',
-                newVerificationCode: 'رمز التحقق الجديد: ',
-                resendFailed: 'فشل في إعادة الإرسال',
-                logoutSuccess: 'تم تسجيل الخروج بنجاح',
-                locationAccessDenied: 'تم رفض الوصول للموقع',
-                cameraStarted: 'تم تشغيل الكاميرا',
-                cameraAccessDenied: 'تم رفض الوصول للكاميرا',
-                cameraStopped: 'تم إيقاف الكاميرا'
-            },
             en: {
                 title: 'Secure Guardian Pro',
                 loginTitle: 'Login',
@@ -1042,8 +980,8 @@
         function getMessage(key) {
             const lang = document.getElementById('language-selector')?.value || 
                         document.getElementById('language-selector-dashboard')?.value || 
-                        localStorage.getItem('preferredLanguage') || 'ar';
-            return translations[lang][key] || translations['ar'][key] || key;
+                        localStorage.getItem('preferredLanguage') || 'en';
+            return translations[lang][key] || translations['en'][key] || key;
         }
 
         // Change language function
@@ -1055,7 +993,7 @@
             
             // Update direction and language
             document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.dir = 'ltr';
             
             // Update text content
             const appTitle = document.getElementById('app-title');
@@ -1159,7 +1097,7 @@
 
         // Load saved language
         function loadSavedLanguage() {
-            const savedLang = localStorage.getItem('preferredLanguage') || 'ar';
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
             const loginSelector = document.getElementById('language-selector');
             const dashboardSelector = document.getElementById('language-selector-dashboard');
             
