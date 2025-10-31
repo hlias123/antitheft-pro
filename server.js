@@ -110,19 +110,21 @@ function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Clean expired verification codes
+// Clean expired verification codes (disabled for debugging)
 function cleanExpiredCodes() {
-    db.run('DELETE FROM verification_codes WHERE expires_at < datetime("now")', (err) => {
+    db.run('DELETE FROM verification_codes WHERE expires_at < datetime("now")', function(err) {
         if (err) {
             console.error('Error cleaning expired codes:', err);
         } else {
-            console.log('🧹 Cleaned expired verification codes');
+            if (this.changes > 0) {
+                console.log(`🧹 Cleaned ${this.changes} expired verification codes`);
+            }
         }
     });
 }
 
-// Clean expired codes every minute
-setInterval(cleanExpiredCodes, 60 * 1000);
+// Clean expired codes every 5 minutes (reduced frequency for debugging)
+setInterval(cleanExpiredCodes, 5 * 60 * 1000);
 
 async function sendVerificationEmail(email, code, type = 'login') {
     const subject = type === 'login' ? 'رمز تسجيل الدخول - Secure Guardian' : 'رمز التحقق - Secure Guardian';
@@ -267,11 +269,23 @@ app.post('/auth/register', async (req, res) => {
                     const codeId = uuidv4();
                     const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
+                    console.log('📝 Creating verification code:', {
+                        codeId,
+                        userId,
+                        code,
+                        type: 'register',
+                        expiresAt: expiresAt.toISOString(),
+                        currentTime: new Date().toISOString()
+                    });
+
                     db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
-                        [codeId, userId, code, 'register', expiresAt], async (err) => {
+                        [codeId, userId, code, 'register', expiresAt.toISOString()], async (err) => {
                             if (err) {
+                                console.error('❌ Error creating verification code:', err);
                                 return res.status(500).json({ error: 'فشل في إرسال رمز التحقق' });
                             }
+                            
+                            console.log('✅ Verification code created successfully in database');
 
                             const emailSent = await sendVerificationEmail(email, code, 'register');
 
@@ -381,33 +395,73 @@ app.post('/auth/verify', (req, res) => {
             return res.status(400).json({ error: 'معرف المستخدم ورمز التحقق مطلوبان' });
         }
 
+        console.log('🔍 Verifying code:', {
+            userId,
+            code,
+            currentTime: new Date().toISOString()
+        });
+
         // Find valid code
-        db.get(`SELECT vc.*, u.name, u.email, u.is_verified 
+        db.get(`SELECT vc.*, u.name, u.email, u.is_verified,
+                datetime('now') as current_db_time,
+                CASE WHEN vc.expires_at > datetime('now') THEN 'valid' ELSE 'expired' END as time_status
                 FROM verification_codes vc 
                 JOIN users u ON vc.user_id = u.id 
-                WHERE vc.user_id = ? AND vc.code = ? AND vc.used = 0 AND vc.expires_at > datetime('now')`,
+                WHERE vc.user_id = ? AND vc.code = ? AND vc.used = 0`,
             [userId, code], (err, row) => {
+                console.log('📊 Database query result:', row);
+                
                 if (err) {
+                    console.error('❌ Database error during verification:', err);
                     return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
                 }
 
                 if (!row) {
-                    // Check if code exists but expired
-                    db.get('SELECT * FROM verification_codes WHERE user_id = ? AND code = ? AND used = 0', 
-                        [userId, code], (err, expiredRow) => {
-                            if (expiredRow) {
-                                return res.status(400).json({ 
-                                    error: 'رمز التحقق منتهي الصلاحية. يرجى طلب رمز جديد',
-                                    expired: true
-                                });
-                            } else {
-                                return res.status(400).json({ 
-                                    error: 'رمز التحقق غير صحيح. تأكد من إدخال الرمز بشكل صحيح',
-                                    invalid: true
-                                });
+                    console.log('❌ No valid code found, checking for expired/used codes...');
+                    
+                    // Check if code exists but expired or used
+                    db.get('SELECT *, datetime("now") as current_time FROM verification_codes WHERE user_id = ? AND code = ?', 
+                        [userId, code], (err, anyRow) => {
+                            console.log('🔍 Code check result:', anyRow);
+                            
+                            if (anyRow) {
+                                if (anyRow.used === 1) {
+                                    console.log('⚠️ Code already used');
+                                    return res.status(400).json({ 
+                                        error: 'رمز التحقق مستخدم بالفعل. يرجى طلب رمز جديد',
+                                        used: true
+                                    });
+                                } else if (anyRow.expires_at <= anyRow.current_time) {
+                                    console.log('⏰ Code expired');
+                                    return res.status(400).json({ 
+                                        error: 'رمز التحقق منتهي الصلاحية. يرجى طلب رمز جديد',
+                                        expired: true
+                                    });
+                                }
                             }
+                            
+                            console.log('🔍 Code not found in database');
+                            return res.status(400).json({ 
+                                error: 'رمز التحقق غير صحيح. تأكد من إدخال الرمز بشكل صحيح',
+                                invalid: true
+                            });
                         });
                     return;
+                }
+                
+                console.log('✅ Valid code found:', {
+                    code: row.code,
+                    expires_at: row.expires_at,
+                    time_status: row.time_status,
+                    current_db_time: row.current_db_time
+                });
+                
+                if (row.time_status === 'expired') {
+                    console.log('⏰ Code is expired according to database');
+                    return res.status(400).json({ 
+                        error: 'رمز التحقق منتهي الصلاحية. يرجى طلب رمز جديد',
+                        expired: true
+                    });
                 }
 
                 // Mark code as used
@@ -498,7 +552,7 @@ app.post('/auth/resend-verification', async (req, res) => {
 
                 // Insert new code
                 db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
-                    [codeId, userId, code, 'register', expiresAt], async (err) => {
+                    [codeId, userId, code, 'register', expiresAt.toISOString()], async (err) => {
                         if (err) {
                             return res.status(500).json({ error: 'فشل في إنشاء رمز التحقق' });
                         }
@@ -612,6 +666,37 @@ app.post('/auth/logout', authenticateToken, (req, res) => {
             message: 'تم تسجيل الخروج بنجاح'
         });
     });
+});
+
+// Debug endpoint to check database
+app.get('/debug/database', (req, res) => {
+    try {
+        // Check verification_codes table
+        db.all("SELECT * FROM verification_codes ORDER BY created_at DESC LIMIT 20", (err, rows) => {
+            if (err) {
+                console.error('❌ Database debug error:', err);
+                res.json({ error: err.message, codes: [] });
+                return;
+            }
+            
+            console.log(`📊 Database debug: Found ${rows.length} verification codes`);
+            res.json({
+                success: true,
+                totalCodes: rows.length,
+                codes: rows.map(row => ({
+                    code: row.code,
+                    userId: row.user_id,
+                    expires_at: row.expires_at,
+                    used: row.used,
+                    created_at: row.created_at,
+                    type: row.type
+                }))
+            });
+        });
+    } catch (error) {
+        console.error('❌ Debug endpoint error:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Start server
