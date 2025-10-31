@@ -80,7 +80,7 @@ db.serialize(() => {
 // Email configuration
 let transporter = null;
 if (EMAIL_USER && EMAIL_PASS) {
-    transporter = nodemailer.createTransporter({
+    transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: EMAIL_USER,
