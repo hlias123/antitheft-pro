@@ -85,28 +85,10 @@ db.serialize(() => {
 
 // Email configuration
 let transporter = null;
-if (EMAIL_USER && EMAIL_PASS) {
-    transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: EMAIL_USER,
-            pass: EMAIL_PASS
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
-    console.log('✅ Email service configured');
-} else {
-    console.log('⚠️ Email service not configured');
-    console.log('📧 To enable real email sending:');
-    console.log('   1. Edit .env file');
-    console.log('   2. Set EMAIL_USER to your Gmail address');
-    console.log('   3. Set EMAIL_PASS to your Gmail App Password');
-    console.log('   4. Restart the server');
-    console.log('');
-    console.log('🔍 For now, verification codes will be logged here:');
-}
+// Email service DISABLED for development - no personal email sending
+transporter = null;
+console.log('📧 Email service DISABLED - Verification codes will be displayed in UI');
+console.log('🔍 All verification codes will be shown directly to users for testing');
 
 // Helper functions
 function generateVerificationCode() {
@@ -344,13 +326,13 @@ app.post('/auth/register', async (req, res) => {
 
                             res.json({
                                 success: true,
-                                message: emailSent ? 'تم إنشاء الحساب بنجاح وإرسال رمز التحقق إلى بريدك الإلكتروني' : 'تم إنشاء الحساب بنجاح',
+                                message: 'Account created successfully! Verification code is displayed below.',
                                 userId: userId,
                                 requiresVerification: true,
-                                emailSent: emailSent,
-                                verificationCode: emailSent ? null : code,
-                                note: emailSent ? 'تحقق من مجلد الرسائل غير المرغوب فيها (Spam) إذا لم تجد الإيميل' : 'لم يتم إرسال الإيميل. الرمز موضح أعلاه للاختبار.',
-                                spamWarning: emailSent
+                                emailSent: false,
+                                verificationCode: code,
+                                note: 'Email sending is disabled. Use the verification code shown above to verify your account.',
+                                spamWarning: false
                             });
                         });
                 });
@@ -578,21 +560,21 @@ app.post('/auth/resend-verification', async (req, res) => {
         const { userId } = req.body;
 
         if (!userId) {
-            return res.status(400).json({ error: 'معرف المستخدم مطلوب' });
+            return res.status(400).json({ error: 'User ID is required' });
         }
 
         // Get user info
         db.get('SELECT email, name, is_verified FROM users WHERE id = ?', [userId], async (err, user) => {
             if (err) {
-                return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
+                return res.status(500).json({ error: 'Database error' });
             }
 
             if (!user) {
-                return res.status(404).json({ error: 'المستخدم غير موجود' });
+                return res.status(404).json({ error: 'User not found' });
             }
 
             if (user.is_verified) {
-                return res.status(400).json({ error: 'الحساب موثق بالفعل' });
+                return res.status(400).json({ error: 'Account already verified' });
             }
 
             // Generate new verification code
@@ -610,23 +592,24 @@ app.post('/auth/resend-verification', async (req, res) => {
                 db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
                     [codeId, userId, code, 'register', expiresAt.toISOString()], async (err) => {
                         if (err) {
-                            return res.status(500).json({ error: 'فشل في إنشاء رمز التحقق' });
+                            return res.status(500).json({ error: 'Failed to create verification code' });
                         }
 
                         const emailSent = await sendVerificationEmail(user.email, code, 'register');
 
                         res.json({
                             success: true,
-                            message: 'تم إعادة إرسال رمز التحقق',
-                            emailSent: emailSent,
-                            verificationCode: emailSent ? null : code
+                            message: 'New verification code generated successfully',
+                            emailSent: false,
+                            verificationCode: code,
+                            note: 'Email sending is disabled. Use the verification code shown above.'
                         });
                     });
             });
         });
     } catch (error) {
         console.error('Resend verification error:', error);
-        res.status(500).json({ error: 'خطأ في الخادم' });
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
@@ -722,6 +705,128 @@ app.post('/auth/logout', authenticateToken, (req, res) => {
             message: 'تم تسجيل الخروج بنجاح'
         });
     });
+});
+
+// Admin endpoint to clean test users
+app.post('/admin/clean-test-users', (req, res) => {
+    try {
+        console.log('🧹 Starting database cleanup...');
+        
+        // Delete all verification codes first
+        db.run('DELETE FROM verification_codes', (err) => {
+            if (err) {
+                console.error('Error deleting verification codes:', err);
+                return res.status(500).json({ error: 'Failed to clean verification codes' });
+            }
+            
+            console.log('✅ Verification codes deleted');
+            
+            // Delete all users
+            db.run('DELETE FROM users', (err) => {
+                if (err) {
+                    console.error('Error deleting users:', err);
+                    return res.status(500).json({ error: 'Failed to clean users' });
+                }
+                
+                console.log('✅ Users deleted');
+                
+                // Delete all sessions
+                db.run('DELETE FROM sessions', (err) => {
+                    if (err) {
+                        console.error('Error deleting sessions:', err);
+                        // Don't fail if sessions table doesn't exist
+                    }
+                    
+                    console.log('🧹 All test accounts, verification codes, and sessions deleted');
+                    res.json({
+                        success: true,
+                        message: 'All test accounts cleaned successfully',
+                        deletedUsers: 'all',
+                        deletedCodes: 'all',
+                        deletedSessions: 'all'
+                    });
+                });
+            });
+        });
+    } catch (error) {
+        console.error('Clean test users error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin endpoint to delete specific user by email
+app.post('/admin/delete-user', (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+        
+        console.log(`🗑️ Deleting user with email: ${email}`);
+        
+        // Get user ID first
+        db.get('SELECT id FROM users WHERE email = ?', [email], (err, user) => {
+            if (err) {
+                console.error('Error finding user:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            
+            const userId = user.id;
+            
+            // Delete verification codes for this user
+            db.run('DELETE FROM verification_codes WHERE user_id = ?', [userId], (err) => {
+                if (err) {
+                    console.error('Error deleting verification codes:', err);
+                }
+                
+                // Delete sessions for this user
+                db.run('DELETE FROM sessions WHERE user_id = ?', [userId], (err) => {
+                    if (err) {
+                        console.error('Error deleting sessions:', err);
+                    }
+                    
+                    // Delete the user
+                    db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
+                        if (err) {
+                            console.error('Error deleting user:', err);
+                            return res.status(500).json({ error: 'Failed to delete user' });
+                        }
+                        
+                        console.log(`✅ User ${email} deleted successfully`);
+                        res.json({
+                            success: true,
+                            message: `User ${email} deleted successfully`,
+                            deletedEmail: email
+                        });
+                    });
+                });
+            });
+        });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Debug endpoint to check email configuration
+app.get('/debug/email-config', (req, res) => {
+    try {
+        res.json({
+            success: true,
+            emailUser: EMAIL_USER || null,
+            hasPassword: !!EMAIL_PASS,
+            transporterConfigured: !!transporter,
+            emailServiceStatus: transporter ? 'configured' : 'not configured'
+        });
+    } catch (error) {
+        console.error('Email config check error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 });
 
 // Debug endpoint to check database
