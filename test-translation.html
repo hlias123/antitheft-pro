@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الترجمة</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .lang-btn { margin: 5px; padding: 10px; cursor: pointer; }
+        .lang-btn.active { background: blue; color: white; }
+        .test-area { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>🧪 اختبار نظام الترجمة</h1>
+    
+    <div>
+        <button class="lang-btn active" onclick="testLanguage('ar')" id="lang-ar">العربية</button>
+        <button class="lang-btn" onclick="testLanguage('en')" id="lang-en">English</button>
+        <button class="lang-btn" onclick="testLanguage('el')" id="lang-el">Ελληνικά</button>
+    </div>
+    
+    <div class="test-area">
+        <h2 id="app-title">Secure Guardian Pro</h2>
+        <p id="app-subtitle">نظام الحماية الذكي المتقدم</p>
+        <h3 id="login-title">تسجيل الدخول</h3>
+        <label id="email-label">البريد الإلكتروني</label><br>
+        <label id="password-label">كلمة المرور</label><br>
+        <button id="login-btn-text">تسجيل الدخول</button>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        
+        const translations = {
+            ar: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'نظام الحماية الذكي المتقدم',
+                loginTitle: 'تسجيل الدخول',
+                emailLabel: 'البريد الإلكتروني',
+                passwordLabel: 'كلمة المرور',
+                loginBtn: 'تسجيل الدخول'
+            },
+            en: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'Advanced Smart Security System',
+                loginTitle: 'Login',
+                emailLabel: 'Email',
+                passwordLabel: 'Password',
+                loginBtn: 'Login'
+            },
+            el: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'Προηγμένο Έξυπνο Σύστημα Ασφαλείας',
+                loginTitle: 'Σύνδεση',
+                emailLabel: 'Email',
+                passwordLabel: 'Κωδικός',
+                loginBtn: 'Σύνδεση'
+            }
+        };
+
+        function testLanguage(lang) {
+            currentLanguage = lang;
+            
+            // تحديث أزرار اللغة
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+            
+            // تحديث اتجاه الصفحة
+            if (lang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+            
+            // تحديث النصوص
+            const t = translations[lang];
+            if (t) {
+                document.getElementById('app-title').textContent = t.appTitle;
+                document.getElementById('app-subtitle').textContent = t.appSubtitle;
+                document.getElementById('login-title').textContent = t.loginTitle;
+                document.getElementById('email-label').textContent = t.emailLabel;
+                document.getElementById('password-label').textContent = t.passwordLabel;
+                document.getElementById('login-btn-text').textContent = t.loginBtn;
+            }
+            
+            console.log(`✅ تم تغيير اللغة إلى: ${lang}`);
+        }
+        
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            testLanguage('ar');
+        });
+    </script>
+</body>
+</html>

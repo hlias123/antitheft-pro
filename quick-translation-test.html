@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار سريع للترجمة</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .lang-buttons {
+            margin-bottom: 30px;
+        }
+        .lang-btn {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: 2px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .lang-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        .content {
+            line-height: 2;
+        }
+        .title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-title {
+            font-size: 1.5rem;
+            color: #666;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lang-buttons">
+            <button class="lang-btn active" onclick="switchLang('ar')" id="btn-ar">العربية</button>
+            <button class="lang-btn" onclick="switchLang('en')" id="btn-en">English</button>
+            <button class="lang-btn" onclick="switchLang('el')" id="btn-el">Ελληνικά</button>
+        </div>
+
+        <div class="content">
+            <h1 class="title" id="app-title">Secure Guardian Pro</h1>
+            <div class="login-title" id="login-title">تسجيل الدخول</div>
+            <div class="status" id="status">✅ الترجمة تعمل بشكل صحيح</div>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = 'ar';
+
+        const texts = {
+            ar: {
+                appTitle: 'Secure Guardian Pro',
+                loginTitle: 'تسجيل الدخول',
+                status: '✅ الترجمة تعمل بشكل صحيح'
+            },
+            en: {
+                appTitle: 'Secure Guardian Pro',
+                loginTitle: 'Login',
+                status: '✅ Translation working correctly'
+            },
+            el: {
+                appTitle: 'Secure Guardian Pro',
+                loginTitle: 'Σύνδεση',
+                status: '✅ Η μετάφραση λειτουργεί σωστά'
+            }
+        };
+
+        function switchLang(lang) {
+            currentLang = lang;
+            
+            // تحديث أزرار اللغة
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            
+            // تحديث اتجاه الصفحة
+            if (lang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.setAttribute('lang', 'ar');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // تحديث النصوص
+            const t = texts[lang];
+            document.getElementById('app-title').textContent = t.appTitle;
+            document.getElementById('login-title').textContent = t.loginTitle;
+            document.getElementById('status').textContent = t.status;
+            
+            console.log(`تم التبديل إلى: ${lang}`);
+        }
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            switchLang('ar');
+        });
+    </script>
+</body>
+</html>

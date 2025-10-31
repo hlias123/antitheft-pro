@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الترجمة النهائي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .lang-buttons {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            color: #4a5568;
+        }
+        .lang-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .lang-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .login-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .login-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        .field {
+            margin: 15px 0;
+            text-align: left;
+        }
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .field input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+        .field input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            background: #d4edda;
+            color: #155724;
+        }
+        .current-lang {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-buttons">
+        <button class="lang-btn active" onclick="switchLanguage('ar')" id="btn-ar">العربية</button>
+        <button class="lang-btn" onclick="switchLanguage('en')" id="btn-en">English</button>
+        <button class="lang-btn" onclick="switchLanguage('el')" id="btn-el">Ελληνικά</button>
+    </div>
+
+    <div class="current-lang" id="current-lang">العربية</div>
+
+    <div class="container">
+        <div class="logo">🛡️</div>
+        <h1 class="title" id="app-title">Loading...</h1>
+        <p class="subtitle" id="app-subtitle">Loading...</p>
+
+        <div class="login-section">
+            <h2 class="login-title" id="login-title">Loading...</h2>
+            
+            <div class="field">
+                <label id="email-label">Loading...</label>
+                <input type="email" id="email-input" placeholder="Loading...">
+            </div>
+            
+            <div class="field">
+                <label id="password-label">Loading...</label>
+                <input type="password" id="password-input" placeholder="Loading...">
+            </div>
+            
+            <button class="btn" id="login-btn">Loading...</button>
+        </div>
+        
+        <div class="status" id="status">Loading...</div>
+    </div>
+
+    <script>
+        let currentLang = 'ar';
+
+        const translations = {
+            ar: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'نظام الحماية الذكي المتقدم',
+                loginTitle: 'تسجيل الدخول',
+                emailLabel: 'البريد الإلكتروني',
+                passwordLabel: 'كلمة المرور',
+                loginBtn: 'تسجيل الدخول',
+                emailPlaceholder: 'أدخل بريدك الإلكتروني',
+                passwordPlaceholder: 'أدخل كلمة المرور',
+                status: '✅ الترجمة العربية تعمل بشكل مثالي',
+                currentLang: 'العربية'
+            },
+            en: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'Advanced Smart Security System',
+                loginTitle: 'Login',
+                emailLabel: 'Email',
+                passwordLabel: 'Password',
+                loginBtn: 'Login',
+                emailPlaceholder: 'Enter your email',
+                passwordPlaceholder: 'Enter your password',
+                status: '✅ English translation working perfectly',
+                currentLang: 'English'
+            },
+            el: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'Προηγμένο Έξυπνο Σύστημα Ασφαλείας',
+                loginTitle: 'Σύνδεση',
+                emailLabel: 'Email',
+                passwordLabel: 'Κωδικός',
+                loginBtn: 'Σύνδεση',
+                emailPlaceholder: 'Εισάγετε το email σας',
+                passwordPlaceholder: 'Εισάγετε τον κωδικό σας',
+                status: '✅ Η ελληνική μετάφραση λειτουργεί τέλεια',
+                currentLang: 'Ελληνικά'
+            }
+        };
+
+        function switchLanguage(lang) {
+            console.log(`🌍 Switching to: ${lang}`);
+            currentLang = lang;
+            
+            // تحديث أزرار اللغة
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            
+            // تحديث اتجاه الصفحة
+            if (lang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.setAttribute('lang', 'ar');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            // تحديث جميع النصوص
+            const t = translations[lang];
+            
+            document.getElementById('app-title').textContent = t.appTitle;
+            document.getElementById('app-subtitle').textContent = t.appSubtitle;
+            document.getElementById('login-title').textContent = t.loginTitle;
+            document.getElementById('email-label').textContent = t.emailLabel;
+            document.getElementById('password-label').textContent = t.passwordLabel;
+            document.getElementById('login-btn').textContent = t.loginBtn;
+            document.getElementById('status').textContent = t.status;
+            document.getElementById('current-lang').textContent = t.currentLang;
+            
+            document.getElementById('email-input').placeholder = t.emailPlaceholder;
+            document.getElementById('password-input').placeholder = t.passwordPlaceholder;
+            
+            console.log(`✅ Language applied: ${lang}`);
+        }
+
+        // تطبيق الترجمة فوراً
+        function initPage() {
+            console.log('🚀 Initializing page...');
+            switchLanguage('ar');
+            console.log('✅ Page initialized');
+        }
+
+        // تهيئة فورية
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            initPage();
+        }
+    </script>
+</body>
+</html>
