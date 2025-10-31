@@ -243,7 +243,7 @@
             <div class="user-info">
                 <h3><span id="welcome-text">مرحباً</span>، <span id="user-name">المستخدم</span></h3>
                 <p><span id="email-label-text">البريد الإلكتروني</span>: <span id="user-email">user@test.com</span></p>
-                <p><span id="verification-status-text">حالة التحقق: ✅ مؤكد</span></p>
+                <p id="verification-status-text">حالة التحقق: ✅ مؤكد</p>
             </div>
 
             <div class="feature-grid">
@@ -372,6 +372,11 @@
                         if (nameEl) nameEl.textContent = data.user.name;
                         if (emailEl) emailEl.textContent = data.user.email;
                         console.log('👤 Updated user info elements');
+                        
+                        // Update language after user info is set
+                        setTimeout(() => {
+                            changeLanguage();
+                        }, 100);
                     }
                     
                     // Switch to dashboard
@@ -735,6 +740,17 @@
         // Initialize dashboard
         function initializeDashboard() {
             console.log('🚀 Initializing dashboard...');
+            
+            // Update language for dashboard
+            const savedLang = localStorage.getItem('preferredLanguage') || 'ar';
+            const dashboardSelector = document.getElementById('language-selector-dashboard');
+            if (dashboardSelector) {
+                dashboardSelector.value = savedLang;
+            }
+            
+            // Apply current language
+            changeLanguage();
+            
             initializeMap();
         }
 
@@ -1086,7 +1102,6 @@
                 'stop-camera-btn': t.stopCamera,
                 'logout-btn': t.logout,
                 'welcome-text': t.welcome,
-                'email-label-text': t.emailLabel,
                 'verification-status-text': t.verificationStatus,
                 'no-account-link': t.noAccount,
                 'has-account-link': t.hasAccount,
@@ -1096,6 +1111,12 @@
                 'resend-code-link': t.resendCodeLink,
                 'back-to-login-link': t.backToLoginLink
             };
+            
+            // Update email label separately to maintain structure
+            const emailLabelElement = document.getElementById('email-label-text');
+            if (emailLabelElement) {
+                emailLabelElement.textContent = t.emailLabel;
+            }
             
             Object.keys(staticTexts).forEach(id => {
                 const element = document.getElementById(id);
