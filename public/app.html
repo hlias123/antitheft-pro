@@ -159,6 +159,39 @@
                 </div>
             </div>
 
+            <!-- Verification Form -->
+            <div id="verification-form" class="hidden">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📧</div>
+                    <h3>تحقق من بريدك الإلكتروني</h3>
+                    <p style="color: #666; font-size: 14px;">
+                        تم إرسال رمز التحقق إلى بريدك الإلكتروني
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="verification-code">رمز التحقق (6 أرقام):</label>
+                    <input type="text" id="verification-code" placeholder="أدخل رمز التحقق" maxlength="6" required>
+                </div>
+
+                <button id="verify-btn" class="btn" onclick="handleVerification()">
+                    <span id="verify-text">تحقق من الرمز</span>
+                    <span id="verify-loading" style="display: none;">🔄 جاري التحقق...</span>
+                </button>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <span style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="resendVerificationCode()">
+                        لم تستلم الرمز؟ إعادة الإرسال
+                    </span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 10px;">
+                    <span style="color: #999; cursor: pointer; font-size: 14px;" onclick="showLoginForm()">
+                        العودة لتسجيل الدخول
+                    </span>
+                </div>
+            </div>
+
             <div id="message" class="message" style="display: none;"></div>
         </div>
     </div>
@@ -336,15 +369,26 @@
             }
         }
 
+        // Global variable to store user ID for verification
+        let currentUserId = null;
+
         // Form switching functions
         function showRegisterForm() {
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('register-form').classList.remove('hidden');
+            document.getElementById('verification-form').classList.add('hidden');
         }
 
         function showLoginForm() {
             document.getElementById('register-form').classList.add('hidden');
             document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('verification-form').classList.add('hidden');
+        }
+
+        function showVerificationForm() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('verification-form').classList.remove('hidden');
         }
 
         // Handle registration
@@ -396,13 +440,21 @@
 
                 if (response.ok && data.success) {
                     console.log('✅ Registration successful');
-                    showMessage('✅ تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب', 'success');
                     
-                    // Pre-fill login form and switch to login
-                    document.getElementById('login-email').value = email;
-                    setTimeout(() => {
-                        showLoginForm();
-                    }, 2000);
+                    // Store user ID for verification
+                    currentUserId = data.userId;
+                    
+                    if (data.emailSent) {
+                        showMessage('✅ تم إنشاء الحساب بنجاح! تم إرسال رمز التحقق إلى بريدك الإلكتروني', 'success');
+                        setTimeout(() => {
+                            showVerificationForm();
+                        }, 2000);
+                    } else {
+                        showMessage('✅ تم إنشاء الحساب بنجاح! رمز التحقق: ' + data.verificationCode, 'success');
+                        setTimeout(() => {
+                            showVerificationForm();
+                        }, 2000);
+                    }
                     
                 } else {
                     console.log('❌ Registration failed:', data);
@@ -419,6 +471,132 @@
                     registerText.style.display = 'inline';
                     registerLoading.style.display = 'none';
                 }
+            }
+        }
+
+        // Handle verification
+        async function handleVerification() {
+            const code = document.getElementById('verification-code').value.trim();
+
+            if (!code || code.length !== 6) {
+                showMessage('يرجى إدخال رمز التحقق المكون من 6 أرقام', 'error');
+                return;
+            }
+
+            if (!currentUserId) {
+                showMessage('خطأ: معرف المستخدم غير موجود', 'error');
+                return;
+            }
+
+            // Set loading state
+            const btn = document.getElementById('verify-btn');
+            const verifyText = document.getElementById('verify-text');
+            const verifyLoading = document.getElementById('verify-loading');
+            
+            if (btn && verifyText && verifyLoading) {
+                btn.disabled = true;
+                verifyText.style.display = 'none';
+                verifyLoading.style.display = 'inline';
+            }
+
+            try {
+                console.log('🔐 Verifying code:', code);
+                
+                const response = await fetch('/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: currentUserId, 
+                        code: code 
+                    })
+                });
+
+                const data = await response.json();
+                console.log('📊 Verification response:', data);
+
+                if (response.ok && data.success) {
+                    console.log('✅ Verification successful');
+                    showMessage('✅ تم التحقق بنجاح! يمكنك الآن تسجيل الدخول', 'success');
+                    
+                    // Store token and user info
+                    if (data.token) {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userInfo', JSON.stringify(data.user));
+                    }
+                    
+                    // Switch to dashboard
+                    setTimeout(() => {
+                        if (data.token) {
+                            // Update user info
+                            if (data.user) {
+                                const nameEl = document.getElementById('user-name');
+                                const emailEl = document.getElementById('user-email');
+                                if (nameEl) nameEl.textContent = data.user.name;
+                                if (emailEl) emailEl.textContent = data.user.email;
+                            }
+                            
+                            // Go to dashboard
+                            document.getElementById('login-screen').classList.add('hidden');
+                            document.getElementById('dashboard-screen').classList.remove('hidden');
+                            if (typeof initializeDashboard === 'function') {
+                                initializeDashboard();
+                            }
+                        } else {
+                            // Go back to login
+                            showLoginForm();
+                        }
+                    }, 2000);
+                    
+                } else {
+                    console.log('❌ Verification failed:', data);
+                    showMessage('❌ ' + (data.error || 'رمز التحقق غير صحيح'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('🚨 Verification error:', error);
+                showMessage('❌ خطأ في الاتصال بالخادم', 'error');
+            } finally {
+                // Reset loading state
+                if (btn && verifyText && verifyLoading) {
+                    btn.disabled = false;
+                    verifyText.style.display = 'inline';
+                    verifyLoading.style.display = 'none';
+                }
+            }
+        }
+
+        // Resend verification code
+        async function resendVerificationCode() {
+            if (!currentUserId) {
+                showMessage('خطأ: معرف المستخدم غير موجود', 'error');
+                return;
+            }
+
+            try {
+                console.log('📤 Resending verification code...');
+                
+                const response = await fetch('/auth/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+
+                const data = await response.json();
+                console.log('📊 Resend response:', data);
+
+                if (response.ok && data.success) {
+                    if (data.emailSent) {
+                        showMessage('✅ تم إعادة إرسال رمز التحقق إلى بريدك الإلكتروني', 'success');
+                    } else {
+                        showMessage('✅ رمز التحقق الجديد: ' + data.verificationCode, 'success');
+                    }
+                } else {
+                    showMessage('❌ ' + (data.error || 'فشل في إعادة الإرسال'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('🚨 Resend error:', error);
+                showMessage('❌ خطأ في الاتصال بالخادم', 'error');
             }
         }
 
