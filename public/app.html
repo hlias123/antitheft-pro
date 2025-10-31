@@ -213,6 +213,8 @@
 
             try {
                 console.log('🔐 Attempting login with:', { email, password: '***' });
+                console.log('🌐 Request URL:', '/auth/login');
+                console.log('📤 Request body:', JSON.stringify({ email, password: '***' }));
                 
                 const response = await fetch('/auth/login', {
                     method: 'POST',
@@ -220,16 +222,32 @@
                     body: JSON.stringify({ email, password })
                 });
 
-                const data = await response.json();
-                console.log('📊 Login response:', data);
+                console.log('📡 Response received:');
+                console.log('  - Status:', response.status);
+                console.log('  - Status Text:', response.statusText);
+                console.log('  - OK:', response.ok);
+                console.log('  - Headers:', Object.fromEntries(response.headers.entries()));
 
-                if (response.ok && data.success) {
+                const data = await response.json();
+                console.log('📊 Response data:', data);
+                console.log('📊 Response data (stringified):', JSON.stringify(data, null, 2));
+
+                // Debug logging
+                console.log('🔍 Debug info:');
+                console.log('  - response.ok:', response.ok);
+                console.log('  - response.status:', response.status);
+                console.log('  - data.success:', data.success);
+                console.log('  - typeof data.success:', typeof data.success);
+                console.log('  - condition (response.ok && data.success):', response.ok && data.success);
+                
+                if (response.ok && data.success === true) {
                     console.log('✅ Login successful!');
                     
                     // Store token and user info
                     if (data.token) {
                         localStorage.setItem('authToken', data.token);
                         localStorage.setItem('userInfo', JSON.stringify(data.user));
+                        console.log('💾 Stored token and user info');
                     }
                     
                     showMessage('✅ تم تسجيل الدخول بنجاح!', 'success');
@@ -238,17 +256,23 @@
                     if (data.user) {
                         document.getElementById('user-name').textContent = data.user.name;
                         document.getElementById('user-email').textContent = data.user.email;
+                        console.log('👤 Updated user info in dashboard');
                     }
                     
                     // Switch to dashboard
                     setTimeout(() => {
+                        console.log('🔄 Switching to dashboard...');
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('dashboard-screen').classList.remove('hidden');
                         initializeDashboard();
                     }, 1000);
                     
                 } else {
-                    console.log('❌ Login failed:', data);
+                    console.log('❌ Login failed - Debug info:');
+                    console.log('  - response.ok:', response.ok);
+                    console.log('  - data.success:', data.success);
+                    console.log('  - data.error:', data.error);
+                    console.log('  - full data:', data);
                     showMessage('❌ ' + (data.error || 'بيانات تسجيل الدخول غير صحيحة'), 'error');
                 }
                 
