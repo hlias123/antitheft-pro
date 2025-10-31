@@ -266,6 +266,13 @@ app.get('/api', (req, res) => {
 
 // Register
 app.post('/auth/register', async (req, res) => {
+    console.log('📥 Registration request received');
+    console.log('📋 Request body:', { 
+        name: req.body?.name, 
+        email: req.body?.email, 
+        password: req.body?.password ? '***' : 'missing' 
+    });
+    
     try {
         const { name, email, password } = req.body;
 
@@ -284,7 +291,19 @@ app.post('/auth/register', async (req, res) => {
             }
 
             if (row) {
-                return res.status(400).json({ error: 'البريد الإلكتروني مستخدم بالفعل' });
+                // Check if user is verified
+                if (row.is_verified) {
+                    return res.status(400).json({ 
+                        error: 'البريد الإلكتروني مستخدم بالفعل. يمكنك تسجيل الدخول مباشرة.',
+                        canLogin: true
+                    });
+                } else {
+                    return res.status(400).json({ 
+                        error: 'البريد الإلكتروني مستخدم بالفعل ولكن الحساب غير محقق. يرجى التحقق من بريدك الإلكتروني أو طلب رمز جديد.',
+                        needsVerification: true,
+                        userId: row.id
+                    });
+                }
             }
 
             // Hash password

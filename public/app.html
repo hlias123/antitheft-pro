@@ -465,12 +465,19 @@
 
             try {
                 console.log('📤 Sending registration request...');
+                console.log('📋 Request data:', { name, email, password: '***' });
+                
+                const requestBody = JSON.stringify({ name, email, password });
+                console.log('📦 Request body:', requestBody);
                 
                 const response = await fetch('/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
+                    body: requestBody
                 });
+                
+                console.log('📡 Response status:', response.status);
+                console.log('📡 Response ok:', response.ok);
 
                 const data = await response.json();
                 console.log('📊 Registration response:', data);
@@ -507,7 +514,39 @@
                     
                 } else {
                     console.log('❌ Registration failed:', data);
-                    showMessage('❌ ' + (data.error || 'فشل في إنشاء الحساب'), 'error');
+                    
+                    // Handle duplicate email with verification needed
+                    if (data.needsVerification) {
+                        currentUserId = data.userId;
+                        const verificationMessage = `
+                            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 10px 0; color: #856404;">
+                                <strong>⚠️ ${data.error}</strong><br>
+                                <div style="margin-top: 10px;">
+                                    <button onclick="showVerificationForm()" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                                        التحقق الآن
+                                    </button>
+                                    <button onclick="resendVerificationCode()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                                        إرسال رمز جديد
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        showMessage(verificationMessage, 'warning');
+                    } else if (data.canLogin) {
+                        const loginMessage = `
+                            <div style="background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 8px; margin: 10px 0; color: #0c5460;">
+                                <strong>ℹ️ ${data.error}</strong><br>
+                                <div style="margin-top: 10px;">
+                                    <button onclick="showLoginForm()" style="background: #17a2b8; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                                        تسجيل الدخول
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        showMessage(loginMessage, 'warning');
+                    } else {
+                        showMessage('❌ ' + (data.error || 'فشل في إنشاء الحساب'), 'error');
+                    }
                 }
                 
             } catch (error) {
