@@ -74,6 +74,35 @@ db.serialize(() => {
         FOREIGN KEY (user_id) REFERENCES users (id)
     )`);
 
+    // Create a test user if it doesn't exist
+    db.get('SELECT id FROM users WHERE email = ?', ['test@example.com'], async (err, user) => {
+        if (err) {
+            console.error('Error checking test user:', err);
+            return;
+        }
+
+        if (!user) {
+            try {
+                const testPassword = 'password123';
+                const passwordHash = await bcrypt.hash(testPassword, 12);
+                const userId = uuidv4();
+
+                db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
+                    [userId, 'Test User', 'test@example.com', passwordHash, 1], (err) => {
+                        if (err) {
+                            console.error('Error creating test user:', err);
+                        } else {
+                            console.log('✅ Test user created:');
+                            console.log('   Email: test@example.com');
+                            console.log('   Password: password123');
+                        }
+                    });
+            } catch (error) {
+                console.error('Error hashing test password:', error);
+            }
+        }
+    });
+
     console.log('✅ Database initialized successfully');
 });
 
@@ -283,18 +312,23 @@ app.post('/auth/login', async (req, res) => {
         // Find user
         db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
             if (err) {
+                console.error('Database error during login:', err);
                 return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
             }
 
             if (!user) {
+                console.log(`Login attempt with non-existent email: ${email}`);
                 return res.status(401).json({ error: 'بيانات تسجيل الدخول غير صحيحة' });
             }
 
             // Check password
             const validPassword = await bcrypt.compare(password, user.password_hash);
             if (!validPassword) {
+                console.log(`Invalid password for email: ${email}`);
                 return res.status(401).json({ error: 'بيانات تسجيل الدخول غير صحيحة' });
             }
+
+            console.log(`Successful login attempt for: ${email}`);
 
             // Check if account is verified
             if (!user.is_verified) {
