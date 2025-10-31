@@ -277,29 +277,29 @@ app.post('/auth/register', async (req, res) => {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ error: 'جميع الحقول مطلوبة' });
+            return res.status(400).json({ error: 'All fields are required' });
         }
 
         if (password.length < 8) {
-            return res.status(400).json({ error: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل' });
+            return res.status(400).json({ error: 'Password must be at least 8 characters long' });
         }
 
         // Check if user exists
         db.get('SELECT id FROM users WHERE email = ?', [email], async (err, row) => {
             if (err) {
-                return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
+                return res.status(500).json({ error: 'Database error' });
             }
 
             if (row) {
                 // Check if user is verified
                 if (row.is_verified) {
                     return res.status(400).json({ 
-                        error: 'البريد الإلكتروني مستخدم بالفعل. يمكنك تسجيل الدخول مباشرة.',
+                        error: 'Email already in use. You can login directly.',
                         canLogin: true
                     });
                 } else {
                     return res.status(400).json({ 
-                        error: 'البريد الإلكتروني مستخدم بالفعل ولكن الحساب غير محقق. يرجى التحقق من بريدك الإلكتروني أو طلب رمز جديد.',
+                        error: 'Email already in use but account is not verified. Please check your email or request a new code.',
                         needsVerification: true,
                         userId: row.id
                     });
@@ -314,7 +314,7 @@ app.post('/auth/register', async (req, res) => {
             db.run('INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)',
                 [userId, name, email, passwordHash], function(err) {
                     if (err) {
-                        return res.status(500).json({ error: 'فشل في إنشاء الحساب' });
+                        return res.status(500).json({ error: 'Failed to create account' });
                     }
 
                     // Generate verification code
@@ -335,7 +335,7 @@ app.post('/auth/register', async (req, res) => {
                         [codeId, userId, code, 'register', expiresAt.toISOString()], async (err) => {
                             if (err) {
                                 console.error('❌ Error creating verification code:', err);
-                                return res.status(500).json({ error: 'فشل في إرسال رمز التحقق' });
+                                return res.status(500).json({ error: 'Failed to send verification code' });
                             }
                             
                             console.log('✅ Verification code created successfully in database');
@@ -367,7 +367,7 @@ app.post('/auth/login', async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ error: 'البريد الإلكتروني وكلمة المرور مطلوبان' });
+            return res.status(400).json({ error: 'Email and password are required' });
         }
 
         // Find user
@@ -379,14 +379,14 @@ app.post('/auth/login', async (req, res) => {
 
             if (!user) {
                 console.log(`Login attempt with non-existent email: ${email}`);
-                return res.status(401).json({ error: 'بيانات تسجيل الدخول غير صحيحة' });
+                return res.status(401).json({ error: 'Invalid login credentials' });
             }
 
             // Check password
             const validPassword = await bcrypt.compare(password, user.password_hash);
             if (!validPassword) {
                 console.log(`Invalid password for email: ${email}`);
-                return res.status(401).json({ error: 'بيانات تسجيل الدخول غير صحيحة' });
+                return res.status(401).json({ error: 'Invalid login credentials' });
             }
 
             console.log(`Successful login attempt for: ${email}`);
@@ -394,10 +394,10 @@ app.post('/auth/login', async (req, res) => {
             // Check if account is verified
             if (!user.is_verified) {
                 return res.status(403).json({ 
-                    error: 'الحساب غير موثق. يرجى التحقق من بريدك الإلكتروني أولاً',
+                    error: 'Account not verified. Please check your email first',
                     requiresVerification: true,
                     userId: user.id,
-                    message: 'تحتاج إلى التحقق من حسابك أولاً. تحقق من بريدك الإلكتروني أو اطلب رمز تحقق جديد.'
+                    message: 'You need to verify your account first. Check your email or request a new verification code.'
                 });
             }
 
