@@ -377,7 +377,8 @@ app.post('/auth/login', async (req, res) => {
                 return res.status(403).json({ 
                     error: 'الحساب غير موثق. يرجى التحقق من بريدك الإلكتروني أولاً',
                     requiresVerification: true,
-                    userId: user.id
+                    userId: user.id,
+                    message: 'تحتاج إلى التحقق من حسابك أولاً. تحقق من بريدك الإلكتروني أو اطلب رمز تحقق جديد.'
                 });
             }
 
