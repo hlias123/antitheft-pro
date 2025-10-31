@@ -199,6 +199,7 @@ app.get('/api', (req, res) => {
             'POST /auth/register': 'Register new user',
             'POST /auth/login': 'Login user',
             'POST /auth/verify': 'Verify MFA code',
+            'POST /auth/resend-verification': 'Resend verification code',
             'GET /auth/profile': 'Get user profile',
             'POST /auth/logout': 'Logout user',
             'GET /health': 'Health check'
@@ -293,6 +294,15 @@ app.post('/auth/login', async (req, res) => {
             const validPassword = await bcrypt.compare(password, user.password_hash);
             if (!validPassword) {
                 return res.status(401).json({ error: 'بيانات تسجيل الدخول غير صحيحة' });
+            }
+
+            // Check if account is verified
+            if (!user.is_verified) {
+                return res.status(403).json({ 
+                    error: 'الحساب غير موثق. يرجى التحقق من بريدك الإلكتروني أولاً',
+                    requiresVerification: true,
+                    userId: user.id
+                });
             }
 
             // Generate MFA code
@@ -399,7 +409,63 @@ app.post('/auth/verify', (req, res) => {
     }
 });
 
+// Resend verification code
+app.post('/auth/resend-verification', async (req, res) => {
+    try {
+        const { userId } = req.body;
 
+        if (!userId) {
+            return res.status(400).json({ error: 'معرف المستخدم مطلوب' });
+        }
+
+        // Get user info
+        db.get('SELECT email, name, is_verified FROM users WHERE id = ?', [userId], async (err, user) => {
+            if (err) {
+                return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
+            }
+
+            if (!user) {
+                return res.status(404).json({ error: 'المستخدم غير موجود' });
+            }
+
+            if (user.is_verified) {
+                return res.status(400).json({ error: 'الحساب موثق بالفعل' });
+            }
+
+            // Generate new verification code
+            const code = generateVerificationCode();
+            const codeId = uuidv4();
+            const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+            // Delete old codes for this user
+            db.run('DELETE FROM verification_codes WHERE user_id = ? AND type = ?', [userId, 'register'], (err) => {
+                if (err) {
+                    console.error('Error deleting old codes:', err);
+                }
+
+                // Insert new code
+                db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
+                    [codeId, userId, code, 'register', expiresAt], async (err) => {
+                        if (err) {
+                            return res.status(500).json({ error: 'فشل في إنشاء رمز التحقق' });
+                        }
+
+                        const emailSent = await sendVerificationEmail(user.email, code, 'register');
+
+                        res.json({
+                            success: true,
+                            message: 'تم إعادة إرسال رمز التحقق',
+                            emailSent: emailSent,
+                            verificationCode: emailSent ? null : code
+                        });
+                    });
+            });
+        });
+    } catch (error) {
+        console.error('Resend verification error:', error);
+        res.status(500).json({ error: 'خطأ في الخادم' });
+    }
+});
 
 // Get profile
 app.get('/auth/profile', authenticateToken, (req, res) => {
