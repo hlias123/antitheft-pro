@@ -110,6 +110,20 @@ function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Clean expired verification codes
+function cleanExpiredCodes() {
+    db.run('DELETE FROM verification_codes WHERE expires_at < datetime("now")', (err) => {
+        if (err) {
+            console.error('Error cleaning expired codes:', err);
+        } else {
+            console.log('🧹 Cleaned expired verification codes');
+        }
+    });
+}
+
+// Clean expired codes every minute
+setInterval(cleanExpiredCodes, 60 * 1000);
+
 async function sendVerificationEmail(email, code, type = 'login') {
     const subject = type === 'login' ? 'رمز تسجيل الدخول - Secure Guardian' : 'رمز التحقق - Secure Guardian';
     const html = `
@@ -123,7 +137,7 @@ async function sendVerificationEmail(email, code, type = 'login') {
                     ${code}
                 </div>
                 <p style="color: #666; margin-top: 20px;">
-                    هذا الرمز صالح لمدة 10 دقائق فقط
+                    هذا الرمز صالح لمدة 3 دقائق فقط
                 </p>
                 <p style="color: #999; font-size: 14px;">
                     إذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة
@@ -251,7 +265,7 @@ app.post('/auth/register', async (req, res) => {
                     // Generate verification code
                     const code = generateVerificationCode();
                     const codeId = uuidv4();
-                    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+                    const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
                     db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
                         [codeId, userId, code, 'register', expiresAt], async (err) => {
@@ -378,7 +392,22 @@ app.post('/auth/verify', (req, res) => {
                 }
 
                 if (!row) {
-                    return res.status(400).json({ error: 'رمز التحقق غير صحيح أو منتهي الصلاحية' });
+                    // Check if code exists but expired
+                    db.get('SELECT * FROM verification_codes WHERE user_id = ? AND code = ? AND used = 0', 
+                        [userId, code], (err, expiredRow) => {
+                            if (expiredRow) {
+                                return res.status(400).json({ 
+                                    error: 'رمز التحقق منتهي الصلاحية. يرجى طلب رمز جديد',
+                                    expired: true
+                                });
+                            } else {
+                                return res.status(400).json({ 
+                                    error: 'رمز التحقق غير صحيح. تأكد من إدخال الرمز بشكل صحيح',
+                                    invalid: true
+                                });
+                            }
+                        });
+                    return;
                 }
 
                 // Mark code as used
@@ -459,7 +488,7 @@ app.post('/auth/resend-verification', async (req, res) => {
             // Generate new verification code
             const code = generateVerificationCode();
             const codeId = uuidv4();
-            const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+            const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
             // Delete old codes for this user
             db.run('DELETE FROM verification_codes WHERE user_id = ? AND type = ?', [userId, 'register'], (err) => {
