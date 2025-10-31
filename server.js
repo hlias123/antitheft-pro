@@ -91,6 +91,9 @@ if (EMAIL_USER && EMAIL_PASS) {
         auth: {
             user: EMAIL_USER,
             pass: EMAIL_PASS
+        },
+        tls: {
+            rejectUnauthorized: false
         }
     });
     console.log('✅ Email service configured');
@@ -127,38 +130,69 @@ function cleanExpiredCodes() {
 setInterval(cleanExpiredCodes, 5 * 60 * 1000);
 
 async function sendVerificationEmail(email, code, type = 'login') {
-    const subject = type === 'login' ? 'رمز تسجيل الدخول - Secure Guardian' : 'رمز التحقق - Secure Guardian';
+    const subject = type === 'login' ? 'Secure Guardian - Login Code' : 'Secure Guardian - Verification Code';
     const html = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #667eea;">🛡️ Secure Guardian</h1>
-            </div>
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
-                <h2 style="color: #333;">رمز التحقق الخاص بك</h2>
-                <div style="font-size: 32px; font-weight: bold; color: #667eea; margin: 20px 0; padding: 15px; background: white; border-radius: 8px; letter-spacing: 5px;">
-                    ${code}
-                </div>
-                <p style="color: #666; margin-top: 20px;">
-                    هذا الرمز صالح لمدة 3 دقائق فقط
-                </p>
-                <p style="color: #999; font-size: 14px;">
-                    إذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة
-                </p>
-            </div>
-        </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Secure Guardian Verification</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+                <tr>
+                    <td align="center">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <tr>
+                                <td style="padding: 40px; text-align: center;">
+                                    <h1 style="color: #667eea; margin: 0 0 20px 0; font-size: 28px;">🛡️ Secure Guardian</h1>
+                                    <h2 style="color: #333; margin: 0 0 30px 0; font-size: 20px;">Your Verification Code</h2>
+                                    
+                                    <div style="background: #f8f9fa; padding: 30px; border-radius: 8px; margin: 20px 0;">
+                                        <div style="font-size: 36px; font-weight: bold; color: #667eea; letter-spacing: 8px; margin: 10px 0;">
+                                            ${code}
+                                        </div>
+                                    </div>
+                                    
+                                    <p style="color: #666; font-size: 16px; margin: 20px 0;">
+                                        This code is valid for 3 minutes only.
+                                    </p>
+                                    
+                                    <p style="color: #999; font-size: 14px; margin: 30px 0 0 0;">
+                                        If you didn't request this code, please ignore this email.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
     `;
 
     if (transporter) {
         try {
-            await transporter.sendMail({
-                from: EMAIL_USER,
+            const mailOptions = {
+                from: `"Secure Guardian Pro" <${EMAIL_USER}>`,
                 to: email,
                 subject: subject,
-                html: html
-            });
+                html: html,
+                text: `Your Secure Guardian verification code is: ${code}. This code is valid for 3 minutes only.`,
+                headers: {
+                    'X-Priority': '1',
+                    'X-MSMail-Priority': 'High',
+                    'Importance': 'high'
+                }
+            };
+            
+            await transporter.sendMail(mailOptions);
+            console.log(`✅ Email sent successfully to ${email}`);
             return true;
         } catch (error) {
-            console.error('Email sending error:', error);
+            console.error('❌ Email sending error:', error);
+            console.log(`📧 Verification code for ${email}: ${code}`);
             return false;
         }
     } else {
@@ -296,7 +330,8 @@ app.post('/auth/register', async (req, res) => {
                                 requiresVerification: true,
                                 emailSent: emailSent,
                                 verificationCode: emailSent ? null : code,
-                                note: emailSent ? null : 'لم يتم إرسال الإيميل. الرمز موضح أعلاه للاختبار.'
+                                note: emailSent ? 'تحقق من مجلد الرسائل غير المرغوب فيها (Spam) إذا لم تجد الإيميل' : 'لم يتم إرسال الإيميل. الرمز موضح أعلاه للاختبار.',
+                                spamWarning: emailSent
                             });
                         });
                 });

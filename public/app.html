@@ -453,10 +453,15 @@
                     currentUserId = data.userId;
                     
                     if (data.emailSent) {
-                        showMessage('✅ تم إنشاء الحساب بنجاح! تم إرسال رمز التحقق إلى بريدك الإلكتروني', 'success');
+                        const spamWarning = data.spamWarning ? 
+                            `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px; margin: 10px 0; color: #856404; font-size: 14px;">
+                                <strong>⚠️ تنبيه:</strong> إذا لم تجد الإيميل في صندوق الوارد، تحقق من مجلد الرسائل غير المرغوب فيها (Spam/Junk)
+                            </div>` : '';
+                        
+                        showMessage('✅ تم إنشاء الحساب بنجاح! تم إرسال رمز التحقق إلى بريدك الإلكتروني' + spamWarning, 'success');
                         setTimeout(() => {
                             showVerificationForm();
-                        }, 2000);
+                        }, 3000);
                     } else {
                         // Show verification code prominently
                         const codeDisplay = data.verificationCode ? 
