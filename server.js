@@ -74,61 +74,8 @@ db.serialize(() => {
         FOREIGN KEY (user_id) REFERENCES users (id)
     )`);
 
-    // Create test users if they don't exist - Fixed version
-    const testUsers = [
-        { name: 'Test User', email: 'test@example.com', password: 'password123' },
-        { name: 'Gmail User', email: 'user@gmail.com', password: 'password123' },
-        { name: 'Real User', email: 'hlias.antitheft@gmail.com', password: 'password123' }
-    ];
-
-    // Create users synchronously to avoid async issues
-    const createTestUser = async (testUser) => {
-        return new Promise((resolve, reject) => {
-            db.get('SELECT id FROM users WHERE email = ?', [testUser.email], async (err, user) => {
-                if (err) {
-                    console.error(`Error checking user ${testUser.email}:`, err);
-                    reject(err);
-                    return;
-                }
-
-                if (!user) {
-                    try {
-                        const passwordHash = await bcrypt.hash(testUser.password, 12);
-                        const userId = uuidv4();
-
-                        db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
-                            [userId, testUser.name, testUser.email, passwordHash, 1], (err) => {
-                                if (err) {
-                                    console.error(`Error creating user ${testUser.email}:`, err);
-                                    reject(err);
-                                } else {
-                                    console.log(`✅ User created: ${testUser.email} / ${testUser.password}`);
-                                    resolve();
-                                }
-                            });
-                    } catch (error) {
-                        console.error(`Error hashing password for ${testUser.email}:`, error);
-                        reject(error);
-                    }
-                } else {
-                    console.log(`✅ User already exists: ${testUser.email}`);
-                    resolve();
-                }
-            });
-        });
-    };
-
-    // Create all test users
-    (async () => {
-        try {
-            for (const testUser of testUsers) {
-                await createTestUser(testUser);
-            }
-            console.log('✅ All test users processed successfully');
-        } catch (error) {
-            console.error('❌ Error creating test users:', error);
-        }
-    })();
+    // No test users - Real registration system only
+    console.log('✅ Database initialized - Ready for real user registration');
 
     console.log('✅ Database initialized successfully');
 });

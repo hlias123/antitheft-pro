@@ -99,14 +99,12 @@
             <h1>Secure Guardian Pro</h1>
             
             <div style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72;">
-                ⚠️ تنبيه: استخدم الحسابات التجريبية للدخول
+                🔐 نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع
             </div>
             
-            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
-                <strong>حسابات تجريبية:</strong><br>
-                📧 test@example.com | 🔑 password123<br>
-                📧 user@gmail.com | 🔑 password123<br>
-                📧 hlias.antitheft@gmail.com | 🔑 password123
+            <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #2e7d32;">
+                <strong>💡 للمستخدمين الجدد:</strong><br>
+                إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه
             </div>
 
             <div id="login-form">
@@ -124,6 +122,41 @@
                     <span id="login-text">تسجيل الدخول</span>
                     <span id="loading-text" style="display: none;">🔄 جاري التحقق...</span>
                 </button>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <span style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showRegisterForm()">
+                        ليس لديك حساب؟ إنشاء حساب جديد
+                    </span>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden">
+                <div class="form-group">
+                    <label for="register-name">الاسم الكامل:</label>
+                    <input type="text" id="register-name" placeholder="أدخل اسمك الكامل" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email">البريد الإلكتروني:</label>
+                    <input type="email" id="register-email" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">كلمة المرور:</label>
+                    <input type="password" id="register-password" placeholder="أدخل كلمة مرور قوية (8 أحرف على الأقل)" required>
+                </div>
+
+                <button id="register-btn" class="btn" onclick="handleRegister()">
+                    <span id="register-text">إنشاء الحساب</span>
+                    <span id="register-loading" style="display: none;">🔄 جاري الإنشاء...</span>
+                </button>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <span style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="showLoginForm()">
+                        لديك حساب بالفعل؟ تسجيل الدخول
+                    </span>
+                </div>
             </div>
 
             <div id="message" class="message" style="display: none;"></div>
@@ -300,6 +333,92 @@
             } finally {
                 setLoading(false);
                 console.log('🏁 Login process completed');
+            }
+        }
+
+        // Form switching functions
+        function showRegisterForm() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+        }
+
+        // Handle registration
+        async function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+
+            console.log('🚀 handleRegister called with:', { name, email, password: '***' });
+
+            // Validation
+            if (!name || name.length < 2) {
+                showMessage('الاسم يجب أن يكون حرفين على الأقل', 'error');
+                return;
+            }
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                showMessage('يرجى إدخال بريد إلكتروني صحيح', 'error');
+                return;
+            }
+
+            if (!password || password.length < 8) {
+                showMessage('كلمة المرور يجب أن تكون 8 أحرف على الأقل', 'error');
+                return;
+            }
+
+            // Set loading state
+            const btn = document.getElementById('register-btn');
+            const registerText = document.getElementById('register-text');
+            const registerLoading = document.getElementById('register-loading');
+            
+            if (btn && registerText && registerLoading) {
+                btn.disabled = true;
+                registerText.style.display = 'none';
+                registerLoading.style.display = 'inline';
+            }
+
+            try {
+                console.log('📤 Sending registration request...');
+                
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+                console.log('📊 Registration response:', data);
+
+                if (response.ok && data.success) {
+                    console.log('✅ Registration successful');
+                    showMessage('✅ تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب', 'success');
+                    
+                    // Pre-fill login form and switch to login
+                    document.getElementById('login-email').value = email;
+                    setTimeout(() => {
+                        showLoginForm();
+                    }, 2000);
+                    
+                } else {
+                    console.log('❌ Registration failed:', data);
+                    showMessage('❌ ' + (data.error || 'فشل في إنشاء الحساب'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('🚨 Registration error:', error);
+                showMessage('❌ خطأ في الاتصال بالخادم', 'error');
+            } finally {
+                // Reset loading state
+                if (btn && registerText && registerLoading) {
+                    btn.disabled = false;
+                    registerText.style.display = 'inline';
+                    registerLoading.style.display = 'none';
+                }
             }
         }
 

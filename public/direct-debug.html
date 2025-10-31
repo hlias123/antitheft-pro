@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>تشخيص مباشر</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        input, button { padding: 10px; margin: 5px; font-size: 16px; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin: 20px 0; padding: 15px; border: 1px solid #ccc; background: #f9f9f9; }
+        .error { background: #ffebee; border-color: #f44336; }
+        .success { background: #e8f5e8; border-color: #4caf50; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 تشخيص مباشر لمشكلة تسجيل الدخول</h1>
+        
+        <h3>1. اختبار الاتصال بالخادم:</h3>
+        <button onclick="testServer()">اختبار الخادم</button>
+        <div id="server-result" class="result"></div>
+        
+        <h3>2. اختبار تسجيل الدخول:</h3>
+        <div>
+            <input type="email" id="email" placeholder="البريد الإلكتروني" value="test@example.com">
+            <input type="password" id="password" placeholder="كلمة المرور" value="password123">
+            <button onclick="testLogin()">اختبار تسجيل الدخول</button>
+        </div>
+        <div id="login-result" class="result"></div>
+        
+        <h3>3. معلومات المتصفح:</h3>
+        <div id="browser-info" class="result"></div>
+        
+        <h3>4. سجل الأحداث:</h3>
+        <div id="console-log" class="result" style="height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;"></div>
+    </div>
+
+    <script>
+        // Override console.log to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logDiv = document.getElementById('console-log');
+        
+        function addLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'black';
+            logDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        // Show browser info
+        function showBrowserInfo() {
+            const info = {
+                'User Agent': navigator.userAgent,
+                'URL': window.location.href,
+                'Protocol': window.location.protocol,
+                'Host': window.location.host,
+                'Cookies Enabled': navigator.cookieEnabled,
+                'Local Storage': typeof(Storage) !== "undefined",
+                'Fetch API': typeof(fetch) !== "undefined"
+            };
+            
+            let html = '';
+            for (const [key, value] of Object.entries(info)) {
+                html += `<strong>${key}:</strong> ${value}<br>`;
+            }
+            document.getElementById('browser-info').innerHTML = html;
+        }
+
+        // Test server connection
+        async function testServer() {
+            const resultDiv = document.getElementById('server-result');
+            resultDiv.innerHTML = 'جاري الاختبار...';
+            
+            try {
+                console.log('Testing server connection...');
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ الخادم يعمل بشكل طبيعي</strong><br>
+                        Status: ${data.status}<br>
+                        Service: ${data.service}<br>
+                        Time: ${data.timestamp}
+                    `;
+                    console.log('Server test successful:', data);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ فشل الاتصال بالخادم</strong><br>Error: ${error.message}`;
+                console.error('Server test failed:', error);
+            }
+        }
+
+        // Test login
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('login-result');
+            
+            resultDiv.innerHTML = 'جاري اختبار تسجيل الدخول...';
+            
+            try {
+                console.log('Testing login with:', { email, password: '***' });
+                
+                const requestBody = JSON.stringify({ email, password });
+                console.log('Request body:', requestBody);
+                
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: requestBody
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ تم تسجيل الدخول بنجاح!</strong><br>
+                        User: ${data.user.name}<br>
+                        Email: ${data.user.email}<br>
+                        Token: ${data.token.substring(0, 50)}...<br>
+                        Verified: ${data.user.isVerified ? 'Yes' : 'No'}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ فشل تسجيل الدخول</strong><br>
+                        Status: ${response.status}<br>
+                        Error: ${data.error || 'Unknown error'}<br>
+                        Full response: <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ خطأ في الشبكة</strong><br>
+                    Error: ${error.message}<br>
+                    Stack: <pre>${error.stack}</pre>
+                `;
+                console.error('Login test failed:', error);
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            showBrowserInfo();
+            testServer();
+        });
+    </script>
+</body>
+</html>
