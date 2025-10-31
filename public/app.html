@@ -182,14 +182,14 @@
             <div id="verification-form" class="hidden">
                 <div style="text-align: center; margin-bottom: 20px;">
                     <div style="font-size: 2rem; margin-bottom: 10px;">📧</div>
-                    <h3>تحقق من بريدك الإلكتروني</h3>
-                    <p style="color: #666; font-size: 14px;">
+                    <h3 id="verify-email-title">تحقق من بريدك الإلكتروني</h3>
+                    <p id="verify-email-desc" style="color: #666; font-size: 14px;">
                         تم إرسال رمز التحقق إلى بريدك الإلكتروني
                     </p>
                 </div>
 
                 <div class="form-group">
-                    <label for="verification-code">رمز التحقق (6 أرقام):</label>
+                    <label for="verification-code" id="verify-code-label">رمز التحقق (6 أرقام):</label>
                     <input type="text" id="verification-code" placeholder="أدخل رمز التحقق" maxlength="6" required>
                 </div>
 
@@ -199,13 +199,13 @@
                 </button>
                 
                 <div style="text-align: center; margin-top: 15px;">
-                    <span style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="resendVerificationCode()">
+                    <span id="resend-code-link" style="color: #667eea; cursor: pointer; font-weight: 500;" onclick="resendVerificationCode()">
                         لم تستلم الرمز؟ إعادة الإرسال
                     </span>
                 </div>
                 
                 <div style="text-align: center; margin-top: 10px;">
-                    <span style="color: #999; cursor: pointer; font-size: 14px;" onclick="showLoginForm()">
+                    <span id="back-to-login-link" style="color: #999; cursor: pointer; font-size: 14px;" onclick="showLoginForm()">
                         العودة لتسجيل الدخول
                     </span>
                 </div>
@@ -319,12 +319,12 @@
 
             if (!email || !password) {
                 console.log('❌ Validation failed: missing email or password');
-                showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                showMessage('❌ ' + getMessage('enterEmailPassword'), 'error');
                 return;
             }
 
             setLoading(true);
-            showMessage('🔄 جاري التحقق من البيانات...', 'success');
+            showMessage('🔄 ' + getMessage('checkingData'), 'success');
 
             try {
                 console.log('🔐 Sending login request...');
@@ -363,7 +363,7 @@
                         console.log('💾 Stored auth data successfully');
                     }
                     
-                    showMessage('✅ تم تسجيل الدخول بنجاح!', 'success');
+                    showMessage('✅ ' + getMessage('loginSuccess'), 'success');
                     
                     // Update user info
                     if (data.user) {
@@ -422,13 +422,13 @@
                         `;
                         showMessage(verificationMessage, 'warning');
                     } else {
-                        showMessage('❌ ' + (data.error || 'بيانات تسجيل الدخول غير صحيحة'), 'error');
+                        showMessage('❌ ' + (data.error || getMessage('loginDataIncorrect')), 'error');
                     }
                 }
                 
             } catch (error) {
                 console.error('🚨 Login error:', error);
-                showMessage('❌ خطأ في الاتصال بالخادم', 'error');
+                showMessage('❌ ' + getMessage('serverError'), 'error');
             } finally {
                 setLoading(false);
                 console.log('🏁 Login process completed');
@@ -467,17 +467,17 @@
 
             // Validation
             if (!name || name.length < 2) {
-                showMessage('الاسم يجب أن يكون حرفين على الأقل', 'error');
+                showMessage('❌ ' + getMessage('nameMinLength'), 'error');
                 return;
             }
 
             if (!email || !email.includes('@') || !email.includes('.')) {
-                showMessage('يرجى إدخال بريد إلكتروني صحيح', 'error');
+                showMessage('❌ ' + getMessage('validEmail'), 'error');
                 return;
             }
 
             if (!password || password.length < 8) {
-                showMessage('كلمة المرور يجب أن تكون 8 أحرف على الأقل', 'error');
+                showMessage('❌ ' + getMessage('passwordMinLength'), 'error');
                 return;
             }
 
@@ -868,7 +868,37 @@
                 stopCamera: 'إيقاف الكاميرا',
                 logout: 'تسجيل الخروج',
                 securitySystem: 'نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع',
-                newUsersInfo: 'للمستخدمين الجدد: إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه'
+                newUsersInfo: 'للمستخدمين الجدد: إذا لم يكن لديك حساب، يمكنك إنشاء حساب جديد أدناه',
+                verifyEmailTitle: 'تحقق من بريدك الإلكتروني',
+                verifyEmailDesc: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
+                verifyCodeLabel: 'رمز التحقق (6 أرقام):',
+                resendCodeLink: 'لم تستلم الرمز؟ إعادة الإرسال',
+                backToLoginLink: 'العودة لتسجيل الدخول',
+                verifyingText: 'جاري التحقق...',
+                // Messages
+                enterEmailPassword: 'يرجى إدخال البريد الإلكتروني وكلمة المرور',
+                checkingData: 'جاري التحقق من البيانات...',
+                loginSuccess: 'تم تسجيل الدخول بنجاح!',
+                loginDataIncorrect: 'بيانات تسجيل الدخول غير صحيحة',
+                serverError: 'خطأ في الاتصال بالخادم',
+                nameMinLength: 'الاسم يجب أن يكون حرفين على الأقل',
+                validEmail: 'يرجى إدخال بريد إلكتروني صحيح',
+                passwordMinLength: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
+                accountCreatedEmailSent: 'تم إنشاء الحساب بنجاح! تم إرسال رمز التحقق إلى بريدك الإلكتروني',
+                accountCreatedSuccess: 'تم إنشاء الحساب بنجاح!',
+                accountCreationFailed: 'فشل في إنشاء الحساب',
+                enterSixDigitCode: 'يرجى إدخال رمز التحقق المكون من 6 أرقام',
+                userIdMissing: 'خطأ: معرف المستخدم غير موجود',
+                verificationSuccess: 'تم التحقق بنجاح! يمكنك الآن تسجيل الدخول',
+                verificationCodeIncorrect: 'رمز التحقق غير صحيح',
+                codeResentEmail: 'تم إعادة إرسال رمز التحقق إلى بريدك الإلكتروني',
+                newVerificationCode: 'رمز التحقق الجديد: ',
+                resendFailed: 'فشل في إعادة الإرسال',
+                logoutSuccess: 'تم تسجيل الخروج بنجاح',
+                locationAccessDenied: 'تم رفض الوصول للموقع',
+                cameraStarted: 'تم تشغيل الكاميرا',
+                cameraAccessDenied: 'تم رفض الوصول للكاميرا',
+                cameraStopped: 'تم إيقاف الكاميرا'
             },
             en: {
                 title: 'Secure Guardian Pro',
@@ -898,7 +928,37 @@
                 stopCamera: 'Stop Camera',
                 logout: 'Logout',
                 securitySystem: 'Advanced security system with live monitoring and location tracking',
-                newUsersInfo: 'For new users: If you don\'t have an account, you can create a new account below'
+                newUsersInfo: 'For new users: If you don\'t have an account, you can create a new account below',
+                verifyEmailTitle: 'Check Your Email',
+                verifyEmailDesc: 'A verification code has been sent to your email',
+                verifyCodeLabel: 'Verification Code (6 digits):',
+                resendCodeLink: 'Didn\'t receive the code? Resend',
+                backToLoginLink: 'Back to Login',
+                verifyingText: 'Verifying...',
+                // Messages
+                enterEmailPassword: 'Please enter email and password',
+                checkingData: 'Checking data...',
+                loginSuccess: 'Login successful!',
+                loginDataIncorrect: 'Incorrect login credentials',
+                serverError: 'Server connection error',
+                nameMinLength: 'Name must be at least 2 characters',
+                validEmail: 'Please enter a valid email',
+                passwordMinLength: 'Password must be at least 8 characters',
+                accountCreatedEmailSent: 'Account created successfully! Verification code sent to your email',
+                accountCreatedSuccess: 'Account created successfully!',
+                accountCreationFailed: 'Failed to create account',
+                enterSixDigitCode: 'Please enter the 6-digit verification code',
+                userIdMissing: 'Error: User ID missing',
+                verificationSuccess: 'Verification successful! You can now log in',
+                verificationCodeIncorrect: 'Verification code incorrect',
+                codeResentEmail: 'Verification code resent to your email',
+                newVerificationCode: 'New verification code: ',
+                resendFailed: 'Failed to resend',
+                logoutSuccess: 'Logout successful',
+                locationAccessDenied: 'Location access denied',
+                cameraStarted: 'Camera started',
+                cameraAccessDenied: 'Camera access denied',
+                cameraStopped: 'Camera stopped'
             },
             el: {
                 title: 'Secure Guardian Pro',
@@ -928,9 +988,47 @@
                 stopCamera: 'Διακοπή Κάμερας',
                 logout: 'Αποσύνδεση',
                 securitySystem: 'Προηγμένο σύστημα ασφαλείας με ζωντανή παρακολούθηση και εντοπισμό τοποθεσίας',
-                newUsersInfo: 'Για νέους χρήστες: Εάν δεν έχετε λογαριασμό, μπορείτε να δημιουργήσετε έναν νέο λογαριασμό παρακάτω'
+                newUsersInfo: 'Για νέους χρήστες: Εάν δεν έχετε λογαριασμό, μπορείτε να δημιουργήσετε έναν νέο λογαριασμό παρακάτω',
+                verifyEmailTitle: 'Ελέγξτε το Email σας',
+                verifyEmailDesc: 'Ένας κωδικός επαλήθευσης έχει σταλεί στο email σας',
+                verifyCodeLabel: 'Κωδικός Επαλήθευσης (6 ψηφία):',
+                resendCodeLink: 'Δεν λάβατε τον κωδικό; Επανάληψη αποστολής',
+                backToLoginLink: 'Επιστροφή στη Σύνδεση',
+                verifyingText: 'Επαλήθευση...',
+                // Messages
+                enterEmailPassword: 'Παρακαλώ εισάγετε email και κωδικό πρόσβασης',
+                checkingData: 'Έλεγχος δεδομένων...',
+                loginSuccess: 'Επιτυχής σύνδεση!',
+                loginDataIncorrect: 'Λανθασμένα στοιχεία σύνδεσης',
+                serverError: 'Σφάλμα σύνδεσης με τον διακομιστή',
+                nameMinLength: 'Το όνομα πρέπει να έχει τουλάχιστον 2 χαρακτήρες',
+                validEmail: 'Παρακαλώ εισάγετε έγκυρο email',
+                passwordMinLength: 'Ο κωδικός πρόσβασης πρέπει να έχει τουλάχιστον 8 χαρακτήρες',
+                accountCreatedEmailSent: 'Ο λογαριασμός δημιουργήθηκε επιτυχώς! Κωδικός επαλήθευσης στάλθηκε στο email σας',
+                accountCreatedSuccess: 'Ο λογαριασμός δημιουργήθηκε επιτυχώς!',
+                accountCreationFailed: 'Αποτυχία δημιουργίας λογαριασμού',
+                enterSixDigitCode: 'Παρακαλώ εισάγετε τον 6ψήφιο κωδικό επαλήθευσης',
+                userIdMissing: 'Σφάλμα: Λείπει το ID χρήστη',
+                verificationSuccess: 'Επιτυχής επαλήθευση! Μπορείτε τώρα να συνδεθείτε',
+                verificationCodeIncorrect: 'Λανθασμένος κωδικός επαλήθευσης',
+                codeResentEmail: 'Κωδικός επαλήθευσης στάλθηκε ξανά στο email σας',
+                newVerificationCode: 'Νέος κωδικός επαλήθευσης: ',
+                resendFailed: 'Αποτυχία επαναποστολής',
+                logoutSuccess: 'Επιτυχής αποσύνδεση',
+                locationAccessDenied: 'Άρνηση πρόσβασης στην τοποθεσία',
+                cameraStarted: 'Η κάμερα ξεκίνησε',
+                cameraAccessDenied: 'Άρνηση πρόσβασης στην κάμερα',
+                cameraStopped: 'Η κάμερα σταμάτησε'
             }
         };
+
+        // Get translated message
+        function getMessage(key) {
+            const lang = document.getElementById('language-selector')?.value || 
+                        document.getElementById('language-selector-dashboard')?.value || 
+                        localStorage.getItem('preferredLanguage') || 'ar';
+            return translations[lang][key] || translations['ar'][key] || key;
+        }
 
         // Change language function
         function changeLanguage() {
@@ -974,6 +1072,9 @@
             const registerBtn = document.getElementById('register-text');
             if (registerBtn) registerBtn.textContent = t.registerBtn;
             
+            const verifyBtn = document.getElementById('verify-text');
+            if (verifyBtn) verifyBtn.textContent = t.verifyBtn;
+            
             // Update static text elements
             const staticTexts = {
                 'security-description': t.securitySystem,
@@ -988,7 +1089,12 @@
                 'email-label-text': t.emailLabel,
                 'verification-status-text': t.verificationStatus,
                 'no-account-link': t.noAccount,
-                'has-account-link': t.hasAccount
+                'has-account-link': t.hasAccount,
+                'verify-email-title': t.verifyEmailTitle,
+                'verify-email-desc': t.verifyEmailDesc,
+                'verify-code-label': t.verifyCodeLabel,
+                'resend-code-link': t.resendCodeLink,
+                'back-to-login-link': t.backToLoginLink
             };
             
             Object.keys(staticTexts).forEach(id => {
