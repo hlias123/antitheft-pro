@@ -100,8 +100,9 @@
         </div>
 
         <div class="section">
-            <h3>🗄️ فحص قاعدة البيانات</h3>
-            <button onclick="checkDatabase()">📊 عرض الرموز الحالية</button>
+            <h3>🗄️ إدارة قاعدة البيانات</h3>
+            <button onclick="generateRandomEmail()">🎲 إنشاء بريد عشوائي</button>
+            <button onclick="deleteTestUsers()">🗑️ حذف الحسابات التجريبية</button>
             <button onclick="checkTime()">⏰ فحص التوقيت</button>
         </div>
 
@@ -229,8 +230,22 @@
             }
         }
 
-        function checkDatabase() {
-            showResult('📊 لفحص قاعدة البيانات، تحقق من سجل الخادم في Terminal', 'info');
+        function generateRandomEmail() {
+            const randomId = Math.floor(Math.random() * 10000);
+            const email = `test${randomId}@debug.com`;
+            document.getElementById('email').value = email;
+            showResult('✅ تم إنشاء بريد إلكتروني عشوائي: ' + email, 'success');
+        }
+
+        async function deleteTestUsers() {
+            try {
+                showResult('🗑️ حذف الحسابات التجريبية...', 'info');
+                
+                // This would need a server endpoint, for now just show message
+                showResult('💡 لحذف الحسابات التجريبية، استخدم الأمر التالي في Terminal:\n\nnode -e "const sqlite3 = require(\'sqlite3\').verbose(); const db = new sqlite3.Database(\'./data/guardian.db\'); db.run(\'DELETE FROM users WHERE email LIKE \\\'%debug.com\\\'\', (err) => { if(err) console.error(err); else console.log(\'✅ تم حذف الحسابات التجريبية\'); db.close(); });"', 'info');
+            } catch (error) {
+                showResult('❌ خطأ: ' + error.message, 'error');
+            }
         }
 
         function checkTime() {
@@ -247,7 +262,9 @@
 
         // Initialize
         window.addEventListener('DOMContentLoaded', function() {
-            showResult('🚀 أداة تشخيص رموز التحقق جاهزة\\nمدة صلاحية الرمز: 3 دقائق', 'info');
+            // Generate random email on load
+            generateRandomEmail();
+            showResult('🚀 أداة تشخيص رموز التحقق جاهزة\\nمدة صلاحية الرمز: 3 دقائق\\nتم إنشاء بريد إلكتروني عشوائي تلقائياً', 'info');
         });
     </script>
 </body>

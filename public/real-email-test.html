@@ -105,6 +105,9 @@
             <div class="form-group">
                 <label for="email">البريد الإلكتروني:</label>
                 <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" value="hlia.hlias123@gmail.com" required>
+                <button type="button" onclick="generateTestEmail()" style="margin-top: 5px; padding: 5px 10px; font-size: 12px; background: #28a745;">
+                    🎲 بريد تجريبي عشوائي
+                </button>
             </div>
 
             <div class="form-group">
@@ -281,6 +284,13 @@
 
         function goToApp() {
             window.location.href = '/app.html';
+        }
+
+        function generateTestEmail() {
+            const randomId = Math.floor(Math.random() * 10000);
+            const email = `test${randomId}@example.com`;
+            document.getElementById('email').value = email;
+            showResult('✅ تم إنشاء بريد تجريبي: ' + email, 'success');
         }
 
         // Initialize
