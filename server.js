@@ -291,11 +291,12 @@ app.post('/auth/register', async (req, res) => {
 
                             res.json({
                                 success: true,
-                                message: 'تم إنشاء الحساب بنجاح',
+                                message: emailSent ? 'تم إنشاء الحساب بنجاح وإرسال رمز التحقق إلى بريدك الإلكتروني' : 'تم إنشاء الحساب بنجاح',
                                 userId: userId,
                                 requiresVerification: true,
                                 emailSent: emailSent,
-                                verificationCode: emailSent ? null : code
+                                verificationCode: emailSent ? null : code,
+                                note: emailSent ? null : 'لم يتم إرسال الإيميل. الرمز موضح أعلاه للاختبار.'
                             });
                         });
                 });

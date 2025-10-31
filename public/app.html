@@ -95,8 +95,16 @@
     <!-- Login Screen -->
     <div id="login-screen">
         <div class="container">
+            <!-- Language Switcher -->
+            <div style="position: absolute; top: 20px; right: 20px;">
+                <select id="language-selector" onchange="changeLanguage()" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px;">
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="en">🇺🇸 English</option>
+                </select>
+            </div>
+            
             <div class="logo">🛡️</div>
-            <h1>Secure Guardian Pro</h1>
+            <h1 id="app-title">Secure Guardian Pro</h1>
             
             <div style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72;">
                 🔐 نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع
@@ -450,7 +458,14 @@
                             showVerificationForm();
                         }, 2000);
                     } else {
-                        showMessage('✅ تم إنشاء الحساب بنجاح! رمز التحقق: ' + data.verificationCode, 'success');
+                        // Show verification code prominently
+                        const codeDisplay = data.verificationCode ? 
+                            `<div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 10px 0; text-align: center;">
+                                <strong style="color: #1976d2; font-size: 18px;">رمز التحقق: ${data.verificationCode}</strong>
+                                <br><small style="color: #666;">انسخ هذا الرمز واستخدمه للتحقق</small>
+                            </div>` : '';
+                        
+                        showMessage('✅ تم إنشاء الحساب بنجاح!' + (codeDisplay || ''), 'success');
                         setTimeout(() => {
                             showVerificationForm();
                         }, 2000);
@@ -721,9 +736,73 @@
             }
         });
 
+        // Language translations
+        const translations = {
+            ar: {
+                title: 'Secure Guardian Pro',
+                loginTitle: 'تسجيل الدخول',
+                registerTitle: 'إنشاء حساب جديد',
+                email: 'البريد الإلكتروني:',
+                password: 'كلمة المرور:',
+                name: 'الاسم الكامل:',
+                loginBtn: 'تسجيل الدخول',
+                registerBtn: 'إنشاء الحساب',
+                noAccount: 'ليس لديك حساب؟ إنشاء حساب جديد',
+                hasAccount: 'لديك حساب؟ تسجيل الدخول',
+                verificationCode: 'رمز التحقق:',
+                verifyBtn: 'تحقق من الرمز',
+                emailPlaceholder: 'أدخل بريدك الإلكتروني',
+                passwordPlaceholder: 'أدخل كلمة المرور',
+                namePlaceholder: 'أدخل اسمك الكامل',
+                codePlaceholder: 'أدخل رمز التحقق'
+            },
+            en: {
+                title: 'Secure Guardian Pro',
+                loginTitle: 'Login',
+                registerTitle: 'Create New Account',
+                email: 'Email:',
+                password: 'Password:',
+                name: 'Full Name:',
+                loginBtn: 'Login',
+                registerBtn: 'Create Account',
+                noAccount: 'Don\'t have an account? Create new account',
+                hasAccount: 'Have an account? Login',
+                verificationCode: 'Verification Code:',
+                verifyBtn: 'Verify Code',
+                emailPlaceholder: 'Enter your email',
+                passwordPlaceholder: 'Enter your password',
+                namePlaceholder: 'Enter your full name',
+                codePlaceholder: 'Enter verification code'
+            }
+        };
+
+        // Change language function
+        function changeLanguage() {
+            const lang = document.getElementById('language-selector').value;
+            const t = translations[lang];
+            
+            // Update direction and language
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            // Update text content
+            document.getElementById('app-title').textContent = t.title;
+            
+            // Store language preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Load saved language
+        function loadSavedLanguage() {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'ar';
+            document.getElementById('language-selector').value = savedLang;
+            changeLanguage();
+        }
+
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Page loaded');
+            loadSavedLanguage();
             checkExistingSession();
         });
     </script>
