@@ -959,10 +959,6 @@
             alert('📸 Photo captured from front camera');
         }
 
-        function logout() {
-            location.reload(); // Reload page to return to login
-        }
-
         function wipeData() {
             const messages = {
                 en: '🗑️ Data wipe initiated! (This is a demo)',
@@ -973,30 +969,7 @@
         }
 
         function logout() {
-            // Clean up map
-            if (map) {
-                map.remove();
-                map = null;
-                deviceMarker = null;
-            }
-            
-            // Reset form
-            document.getElementById('email').value = '';
-            document.querySelectorAll('.pin-input').forEach(input => input.value = '');
-            
-            // Show login form again
-            document.querySelector('.login-form').style.display = 'block';
-            document.querySelector('.info-panel').style.display = 'block';
-            document.querySelector('.app-download').style.display = 'block';
-            document.getElementById('dashboardSection').style.display = 'none';
-            document.getElementById('messageDiv').innerHTML = '';
-            
-            const messages = {
-                en: '👋 Logged out successfully!',
-                el: '👋 Αποσυνδεθήκατε επιτυχώς!',
-                ar: '👋 تم تسجيل الخروج بنجاح!'
-            };
-            showMessage(messages[currentLanguage], 'info');
+            location.reload(); // Reload page to return to login
         }
 
 
