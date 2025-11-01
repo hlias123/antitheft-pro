@@ -441,10 +441,10 @@
                     <div style="font-size: 12px; color: rgba(255,255,255,0.7);" id="alarmDesc">Activate alarm</div>
                 </div>
                 
-                <div class="feature-card" onclick="openAdvancedMap()">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🗺️</div>
-                    <div style="font-weight: 600; color: white; margin-bottom: 5px;" id="trackTitle">Advanced Map</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.7);" id="trackDesc">Full tracking system</div>
+                <div class="feature-card" onclick="refreshLocation()">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📍</div>
+                    <div style="font-weight: 600; color: white; margin-bottom: 5px;" id="trackTitle">Refresh Location</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.7);" id="trackDesc">Update device position</div>
                 </div>
                 
                 <div class="feature-card" onclick="wipeData()">
@@ -501,8 +501,8 @@
                 mapInfo: "📍 Last updated: Just now • Accuracy: ±5 meters",
                 fullscreenBtn: "🔍 Fullscreen",
                 exitFullscreenBtn: "❌ Exit Fullscreen",
-                trackTitle: "Advanced Map",
-                trackDesc: "Full tracking system",
+                trackTitle: "Refresh Location",
+                trackDesc: "Update device position",
                 wipeTitle: "Wipe Data",
                 wipeDesc: "Erase all data",
                 logoutBtn: "🚪 Sign Out",
@@ -539,8 +539,8 @@
                 mapInfo: "📍 Τελευταία ενημέρωση: Μόλις τώρα • Ακρίβεια: ±5 μέτρα",
                 fullscreenBtn: "🔍 Πλήρης Οθόνη",
                 exitFullscreenBtn: "❌ Έξοδος από Πλήρη Οθόνη",
-                trackTitle: "Προηγμένος Χάρτης",
-                trackDesc: "Πλήρες σύστημα παρακολούθησης",
+                trackTitle: "Ανανέωση Τοποθεσίας",
+                trackDesc: "Ενημέρωση θέσης συσκευής",
                 wipeTitle: "Διαγραφή Δεδομένων",
                 wipeDesc: "Διαγραφή όλων των δεδομένων",
                 logoutBtn: "🚪 Αποσύνδεση",
@@ -577,8 +577,8 @@
                 mapInfo: "📍 آخر تحديث: الآن • الدقة: ±5 أمتار",
                 fullscreenBtn: "🔍 ملء الشاشة",
                 exitFullscreenBtn: "❌ إغلاق ملء الشاشة",
-                trackTitle: "الخريطة المتقدمة",
-                trackDesc: "نظام التتبع الكامل",
+                trackTitle: "تحديث الموقع",
+                trackDesc: "تحديث موضع الجهاز",
                 wipeTitle: "مسح البيانات",
                 wipeDesc: "حذف جميع البيانات",
                 logoutBtn: "🚪 تسجيل الخروج",
@@ -845,18 +845,18 @@
             showMessage(messages[currentLanguage], 'success');
         }
 
-        function openAdvancedMap() {
+        function refreshLocation() {
             const messages = {
-                en: '🗺️ Opening advanced tracking system...',
-                el: '🗺️ Άνοιγμα προηγμένου συστήματος παρακολούθησης...',
-                ar: '🗺️ فتح نظام التتبع المتقدم...'
+                en: '📍 Location refreshed! Map updated with latest position.',
+                el: '📍 Η τοποθεσία ανανεώθηκε! Ο χάρτης ενημερώθηκε με την τελευταία θέση.',
+                ar: '📍 تم تحديث الموقع! تم تحديث الخريطة بأحدث موضع.'
             };
-            showMessage(messages[currentLanguage], 'info');
+            showMessage(messages[currentLanguage], 'success');
             
-            // Open the advanced tracking page in a new tab
-            setTimeout(() => {
-                window.open('/advanced-tracking.html', '_blank');
-            }, 1000);
+            // Center map on current device location
+            if (map && deviceMarker) {
+                map.setView(deviceMarker.getLatLng(), 18);
+            }
         }
 
         function wipeData() {
