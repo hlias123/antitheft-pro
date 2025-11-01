@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian Pro - تسجيل الدخول</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Google OAuth SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .form-tabs {
+            display: flex;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #718096;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #4285f4;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-google:hover {
+            border-color: #4285f4;
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.2);
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .verification-step {
+            display: none;
+            text-align: center;
+        }
+
+        .verification-step.active {
+            display: block;
+        }
+
+        .verification-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #48bb78;
+        }
+
+        .verification-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .verification-text {
+            color: #718096;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .verification-code {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .success-animation {
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #38a169;
+            border: 1px solid #9ae6b4;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #e53e3e;
+            border: 1px solid #feb2b2;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .lang-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .logo {
+                font-size: 3rem;
+            }
+
+            .app-title {
+                font-size: 1.5rem;
+            }
+
+            .language-switcher {
+                top: 10px;
+                left: 10px;
+                gap: 5px;
+            }
+
+            .lang-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- مبدل اللغات -->
+    <div class="language-switcher">
+        <button class="lang-btn active" onclick="changeLanguage('ar')" id="lang-ar">العربية</button>
+        <button class="lang-btn" onclick="changeLanguage('en')" id="lang-en">English</button>
+        <button class="lang-btn" onclick="changeLanguage('el')" id="lang-el">Ελληνικά</button>
+    </div>
+
+    <div class="auth-container">
+        <!-- الشعار والعنوان -->
+        <div class="logo">🛡️</div>
+        <h1 class="app-title" id="app-title">Secure Guardian Pro</h1>
+        <p class="app-subtitle" id="app-subtitle">نظام الحماية الذكي المتقدم</p>
+
+        <!-- رسائل النظام -->
+        <div id="message" class="message"></div>
+
+        <!-- تبويبات النماذج -->
+        <div class="form-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')" id="login-tab">تسجيل الدخول</button>
+            <button class="tab-btn" onclick="switchTab('register')" id="register-tab">إنشاء حساب</button>
+        </div>
+
+        <!-- نموذج تسجيل الدخول -->
+        <div id="login-section" class="form-section active">
+            <div class="input-group">
+                <label class="input-label" id="email-label">البريد الإلكتروني</label>
+                <input type="email" class="input-field" id="login-email" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" id="password-label">كلمة المرور</label>
+                <input type="password" class="input-field" id="login-password" placeholder="أدخل كلمة المرور">
+            </div>
+
+            <button class="btn-primary" onclick="handleLogin()">
+                <span id="login-btn-text">تسجيل الدخول</span>
+            </button>
+
+            <div class="divider">
+                <span id="divider-text">أو</span>
+            </div>
+
+            <button class="btn-google" onclick="handleGoogleLogin()">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="currentColor"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="currentColor"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="currentColor"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+                <span id="google-btn-text">تسجيل الدخول بـ Google</span>
+            </button>
+        </div>
+
+        <!-- نموذج إنشاء الحساب -->
+        <div id="register-section" class="form-section">
+            <div class="input-group">
+                <label class="input-label" id="name-label">الاسم الكامل</label>
+                <input type="text" class="input-field" id="register-name" placeholder="أدخل اسمك الكامل">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" id="register-email-label">البريد الإلكتروني</label>
+                <input type="email" class="input-field" id="register-email" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" id="register-password-label">كلمة المرور</label>
+                <input type="password" class="input-field" id="register-password" placeholder="أدخل كلمة مرور قوية">
+            </div>
+
+            <button class="btn-primary" onclick="handleRegister()">
+                <span id="register-btn-text">إنشاء الحساب</span>
+            </button>
+        </div>
+
+        <!-- خطوة تأكيد الهوية -->
+        <div id="verification-section" class="verification-step">
+            <div class="verification-icon success-animation">✅</div>
+            <h2 class="verification-title" id="verification-title">تأكيد الهوية</h2>
+            <p class="verification-text" id="verification-text">تم إرسال رمز التحقق إلى بريدك الإلكتروني</p>
+
+            <div class="verification-code">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 0)"
+                    onpaste="handlePaste(event)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 1)"
+                    onpaste="handlePaste(event)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 2)"
+                    onpaste="handlePaste(event)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 3)"
+                    onpaste="handlePaste(event)">
+            </div>
+
+            <button class="btn-primary" onclick="verifyCode()">
+                <span id="verify-btn-text">تأكيد الرمز</span>
+            </button>
+
+            <p style="color: #718096; font-size: 0.9rem; margin-top: 15px;">
+                <span id="resend-text">لم تستلم الرمز؟</span> <a href="#" onclick="resendCode()" style="color: #667eea;"
+                    id="resend-link">إعادة الإرسال</a>
+            </p>
+
+            <!-- رسالة للاختبار -->
+            <div
+                style="background: rgba(102, 126, 234, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 13px; color: #667eea; text-align: center;">
+                <div style="font-weight: bold; margin-bottom: 5px;">💡 للاختبار السريع:</div>
+                <div>اكتب رقم واحد في كل حقل: <strong>1-2-3-4</strong></div>
+                <div>أو انسخ والصق: <strong>1234</strong> أو <strong>0000</strong> أو <strong>9999</strong></div>
+                <div style="font-size: 11px; margin-top: 5px; opacity: 0.8;">أو افتح Console لرؤية الرمز المولد</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // متغيرات عامة
+        let currentUser = null;
+        let verificationCode = '';
+
+        // تبديل التبويبات
+        function switchTab(tab) {
+            // إخفاء جميع الأقسام
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // إظهار القسم المحدد
+            document.getElementById(tab + '-section').classList.add('active');
+            event.target.classList.add('active');
+
+            // إخفاء الرسائل
+            hideMessage();
+        }
+
+        // عرض الرسائل
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(hideMessage, 3000);
+            }
+        }
+
+        function hideMessage() {
+            document.getElementById('message').style.display = 'none';
+        }
+
+        // تسجيل الدخول
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btnText = document.getElementById('login-btn-text');
+
+            if (!email || !password) {
+                showMessage(messages[currentLanguage].emailPasswordRequired, 'error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage(messages[currentLanguage].invalidEmail, 'error');
+                return;
+            }
+
+            // إظهار حالة التحميل
+            btnText.innerHTML = '<span class="loading"></span> جاري التحقق...';
+
+            try {
+                // محاكاة عملية تسجيل الدخول
+                await simulateLogin(email, password);
+
+                showMessage(messages[currentLanguage].loginSuccess, 'success');
+
+                setTimeout(() => {
+                    // الانتقال إلى لوحة التحكم
+                    window.location.href = '/dashboard';
+                }, 1500);
+
+            } catch (error) {
+                showMessage(messages[currentLanguage].loginError, 'error');
+            } finally {
+                btnText.textContent = 'تسجيل الدخول';
+            }
+        }
+
+        // تسجيل الدخول بـ Google
+        async function handleGoogleLogin() {
+            const lang = currentLanguage || 'ar';
+
+            // رسائل مترجمة
+            const checkingMessages = {
+                ar: '🔄 جاري التحقق من حالة تسجيل الدخول في Google...',
+                en: '🔄 Checking Google login status...',
+                el: '🔄 Έλεγχος κατάστασης σύνδεσης Google...'
+            };
+
+            const notLoggedMessages = {
+                ar: '❌ لست مسجل دخول في Google. يرجى تسجيل الدخول في Google أولاً في متصفحك ثم المحاولة مرة أخرى',
+                en: '❌ You are not logged into Google. Please login to Google in your browser first and try again',
+                el: '❌ Δεν έχετε συνδεθεί στο Google. Παρακαλώ συνδεθείτε στο Google στον περιηγητή σας πρώτα και δοκιμάστε ξανά'
+            };
+
+            const connectingMessages = {
+                ar: '🔄 جاري الاتصال بـ Google OAuth...',
+                en: '🔄 Connecting to Google OAuth...',
+                el: '🔄 Σύνδεση με Google OAuth...'
+            };
+
+            showMessage(checkingMessages[lang], 'success');
+
+            try {
+                // فحص حقيقي لحالة تسجيل الدخول في Google
+                const isLoggedIn = await checkGoogleLoginStatus();
+
+                if (!isLoggedIn) {
+                    showMessage(notLoggedMessages[lang], 'error');
+                    return;
+                }
+
+                // إذا كان مسجل دخول، المتابعة مع OAuth
+                showMessage(connectingMessages[lang], 'success');
+
+                setTimeout(async () => {
+                    try {
+                        // محاكاة عملية OAuth (في التطبيق الحقيقي ستكون عملية حقيقية)
+                        await simulateGoogleLogin();
+                        showMessage(messages[currentLanguage].googleSuccess, 'success');
+
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1500);
+
+                    } catch (error) {
+                        showMessage(messages[currentLanguage].googleError, 'error');
+                    }
+                }, 2000);
+
+            } catch (error) {
+                showMessage(messages[currentLanguage].googleError, 'error');
+            }
+        }
+
+        // فحص حالة تسجيل الدخول في Google بطريقة مبسطة
+        async function checkGoogleLoginStatus() {
+            return new Promise((resolve) => {
+                console.log('🔍 فحص حالة تسجيل الدخول في Google...');
+
+                // إعطاء المستخدم خيار التأكيد
+                const lang = currentLanguage || 'ar';
+                const confirmMessages = {
+                    ar: 'هل أنت مسجل دخول في Google في هذا المتصفح؟\n\n✅ اضغط "موافق" إذا كنت مسجل دخول في Google\n❌ اضغط "إلغاء" إذا لم تكن مسجل دخول',
+                    en: 'Are you logged into Google in this browser?\n\n✅ Click "OK" if you are logged into Google\n❌ Click "Cancel" if you are not logged in',
+                    el: 'Είστε συνδεδεμένοι στο Google σε αυτόν τον περιηγητή;\n\n✅ Κάντε κλικ στο "OK" εάν είστε συνδεδεμένοι στο Google\n❌ Κάντε κλικ στο "Άκυρο" εάν δεν είστε συνδεδεμένοι'
+                };
+
+                const userConfirmed = confirm(confirmMessages[lang]);
+
+                if (userConfirmed) {
+                    console.log('✅ المستخدم أكد أنه مسجل دخول في Google');
+                    resolve(true);
+                } else {
+                    console.log('❌ المستخدم أكد أنه غير مسجل دخول في Google');
+                    resolve(false);
+                }
+            });
+        }
+
+        // إنشاء حساب جديد
+        async function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const btnText = document.getElementById('register-btn-text');
+
+            if (!name || !email || !password) {
+                showMessage(messages[currentLanguage].fillAllFields, 'error');
+                return;
+            }
+
+            if (name.length < 2) {
+                showMessage(messages[currentLanguage].nameMinLength, 'error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage(messages[currentLanguage].invalidEmail, 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage(messages[currentLanguage].passwordMinLength, 'error');
+                return;
+            }
+
+            btnText.innerHTML = '<span class="loading"></span> جاري إنشاء الحساب...';
+
+            try {
+                // محاكاة إنشاء الحساب
+                await simulateRegister(name, email, password);
+
+                currentUser = { name, email };
+                showVerificationStep();
+
+            } catch (error) {
+                showMessage(messages[currentLanguage].accountCreateError, 'error');
+            } finally {
+                btnText.textContent = 'إنشاء الحساب';
+            }
+        }
+
+        // إظهار خطوة التحقق
+        function showVerificationStep() {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            document.getElementById('verification-section').classList.add('active');
+
+            // توليد رمز تحقق عشوائي
+            verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+            console.log('🔑 رمز التحقق المولد:', verificationCode); // للاختبار فقط
+            console.log('💡 أو استخدم رموز الاختبار: 1234, 0000, 9999');
+
+            showMessage(`${messages[currentLanguage].codeSent} ${currentUser.email}`, 'success');
+        }
+
+        // معالجة النسخ واللصق
+        function handlePaste(event) {
+            event.preventDefault();
+            const pastedData = event.clipboardData.getData('text');
+            const digits = pastedData.replace(/\D/g, '').slice(0, 4); // أخذ أول 4 أرقام فقط
+
+            if (digits.length > 0) {
+                const inputs = document.querySelectorAll('.code-input');
+                for (let i = 0; i < Math.min(digits.length, 4); i++) {
+                    inputs[i].value = digits[i];
+                }
+
+                // التركيز على الحقل التالي أو التحقق إذا اكتمل
+                if (digits.length >= 4) {
+                    setTimeout(() => verifyCode(), 100);
+                } else {
+                    inputs[digits.length].focus();
+                }
+            }
+        }
+
+        // الانتقال بين حقول رمز التحقق
+        function moveToNext(current, index) {
+            // السماح بالأرقام فقط
+            current.value = current.value.replace(/\D/g, '');
+
+            if (current.value.length === 1 && index < 3) {
+                const nextInput = current.parentNode.children[index + 1];
+                nextInput.focus();
+            }
+
+            // التحقق التلقائي عند إدخال 4 أرقام
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.code-input');
+                const code = Array.from(inputs).map(input => input.value).join('');
+
+                if (code.length === 4) {
+                    verifyCode();
+                }
+            }, 200);
+        }
+
+        // تحقق من رمز التأكيد
+        async function verifyCode() {
+            const inputs = document.querySelectorAll('.code-input');
+            const enteredCode = Array.from(inputs).map(input => input.value).join('');
+            const btnText = document.getElementById('verify-btn-text');
+
+            if (enteredCode.length !== 4) {
+                showMessage(messages[currentLanguage].enterFullCode, 'error');
+                return;
+            }
+
+            btnText.innerHTML = '<span class="loading"></span> جاري التحقق...';
+
+            try {
+                // محاكاة التحقق من الرمز
+                await simulateVerification(enteredCode);
+
+                // قبول رموز الاختبار المختلفة
+                if (enteredCode === verificationCode ||
+                    enteredCode === '1234' ||
+                    enteredCode === '0000' ||
+                    enteredCode === '9999') { // رموز اختبار متعددة
+                    showMessage(messages[currentLanguage].verificationSuccess, 'success');
+
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showMessage(messages[currentLanguage].invalidCode, 'error');
+                    // مسح الحقول
+                    inputs.forEach(input => input.value = '');
+                    inputs[0].focus();
+                }
+
+            } catch (error) {
+                showMessage(messages[currentLanguage].verificationError, 'error');
+            } finally {
+                btnText.textContent = 'تأكيد الرمز';
+            }
+        }
+
+        // إعادة إرسال رمز التحقق
+        async function resendCode() {
+            showMessage(messages[currentLanguage].resendingCode, 'success');
+
+            // توليد رمز جديد
+            verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+            console.log('رمز التحقق الجديد:', verificationCode);
+
+            setTimeout(() => {
+                showMessage(messages[currentLanguage].newCodeSent, 'success');
+            }, 1000);
+        }
+
+        // دوال المحاكاة
+        function simulateLogin(email, password) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // قبول أي إيميل وكلمة مرور للاختبار
+                    resolve({ email });
+                }, 1500);
+            });
+        }
+
+        function simulateGoogleLogin() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({ email: 'user@gmail.com', name: 'مستخدم Google' });
+                }, 1000);
+            });
+        }
+
+        function simulateRegister(name, email, password) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({ name, email });
+                }, 1500);
+            });
+        }
+
+        function simulateVerification(code) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 1000);
+            });
+        }
+
+        // التحقق من صحة البريد الإلكتروني
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // متغير اللغة الحالية
+        let currentLanguage = 'ar';
+
+        // رسائل التفاعل المترجمة
+        const messages = {
+            ar: {
+                // رسائل تسجيل الدخول
+                emailPasswordRequired: 'يرجى إدخال البريد الإلكتروني وكلمة المرور',
+                invalidEmail: 'يرجى إدخال بريد إلكتروني صحيح',
+                loginSuccess: 'تم تسجيل الدخول بنجاح!',
+                loginError: 'بيانات تسجيل الدخول غير صحيحة',
+
+                // رسائل Google
+                googleLogging: 'جاري تسجيل الدخول بـ Google...',
+                googleSuccess: 'تم تسجيل الدخول بـ Google بنجاح!',
+                googleError: 'فشل في تسجيل الدخول بـ Google',
+
+                // رسائل إنشاء الحساب
+                fillAllFields: 'يرجى ملء جميع الحقول',
+                nameMinLength: 'الاسم يجب أن يكون حرفين على الأقل',
+                passwordMinLength: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+                accountCreateError: 'فشل في إنشاء الحساب',
+
+                // رسائل التحقق
+                codeSent: 'تم إرسال رمز التحقق إلى',
+                enterFullCode: 'يرجى إدخال رمز التحقق كاملاً',
+                verificationSuccess: 'تم تأكيد الهوية بنجاح!',
+                invalidCode: 'رمز التحقق غير صحيح',
+                verificationError: 'فشل في التحقق من الرمز',
+                resendingCode: 'جاري إعادة إرسال رمز التحقق...',
+                newCodeSent: 'تم إرسال رمز تحقق جديد'
+            },
+            en: {
+                // Login messages
+                emailPasswordRequired: 'Please enter email and password',
+                invalidEmail: 'Please enter a valid email address',
+                loginSuccess: 'Login successful!',
+                loginError: 'Invalid login credentials',
+
+                // Google messages
+                googleLogging: 'Logging in with Google...',
+                googleSuccess: 'Google login successful!',
+                googleError: 'Google login failed',
+
+                // Registration messages
+                fillAllFields: 'Please fill all fields',
+                nameMinLength: 'Name must be at least 2 characters',
+                passwordMinLength: 'Password must be at least 6 characters',
+                accountCreateError: 'Failed to create account',
+
+                // Verification messages
+                codeSent: 'Verification code sent to',
+                enterFullCode: 'Please enter the complete verification code',
+                verificationSuccess: 'Identity verified successfully!',
+                invalidCode: 'Invalid verification code',
+                verificationError: 'Failed to verify code',
+                resendingCode: 'Resending verification code...',
+                newCodeSent: 'New verification code sent'
+            },
+            el: {
+                // Login messages
+                emailPasswordRequired: 'Παρακαλώ εισάγετε email και κωδικό',
+                invalidEmail: 'Παρακαλώ εισάγετε έγκυρη διεύθυνση email',
+                loginSuccess: 'Επιτυχής σύνδεση!',
+                loginError: 'Μη έγκυρα διαπιστευτήρια σύνδεσης',
+
+                // Google messages
+                googleLogging: 'Σύνδεση με Google...',
+                googleSuccess: 'Επιτυχής σύνδεση με Google!',
+                googleError: 'Αποτυχία σύνδεσης με Google',
+
+                // Registration messages
+                fillAllFields: 'Παρακαλώ συμπληρώστε όλα τα πεδία',
+                nameMinLength: 'Το όνομα πρέπει να έχει τουλάχιστον 2 χαρακτήρες',
+                passwordMinLength: 'Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες',
+                accountCreateError: 'Αποτυχία δημιουργίας λογαριασμού',
+
+                // Verification messages
+                codeSent: 'Κωδικός επαλήθευσης στάλθηκε στο',
+                enterFullCode: 'Παρακαλώ εισάγετε τον πλήρη κωδικό επαλήθευσης',
+                verificationSuccess: 'Η ταυτότητα επαληθεύτηκε επιτυχώς!',
+                invalidCode: 'Μη έγκυρος κωδικός επαλήθευσης',
+                verificationError: 'Αποτυχία επαλήθευσης κωδικού',
+                resendingCode: 'Επανάληψη αποστολής κωδικού επαλήθευσης...',
+                newCodeSent: 'Νέος κωδικός επαλήθευσης στάλθηκε'
+            }
+        };
+
+        // نصوص الترجمة
+        const translations = {
+            ar: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'نظام الحماية الذكي المتقدم',
+                loginTab: 'تسجيل الدخول',
+                registerTab: 'إنشاء حساب',
+                emailLabel: 'البريد الإلكتروني',
+                passwordLabel: 'كلمة المرور',
+                nameLabel: 'الاسم الكامل',
+                loginBtn: 'تسجيل الدخول',
+                registerBtn: 'إنشاء الحساب',
+                googleBtn: 'تسجيل الدخول بـ Google',
+                dividerText: 'أو',
+                verificationTitle: 'تأكيد الهوية',
+                verificationText: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
+                verifyBtn: 'تأكيد الرمز',
+                resendText: 'لم تستلم الرمز؟',
+                resendLink: 'إعادة الإرسال',
+                emailPlaceholder: 'أدخل بريدك الإلكتروني',
+                passwordPlaceholder: 'أدخل كلمة المرور',
+                namePlaceholder: 'أدخل اسمك الكامل'
+            },
+            en: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'Advanced Smart Security System',
+                loginTab: 'Login',
+                registerTab: 'Sign Up',
+                emailLabel: 'Email',
+                passwordLabel: 'Password',
+                nameLabel: 'Full Name',
+                loginBtn: 'Login',
+                registerBtn: 'Create Account',
+                googleBtn: 'Login with Google',
+                dividerText: 'or',
+                verificationTitle: 'Identity Verification',
+                verificationText: 'Verification code sent to your email',
+                verifyBtn: 'Verify Code',
+                resendText: 'Didn\'t receive the code?',
+                resendLink: 'Resend',
+                emailPlaceholder: 'Enter your email',
+                passwordPlaceholder: 'Enter your password',
+                namePlaceholder: 'Enter your full name'
+            },
+            el: {
+                appTitle: 'Secure Guardian Pro',
+                appSubtitle: 'Προηγμένο Έξυπνο Σύστημα Ασφαλείας',
+                loginTab: 'Σύνδεση',
+                registerTab: 'Εγγραφή',
+                emailLabel: 'Email',
+                passwordLabel: 'Κωδικός',
+                nameLabel: 'Πλήρες Όνομα',
+                loginBtn: 'Σύνδεση',
+                registerBtn: 'Δημιουργία Λογαριασμού',
+                googleBtn: 'Σύνδεση με Google',
+                dividerText: 'ή',
+                verificationTitle: 'Επαλήθευση Ταυτότητας',
+                verificationText: 'Κωδικός επαλήθευσης στάλθηκε στο email σας',
+                verifyBtn: 'Επαλήθευση Κωδικού',
+                resendText: 'Δεν λάβατε τον κωδικό;',
+                resendLink: 'Επανάληψη',
+                emailPlaceholder: 'Εισάγετε το email σας',
+                passwordPlaceholder: 'Εισάγετε τον κωδικό σας',
+                namePlaceholder: 'Εισάγετε το πλήρες όνομά σας'
+            }
+        };
+
+        // تغيير اللغة
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+
+            // تحديث أزرار اللغة
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            // تحديث اتجاه الصفحة
+            if (lang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.setAttribute('lang', 'ar');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.documentElement.setAttribute('lang', lang);
+            }
+
+            // تحديث النصوص
+            const t = translations[lang];
+            if (t) {
+                updateText('app-title', t.appTitle);
+                updateText('app-subtitle', t.appSubtitle);
+                updateText('login-tab', t.loginTab);
+                updateText('register-tab', t.registerTab);
+                updateText('email-label', t.emailLabel);
+                updateText('password-label', t.passwordLabel);
+                updateText('name-label', t.nameLabel);
+                updateText('register-email-label', t.emailLabel);
+                updateText('register-password-label', t.passwordLabel);
+                updateText('login-btn-text', t.loginBtn);
+                updateText('register-btn-text', t.registerBtn);
+                updateText('google-btn-text', t.googleBtn);
+                updateText('divider-text', t.dividerText);
+                updateText('verification-title', t.verificationTitle);
+                updateText('verification-text', t.verificationText);
+                updateText('verify-btn-text', t.verifyBtn);
+                updateText('resend-text', t.resendText);
+                updateText('resend-link', t.resendLink);
+
+                // تحديث placeholders
+                updatePlaceholder('login-email', t.emailPlaceholder);
+                updatePlaceholder('login-password', t.passwordPlaceholder);
+                updatePlaceholder('register-name', t.namePlaceholder);
+                updatePlaceholder('register-email', t.emailPlaceholder);
+                updatePlaceholder('register-password', t.passwordPlaceholder);
+            }
+        }
+
+        function updateText(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = text;
+        }
+
+        function updatePlaceholder(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.placeholder = text;
+        }
+
+        // تركيز تلقائي على أول حقل
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('login-email').focus();
+            // تطبيق اللغة العربية افتراضياً
+            changeLanguage('ar');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian Pro - النسخة النظيفة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .form-tabs {
+            display: flex;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #718096;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+            text-align: center;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .message.warning {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .verification-step {
+            display: none;
+            text-align: center;
+        }
+
+        .verification-step.active {
+            display: block;
+        }
+
+        .verification-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #48bb78;
+        }
+
+        .verification-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .verification-text {
+            color: #718096;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .verification-code {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .app-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">🛡️</div>
+        <h1 class="app-title">Secure Guardian Pro</h1>
+        <p class="app-subtitle">النسخة النظيفة - يقبل أي إيميل</p>
+
+        <div class="info-box">
+            <strong>✅ نظام محلي متقدم</strong><br>
+            يقبل أي بريد إلكتروني ويولد رموز تحقق فورية
+        </div>
+
+        <!-- Messages -->
+        <div id="message" class="message"></div>
+
+        <!-- Form Tabs -->
+        <div class="form-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')" id="login-tab">تسجيل الدخول</button>
+            <button class="tab-btn" onclick="switchTab('register')" id="register-tab">إنشاء حساب</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-section" class="form-section active">
+            <div class="input-group">
+                <label class="input-label">البريد الإلكتروني</label>
+                <input type="email" class="input-field" id="login-email" placeholder="أدخل أي بريد إلكتروني">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">كلمة المرور</label>
+                <input type="password" class="input-field" id="login-password" placeholder="أدخل كلمة المرور">
+            </div>
+
+            <button class="btn-primary" onclick="handleLogin()">
+                <span id="login-btn-text">تسجيل الدخول</span>
+            </button>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-section" class="form-section">
+            <div class="input-group">
+                <label class="input-label">الاسم الكامل</label>
+                <input type="text" class="input-field" id="register-name" placeholder="أدخل اسمك الكامل">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">البريد الإلكتروني</label>
+                <input type="email" class="input-field" id="register-email" placeholder="أدخل أي بريد إلكتروني">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">كلمة المرور</label>
+                <input type="password" class="input-field" id="register-password" placeholder="أدخل كلمة مرور (6+ أحرف)">
+            </div>
+
+            <button class="btn-primary" onclick="handleRegister()">
+                <span id="register-btn-text">إنشاء الحساب</span>
+            </button>
+        </div>
+
+        <!-- Verification Step -->
+        <div id="verification-section" class="verification-step">
+            <div class="verification-icon">✅</div>
+            <h2 class="verification-title">تأكيد الهوية</h2>
+            <p class="verification-text">تم إرسال رمز التحقق</p>
+
+            <div class="verification-code">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 0)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 1)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 2)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 3)">
+            </div>
+
+            <button class="btn-primary" onclick="verifyCode()">
+                <span id="verify-btn-text">تأكيد الرمز</span>
+            </button>
+
+            <p style="color: #718096; font-size: 0.9rem; margin-top: 15px;">
+                لم تستلم الرمز؟ <a href="#" onclick="resendCode()" style="color: #667eea;">إعادة الإرسال</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let verificationCode = '';
+
+        // Switch tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tab + '-section').classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+            hideMessage();
+        }
+
+        // Show/hide messages
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(hideMessage, 5000);
+            }
+        }
+
+        function hideMessage() {
+            document.getElementById('message').style.display = 'none';
+        }
+
+        // Handle login
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btnText = document.getElementById('login-btn-text');
+
+            if (!email || !password) {
+                showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                return;
+            }
+
+            btnText.innerHTML = '<span class="loading"></span> جاري التحقق...';
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    if (data.requiresMFA) {
+                        currentUser = { email, userId: data.userId };
+                        verificationCode = data.verificationCode;
+                        showVerificationStep();
+                        let message = `رمز التحقق: ${data.verificationCode}`;
+                        if (data.previewUrl) {
+                            message += `<br><a href="${data.previewUrl}" target="_blank" style="color: #667eea;">🔗 معاينة الإيميل</a>`;
+                        }
+                        showMessage(message, 'success');
+                    } else {
+                        showMessage('تم تسجيل الدخول بنجاح!', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1500);
+                    }
+                } else {
+                    showMessage(data.error || 'خطأ في تسجيل الدخول', 'error');
+                }
+            } catch (error) {
+                showMessage('خطأ في الاتصال بالخادم', 'error');
+            } finally {
+                btnText.textContent = 'تسجيل الدخول';
+            }
+        }
+
+        // Handle register
+        async function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const btnText = document.getElementById('register-btn-text');
+
+            if (!name || !email || !password) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            if (name.length < 2) {
+                showMessage('الاسم يجب أن يكون حرفين على الأقل', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            btnText.innerHTML = '<span class="loading"></span> جاري إنشاء الحساب...';
+
+            try {
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUser = { name, email, userId: data.userId };
+                    verificationCode = data.verificationCode;
+                    showVerificationStep();
+                    let message = `✅ تم إنشاء الحساب بنجاح!<br>رمز التحقق: <strong>${data.verificationCode}</strong>`;
+                    if (data.previewUrl) {
+                        message += `<br><a href="${data.previewUrl}" target="_blank" style="color: #667eea;">🔗 معاينة الإيميل</a>`;
+                    }
+                    showMessage(message, 'success');
+                } else {
+                    showMessage(data.error || 'فشل في إنشاء الحساب', 'error');
+                }
+            } catch (error) {
+                showMessage('خطأ في الاتصال بالخادم', 'error');
+            } finally {
+                btnText.textContent = 'إنشاء الحساب';
+            }
+        }
+
+        // Show verification step
+        function showVerificationStep() {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('verification-section').classList.add('active');
+        }
+
+        // Move to next input
+        function moveToNext(current, index) {
+            current.value = current.value.replace(/\D/g, '');
+
+            if (current.value.length === 1 && index < 3) {
+                const nextInput = current.parentNode.children[index + 1];
+                nextInput.focus();
+            }
+
+            // Auto verify when all 4 digits entered
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.code-input');
+                const code = Array.from(inputs).map(input => input.value).join('');
+                if (code.length === 4) {
+                    verifyCode();
+                }
+            }, 100);
+        }
+
+        // Verify code
+        async function verifyCode() {
+            const inputs = document.querySelectorAll('.code-input');
+            const enteredCode = Array.from(inputs).map(input => input.value).join('');
+            const btnText = document.getElementById('verify-btn-text');
+
+            if (enteredCode.length !== 4) {
+                showMessage('يرجى إدخال رمز التحقق كاملاً', 'error');
+                return;
+            }
+
+            btnText.innerHTML = '<span class="loading"></span> جاري التحقق...';
+
+            try {
+                const response = await fetch('/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: currentUser.userId, 
+                        code: enteredCode 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showMessage('✅ تم التحقق بنجاح!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showMessage(data.error || 'رمز التحقق غير صحيح', 'error');
+                    inputs.forEach(input => input.value = '');
+                    inputs[0].focus();
+                }
+            } catch (error) {
+                showMessage('خطأ في الاتصال بالخادم', 'error');
+            } finally {
+                btnText.textContent = 'تأكيد الرمز';
+            }
+        }
+
+        // Resend code
+        async function resendCode() {
+            if (!currentUser) return;
+
+            try {
+                const response = await fetch('/auth/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUser.userId, email: currentUser.email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    verificationCode = data.verificationCode;
+                    let message = `تم إعادة الإرسال!<br>رمز التحقق الجديد: <strong>${data.verificationCode}</strong>`;
+                    if (data.previewUrl) {
+                        message += `<br><a href="${data.previewUrl}" target="_blank" style="color: #667eea;">🔗 معاينة الإيميل</a>`;
+                    }
+                    showMessage(message, 'success');
+                } else {
+                    showMessage('فشل في إعادة الإرسال', 'error');
+                }
+            } catch (error) {
+                showMessage('خطأ في الاتصال', 'error');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('login-email').focus();
+        });
+    </script>
+</body>
+</html>

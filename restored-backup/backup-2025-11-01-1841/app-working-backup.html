@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Secure Guardian Pro - نظام الحماية الذكي</title>
+
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .lang-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 45px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            margin: 50px auto;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: #1e3c72;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1e3c72;
+            margin-bottom: 35px;
+            font-size: 1.9rem;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4);
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #333;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .google-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .toggle-form {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 15px;
+        }
+
+        .toggle-form:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .quick-start {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            text-align: center;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .user-info {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Map Styles */
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        /* Camera Styles */
+        #camera-container {
+            margin: 20px 0;
+        }
+
+        #camera-video {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            border-radius: 10px;
+            background: #f0f0f0;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .status-online {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+
+        .status-offline {
+            background: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Battery charging animation */
+        @keyframes batteryPulse {
+            0% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.7;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .language-switcher {
+                top: 10px;
+                left: 10px;
+            }
+
+            .dashboard {
+                margin: 10px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" onclick="changeLanguage('ar')" id="lang-ar">العربية</button>
+        <button class="lang-btn" onclick="changeLanguage('en')" id="lang-en">English</button>
+        <button class="lang-btn" onclick="changeLanguage('el')" id="lang-el">Ελληνικά</button>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="container">
+            <div class="logo">🛡️</div>
+            <h1 id="login-title">Secure Guardian Pro</h1>
+
+            <!-- Professional Description -->
+            <div class="professional-desc">
+                <p id="system-desc" style="color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                    نظام حماية متقدم مع مراقبة مباشرة وتتبع الموقع وكشف الحركة التلقائي
+                </p>
+                <div
+                    style="background: rgba(30, 60, 114, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1e3c72; border-left: 4px solid #1e3c72;">
+                    <strong>⚠️ تنبيه:</strong> يجب أن يكون البريد الإلكتروني موثقاً للدخول إلى النظام
+                </div>
+                <div
+                    style="background: rgba(40, 167, 69, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 25px; font-size: 12px; color: #28a745; text-align: left;">
+                    <strong>Demo Account:</strong><br>
+                    📧 admin@secureguardian.com<br>
+                    🔒 SecurePass2024
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form">
+                <div class="form-group">
+                    <label id="email-label" for="login-email">البريد الإلكتروني:</label>
+                    <input type="email" id="login-email" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+
+                <div class="form-group">
+                    <label id="password-label" for="login-password">كلمة المرور:</label>
+                    <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+                </div>
+
+                <button id="login-btn" class="btn" onclick="handleLogin()">تسجيل الدخول</button>
+
+                <button class="google-btn" onclick="handleGoogleLogin()">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="currentColor"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="currentColor"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="currentColor"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    <span id="google-btn-text">تسجيل الدخول بـ Google</span>
+                </button>
+
+                <div id="create-account-link" class="toggle-form" onclick="showRegisterForm()">
+                    إنشاء حساب جديد
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden">
+                <div class="form-group">
+                    <label id="name-label" for="register-name">الاسم الكامل:</label>
+                    <input type="text" id="register-name" placeholder="أدخل اسمك الكامل" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email">البريد الإلكتروني:</label>
+                    <input type="email" id="register-email" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">كلمة المرور:</label>
+                    <input type="password" id="register-password" placeholder="أدخل كلمة مرور قوية (8 أحرف على الأقل)"
+                        required>
+                </div>
+
+                <button id="register-btn" class="btn" onclick="handleRegister()">إنشاء الحساب</button>
+
+                <div id="have-account-link" class="toggle-form" onclick="showLoginForm()">
+                    لديك حساب بالفعل؟ تسجيل الدخول
+                </div>
+            </div>
+
+            <div id="message" style="margin-top: 20px; padding: 10px; border-radius: 5px; display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="dashboard hidden">
+        <div class="container" style="max-width: 1200px;">
+            <div class="logo">🛡️</div>
+            <h1 id="dashboard-title">لوحة التحكم</h1>
+
+            <div class="user-info">
+                <h3><span id="welcome-text">مرحباً،</span> <span id="user-name">المستخدم</span></h3>
+                <p><span id="email-text">البريد الإلكتروني:</span> <span id="user-email">user@test.com</span></p>
+                <p><span id="verification-status-label">حالة التحقق:</span> <span id="verification-status">✅ مؤكد</span>
+                </p>
+            </div>
+
+            <div class="feature-grid">
+                <!-- Real-time Location Map -->
+                <div class="feature-card">
+                    <h4 id="map-title">📍 الموقع الحالي <span class="status-indicator status-online"></span></h4>
+                    <div id="map"></div>
+                    <button class="btn" onclick="updateLocation()" id="update-location-btn" style="margin-top: 10px;">
+                        تحديث الموقع
+                    </button>
+                </div>
+
+                <!-- Camera Feed -->
+                <div class="feature-card">
+                    <h4 id="camera-title">📷 مراقبة الكاميرا <span class="status-indicator status-offline"
+                            id="camera-status"></span></h4>
+                    <div id="camera-container">
+                        <video id="camera-video" autoplay muted></video>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn" onclick="startCamera()" id="start-camera-btn" style="flex: 1;">
+                            تشغيل الكاميرا
+                        </button>
+                        <button class="btn" onclick="stopCamera()" id="stop-camera-btn"
+                            style="flex: 1; background: #e74c3c;">
+                            إيقاف الكاميرا
+                        </button>
+                    </div>
+                    <button class="btn" onclick="capturePhoto()" id="capture-photo-btn"
+                        style="margin-top: 10px; background: #28a745;">
+                        📸 التقاط صورة
+                    </button>
+                </div>
+            </div>
+
+            <div class="feature-grid" style="margin-top: 20px;">
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h4 id="alerts-title">التنبيهات</h4>
+                    <p id="alerts-desc">تنبيهات فورية عند الحركة</p>
+                    <div id="alerts-list" style="margin-top: 10px; font-size: 14px; color: #666;">
+                        <div id="alert-system-active">✅ النظام نشط</div>
+                        <div id="alert-device-connected">📱 الجهاز متصل</div>
+                        <div id="alert-protection-enabled">🔒 الحماية مفعلة</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h4 id="security-title">الحماية الآمنة</h4>
+                    <p id="security-desc">حماية متقدمة ضد السرقة</p>
+                    <div style="margin-top: 10px;">
+                        <button class="btn" onclick="toggleSecurity()" id="toggle-security-btn"
+                            style="font-size: 14px;">
+                            تفعيل الحماية المتقدمة
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Battery Monitoring -->
+                <div class="feature-card">
+                    <div class="feature-icon" id="battery-icon">🔋</div>
+                    <h4 id="battery-title">🔋 حالة البطارية</h4>
+                    <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>مستوى البطارية:</span>
+                            <span id="battery-level" style="font-weight: bold; color: #28a745;">85%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>حالة الشحن:</span>
+                            <span id="battery-status" style="font-weight: bold;">متصل</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <div style="background: #e9ecef; border-radius: 10px; height: 8px; overflow: hidden;">
+                                <div id="battery-bar"
+                                    style="background: linear-gradient(90deg, #28a745, #ffc107, #dc3545); height: 100%; width: 85%; transition: width 0.3s ease;">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: #999; margin-top: 5px; text-align: center;">
+                            تحديث مباشر كل 30 ثانية
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anti-Theft Statistics -->
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h4 id="stats-title">إحصائيات الحماية</h4>
+                    <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                        <div>📍 المواقع المتتبعة: <span id="location-count">12</span></div>
+                        <div>📸 الصور الملتقطة: <span id="photo-count">5</span></div>
+                        <div>⚠️ التنبيهات المرسلة: <span id="alert-count">3</span></div>
+                        <div>🕒 آخر تحديث: <span id="last-update">الآن</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="logout-btn" class="btn" onclick="handleLogout()" style="background: #dc3545; margin-top: 30px;">
+                تسجيل الخروج
+            </button>
+        </div>
+    </div>
+
+    <!-- Leaflet Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Global variables
+        let map = null;
+        let userMarker = null;
+        let cameraStream = null;
+        let batteryUpdateInterval = null;
+        let locationUpdateInterval = null;
+
+        // Language switching with complete translations
+        function changeLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="changeLanguage('${lang}')"]`).classList.add('active');
+
+            if (lang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.setAttribute('lang', 'ar');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.documentElement.setAttribute('lang', lang);
+            }
+
+            const texts = {
+                ar: {
+                    title: 'حارس الأمان المتقدم',
+                    quickStart: '🚀 للبدء السريع:',
+                    quickEmail: '� االبريد:',
+                    quickPassword: '🔒 كلمة المرور:',
+                    quickOr: 'أو أنشئ حساب جديد ↓',
+                    email: 'البريد الإلكتروني:',
+                    password: 'كلمة المرور:',
+                    fullName: 'الاسم الكامل:',
+                    login: 'تسجيل الدخول',
+                    googleLogin: 'تسجيل الدخول بـ Google',
+                    createAccount: 'إنشاء حساب جديد',
+                    register: 'إنشاء الحساب',
+                    haveAccount: 'لديك حساب بالفعل؟ تسجيل الدخول',
+                    dashboardTitle: 'لوحة التحكم',
+                    welcome: 'مرحباً،',
+                    emailText: 'البريد الإلكتروني:',
+                    verificationStatus: 'حالة التحقق:',
+                    mapTitle: '📍 الموقع الحالي',
+                    updateLocation: 'تحديث الموقع',
+                    cameraTitle: '📷 مراقبة الكاميرا',
+                    startCamera: 'تشغيل الكاميرا',
+                    stopCamera: 'إيقاف الكاميرا',
+                    capturePhoto: '📸 التقاط صورة',
+                    alerts: 'التنبيهات',
+                    alertsDesc: 'تنبيهات فورية عند الحركة',
+                    security: 'الحماية الآمنة',
+                    securityDesc: 'حماية متقدمة ضد السرقة',
+                    toggleSecurity: 'تفعيل الحماية المتقدمة',
+                    batteryTitle: '🔋 حالة البطارية',
+                    stats: 'إحصائيات الحماية',
+                    logout: 'تسجيل الخروج',
+                    loginSuccess: 'تم تسجيل الدخول بنجاح!',
+                    googleLoginSuccess: 'تم تسجيل الدخول بـ Google بنجاح!',
+                    registerSuccess: 'تم إنشاء الحساب بنجاح!',
+                    loginError: 'بيانات تسجيل الدخول غير صحيحة',
+                    registerError: 'يرجى ملء جميع الحقول بشكل صحيح',
+                    logoutSuccess: 'تم تسجيل الخروج بنجاح'
+                },
+                en: {
+                    title: 'Secure Guardian Pro',
+                    quickStart: '🚀 Quick Start:',
+                    quickEmail: '📧 Email:',
+                    quickPassword: '🔒 Password:',
+                    quickOr: 'Or create a new account ↓',
+                    email: 'Email:',
+                    password: 'Password:',
+                    fullName: 'Full Name:',
+                    login: 'Login',
+                    googleLogin: 'Login with Google',
+                    createAccount: 'Create New Account',
+                    register: 'Create Account',
+                    haveAccount: 'Already have an account? Login',
+                    dashboardTitle: 'Dashboard',
+                    welcome: 'Welcome,',
+                    emailText: 'Email:',
+                    verificationStatus: 'Verification Status:',
+                    mapTitle: '📍 Current Location',
+                    updateLocation: 'Update Location',
+                    cameraTitle: '📷 Camera Monitoring',
+                    startCamera: 'Start Camera',
+                    stopCamera: 'Stop Camera',
+                    capturePhoto: '📸 Capture Photo',
+                    alerts: 'Alerts',
+                    alertsDesc: 'Instant motion alerts',
+                    security: 'Secure Protection',
+                    securityDesc: 'Advanced anti-theft protection',
+                    toggleSecurity: 'Enable Advanced Protection',
+                    batteryTitle: '🔋 Battery Status',
+                    stats: 'Protection Statistics',
+                    logout: 'Logout',
+                    loginSuccess: 'Login successful!',
+                    googleLoginSuccess: 'Google login successful!',
+                    registerSuccess: 'Account created successfully!',
+                    loginError: 'Invalid login credentials',
+                    registerError: 'Please fill all fields correctly',
+                    logoutSuccess: 'Logout successful'
+                },
+                el: {
+                    title: 'Secure Guardian Pro',
+                    quickStart: '🚀 Γρήγορη Έναρξη:',
+                    quickEmail: '📧 Email:',
+                    quickPassword: '🔒 Κωδικός:',
+                    quickOr: 'Ή δημιουργήστε νέο λογαριασμό ↓',
+                    email: 'Email:',
+                    password: 'Κωδικός:',
+                    fullName: 'Πλήρες Όνομα:',
+                    login: 'Σύνδεση',
+                    googleLogin: 'Σύνδεση με Google',
+                    createAccount: 'Δημιουργία Νέου Λογαριασμού',
+                    register: 'Δημιουργία Λογαριασμού',
+                    haveAccount: 'Έχετε ήδη λογαριασμό; Σύνδεση',
+                    dashboardTitle: 'Πίνακας Ελέγχου',
+                    welcome: 'Καλώς ήρθατε,',
+                    emailText: 'Email:',
+                    verificationStatus: 'Κατάσταση Επαλήθευσης:',
+                    mapTitle: '📍 Τρέχουσα Τοποθεσία',
+                    updateLocation: 'Ενημέρωση Τοποθεσίας',
+                    cameraTitle: '📷 Παρακολούθηση Κάμερας',
+                    startCamera: 'Έναρξη Κάμερας',
+                    stopCamera: 'Διακοπή Κάμερας',
+                    capturePhoto: '📸 Λήψη Φωτογραφίας',
+                    alerts: 'Ειδοποιήσεις',
+                    alertsDesc: 'Άμεσες ειδοποιήσεις κίνησης',
+                    security: 'Ασφαλής Προστασία',
+                    securityDesc: 'Προηγμένη προστασία κατά κλοπής',
+                    toggleSecurity: 'Ενεργοποίηση Προηγμένης Προστασίας',
+                    batteryTitle: '� Κατάστασαη Μπαταρίας',
+                    stats: 'Στατιστικά Προστασίας',
+                    logout: 'Αποσύνδεση',
+                    loginSuccess: 'Επιτυχής σύνδεση!',
+                    googleLoginSuccess: 'Επιτυχής σύνδεση με Google!',
+                    registerSuccess: 'Ο λογαριασμός δημιουργήθηκε επιτυχώς!',
+                    loginError: 'Μη έγκυρα διαπιστευτήρια σύνδεσης',
+                    registerError: 'Παρακαλώ συμπληρώστε όλα τα πεδία σωστά',
+                    logoutSuccess: 'Επιτυχής αποσύνδεση'
+                }
+            };
+
+            const t = texts[lang];
+            if (t) {
+                updateElementText('login-title', t.title);
+                updateElementText('system-desc', t.systemDesc || 'Advanced security system with real-time monitoring, location tracking and automatic motion detection');
+                updateElementText('email-label', t.email);
+                updateElementText('password-label', t.password);
+                updateElementText('name-label', t.fullName);
+                updateElementText('login-btn', t.login);
+                updateElementText('google-btn-text', t.googleLogin);
+                updateElementText('create-account-link', t.createAccount);
+                updateElementText('register-btn', t.register);
+                updateElementText('have-account-link', t.haveAccount);
+                updateElementText('dashboard-title', t.dashboardTitle);
+                updateElementText('welcome-text', t.welcome);
+                updateElementText('email-text', t.emailText);
+                updateElementText('verification-status-label', t.verificationStatus);
+                updateElementText('map-title', t.mapTitle);
+                updateElementText('update-location-btn', t.updateLocation);
+                updateElementText('camera-title', t.cameraTitle);
+                updateElementText('start-camera-btn', t.startCamera);
+                updateElementText('stop-camera-btn', t.stopCamera);
+                updateElementText('capture-photo-btn', t.capturePhoto);
+                updateElementText('alerts-title', t.alerts);
+                updateElementText('alerts-desc', t.alertsDesc);
+                updateElementText('security-title', t.security);
+                updateElementText('security-desc', t.securityDesc);
+                updateElementText('toggle-security-btn', t.toggleSecurity);
+                updateElementText('battery-title', t.batteryTitle);
+                updateElementText('stats-title', t.stats);
+                updateElementText('logout-btn', t.logout);
+
+                window.currentLang = lang;
+                window.messages = {
+                    loginSuccess: t.loginSuccess,
+                    googleLoginSuccess: t.googleLoginSuccess,
+                    registerSuccess: t.registerSuccess,
+                    loginError: t.loginError,
+                    registerError: t.registerError,
+                    logoutSuccess: t.logoutSuccess
+                };
+            }
+        }
+
+        function updateElementText(id, text) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = text;
+        }
+
+        // Form switching
+        function showRegisterForm() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+        }
+
+        // Authentication functions
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            // Validation
+            if (!email || !password) {
+                showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور / Please enter email and password', 'error');
+                return;
+            }
+
+            if (!email.includes('@') || !email.includes('.')) {
+                showMessage('يرجى إدخال بريد إلكتروني صحيح / Please enter a valid email address', 'error');
+                return;
+            }
+
+            // Simulate login process
+            showMessage('🔄 جاري التحقق من البيانات... / Verifying credentials...', 'success');
+
+            setTimeout(() => {
+                // Simulate email verification check
+                if (!isEmailVerified(email)) {
+                    showMessage('❌ البريد الإلكتروني غير موثق. يرجى التحقق من بريدك الإلكتروني أولاً / Email not verified. Please verify your email first', 'error');
+                    return;
+                }
+
+                // Demo credentials for testing
+                if (email === 'admin@secureguardian.com' && password === 'SecurePass2024') {
+                    showMessage(window.messages?.loginSuccess || 'تم تسجيل الدخول بنجاح!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('dashboard-screen').classList.remove('hidden');
+                        initializeDashboard();
+                    }, 1000);
+                } else {
+                    showMessage(window.messages?.loginError || 'بيانات تسجيل الدخول غير صحيحة أو الحساب غير موجود', 'error');
+                }
+            }, 2000);
+        }
+
+        function isEmailVerified(email) {
+            // Simulate email verification check
+            const verifiedEmails = [
+                'admin@secureguardian.com',
+                'user@gmail.com',
+                'test@example.com'
+            ];
+            return verifiedEmails.includes(email);
+        }
+
+        function handleGoogleLogin() {
+            // Simulate Google OAuth process
+            showMessage('🔄 جاري الاتصال بـ Google... / Connecting to Google...', 'success');
+
+            setTimeout(() => {
+                // Simulate successful Google login
+                const googleUser = {
+                    name: 'Google User',
+                    email: 'user@gmail.com',
+                    picture: 'https://via.placeholder.com/40'
+                };
+
+                // Update user info
+                document.getElementById('user-name').textContent = googleUser.name;
+                document.getElementById('user-email').textContent = googleUser.email;
+
+                showMessage(window.messages?.googleLoginSuccess || 'تم تسجيل الدخول بـ Google بنجاح!', 'success');
+
+                setTimeout(() => {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                    initializeDashboard();
+                }, 1000);
+            }, 2000);
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            // Validation
+            if (!name || name.length < 2) {
+                showMessage('الاسم يجب أن يكون حرفين على الأقل / Name must be at least 2 characters', 'error');
+                return;
+            }
+
+            if (!email || !email.includes('@')) {
+                showMessage('يرجى إدخال بريد إلكتروني صحيح / Please enter a valid email', 'error');
+                return;
+            }
+
+            if (!password || password.length < 8) {
+                showMessage('كلمة المرور يجب أن تكون 8 أحرف على الأقل / Password must be at least 8 characters', 'error');
+                return;
+            }
+
+            // Simulate registration process
+            showMessage('🔄 جاري إنشاء الحساب... / Creating account...', 'success');
+
+            setTimeout(() => {
+                // Simulate successful registration
+                showMessage(window.messages?.registerSuccess || 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول', 'success');
+
+                // Pre-fill login form
+                document.getElementById('login-email').value = email;
+
+                setTimeout(() => {
+                    showLoginForm();
+                }, 1500);
+            }, 2000);
+        }
+
+        function handleLogout() {
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            showMessage(window.messages?.logoutSuccess || 'تم تسجيل الخروج بنجاح', 'success');
+
+            // Clean up intervals
+            if (batteryUpdateInterval) clearInterval(batteryUpdateInterval);
+            if (locationUpdateInterval) clearInterval(locationUpdateInterval);
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.style.display = 'block';
+            messageDiv.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+            messageDiv.style.color = type === 'success' ? '#155724' : '#721c24';
+            messageDiv.style.border = `1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'}`;
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Dashboard initialization
+        function initializeDashboard() {
+            initializeMap();
+            startBatteryMonitoring();
+            startLocationUpdates();
+            startMotionDetection();
+
+            // Update user info
+            document.getElementById('user-name').textContent = 'المستخدم';
+            document.getElementById('user-email').textContent = 'user@test.com';
+
+            // Initialize statistics
+            document.getElementById('location-count').textContent = '0';
+            document.getElementById('photo-count').textContent = '0';
+            document.getElementById('alert-count').textContent = '0';
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Map functionality
+        function initializeMap() {
+            if (map) return;
+
+            // Initialize map with default location (Cairo, Egypt)
+            map = L.map('map').setView([30.0444, 31.2357], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add user marker
+            userMarker = L.marker([30.0444, 31.2357]).addTo(map)
+                .bindPopup('موقعك الحالي / Your Current Location')
+                .openPopup();
+
+            // Try to get real location
+            updateLocation();
+        }
+
+        function updateLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        if (map && userMarker) {
+                            map.setView([lat, lng], 15);
+                            userMarker.setLatLng([lat, lng]);
+
+                            // Update statistics
+                            const count = parseInt(document.getElementById('location-count').textContent) + 1;
+                            document.getElementById('location-count').textContent = count;
+                            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                        }
+                    },
+                    (error) => {
+                        console.log('Location access denied or unavailable');
+                        // Simulate location updates for demo
+                        simulateLocationUpdate();
+                    }
+                );
+            } else {
+                simulateLocationUpdate();
+            }
+        }
+
+        function simulateLocationUpdate() {
+            // Simulate random location updates around Cairo
+            const baseLat = 30.0444;
+            const baseLng = 31.2357;
+            const randomLat = baseLat + (Math.random() - 0.5) * 0.01;
+            const randomLng = baseLng + (Math.random() - 0.5) * 0.01;
+
+            if (map && userMarker) {
+                map.setView([randomLat, randomLng], 15);
+                userMarker.setLatLng([randomLat, randomLng]);
+
+                const count = parseInt(document.getElementById('location-count').textContent) + 1;
+                document.getElementById('location-count').textContent = count;
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            }
+        }
+
+        function startLocationUpdates() {
+            locationUpdateInterval = setInterval(() => {
+                updateLocation();
+            }, 30000); // Update every 30 seconds
+        }
+
+        // Camera functionality
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    cameraStream = stream;
+                    const video = document.getElementById('camera-video');
+                    video.srcObject = stream;
+                    document.getElementById('camera-status').className = 'status-indicator status-online';
+                })
+                .catch(err => {
+                    console.log('Camera access denied:', err);
+                    // Show demo message
+                    const video = document.getElementById('camera-video');
+                    video.style.background = '#f0f0f0';
+                    video.style.display = 'flex';
+                    video.style.alignItems = 'center';
+                    video.style.justifyContent = 'center';
+                    video.innerHTML = '<div style="text-align: center; color: #666;">📷<br>كاميرا تجريبية<br>Demo Camera</div>';
+                    document.getElementById('camera-status').className = 'status-indicator status-online';
+                });
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            const video = document.getElementById('camera-video');
+            video.srcObject = null;
+            video.innerHTML = '';
+            document.getElementById('camera-status').className = 'status-indicator status-offline';
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-video');
+
+            if (cameraStream) {
+                // Create canvas to capture photo
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+
+                // Convert to blob and simulate saving
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+
+                    // Create download link (for demo)
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `thief-photo-${new Date().getTime()}.jpg`;
+                    a.click();
+
+                    // Clean up
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                }, 'image/jpeg', 0.8);
+
+                showMessage('📸 تم التقاط صورة السارق وحفظها! / Thief photo captured and saved!', 'success');
+            } else {
+                // Demo mode - simulate photo capture
+                showMessage('📸 تم التقاط صورة تجريبية للسارق! / Demo thief photo captured!', 'success');
+            }
+
+            const count = parseInt(document.getElementById('photo-count').textContent) + 1;
+            document.getElementById('photo-count').textContent = count;
+
+            // Log security event
+            logSecurityEvent('Photo captured', 'Thief detection photo taken');
+        }
+
+        // Auto-capture on motion detection (simulation)
+        function startMotionDetection() {
+            setInterval(() => {
+                if (Math.random() > 0.95) { // 5% chance every 10 seconds
+                    capturePhoto();
+                    showMessage('🚨 تم اكتشاف حركة مشبوهة! تم التقاط صورة تلقائياً / Suspicious motion detected! Auto-captured photo', 'error');
+
+                    const alertCount = parseInt(document.getElementById('alert-count').textContent) + 1;
+                    document.getElementById('alert-count').textContent = alertCount;
+                }
+            }, 10000);
+        }
+
+        // Security event logging
+        function logSecurityEvent(type, description) {
+            const timestamp = new Date().toLocaleString();
+            console.log(`[${timestamp}] Security Event: ${type} - ${description}`);
+
+            // Update last activity
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Battery monitoring
+        function startBatteryMonitoring() {
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(battery => {
+                    updateBatteryInfo(battery);
+
+                    battery.addEventListener('chargingchange', () => updateBatteryInfo(battery));
+                    battery.addEventListener('levelchange', () => updateBatteryInfo(battery));
+                });
+            } else {
+                // Simulate battery for demo
+                simulateBattery();
+            }
+
+            // Update every 30 seconds
+            batteryUpdateInterval = setInterval(() => {
+                if (!('getBattery' in navigator)) {
+                    simulateBattery();
+                }
+            }, 30000);
+        }
+
+        function updateBatteryInfo(battery) {
+            const level = Math.round(battery.level * 100);
+            const charging = battery.charging;
+
+            document.getElementById('battery-level').textContent = level + '%';
+            document.getElementById('battery-status').textContent = charging ? 'يشحن / Charging' : 'غير متصل / Not Charging';
+            document.getElementById('battery-bar').style.width = level + '%';
+
+            // Update icon based on level
+            const icon = document.getElementById('battery-icon');
+            if (level > 75) icon.textContent = '🔋';
+            else if (level > 50) icon.textContent = '🔋';
+            else if (level > 25) icon.textContent = '🪫';
+            else icon.textContent = '🪫';
+
+            if (charging) {
+                icon.style.animation = 'batteryPulse 2s infinite';
+            } else {
+                icon.style.animation = 'none';
+            }
+        }
+
+        function simulateBattery() {
+            const level = Math.floor(Math.random() * 40) + 60; // 60-100%
+            const charging = Math.random() > 0.5;
+
+            document.getElementById('battery-level').textContent = level + '%';
+            document.getElementById('battery-status').textContent = charging ? 'يشحن / Charging' : 'غير متصل / Not Charging';
+            document.getElementById('battery-bar').style.width = level + '%';
+
+            const icon = document.getElementById('battery-icon');
+            if (level > 75) icon.textContent = '🔋';
+            else if (level > 50) icon.textContent = '🔋';
+            else if (level > 25) icon.textContent = '🪫';
+            else icon.textContent = '🪫';
+
+            if (charging) {
+                icon.style.animation = 'batteryPulse 2s infinite';
+            } else {
+                icon.style.animation = 'none';
+            }
+        }
+
+        // Security toggle
+        function toggleSecurity() {
+            const btn = document.getElementById('toggle-security-btn');
+            const isEnabled = btn.textContent.includes('تفعيل') || btn.textContent.includes('Enable');
+
+            if (isEnabled) {
+                btn.textContent = window.currentLang === 'ar' ? 'إيقاف الحماية المتقدمة' :
+                    window.currentLang === 'en' ? 'Disable Advanced Protection' :
+                        'Απενεργοποίηση Προηγμένης Προστασίας';
+                btn.style.background = '#e74c3c';
+                showMessage('تم تفعيل الحماية المتقدمة / Advanced protection enabled', 'success');
+            } else {
+                btn.textContent = window.currentLang === 'ar' ? 'تفعيل الحماية المتقدمة' :
+                    window.currentLang === 'en' ? 'Enable Advanced Protection' :
+                        'Ενεργοποίηση Προηγμένης Προστασίας';
+                btn.style.background = '';
+                showMessage('تم إيقاف الحماية المتقدمة / Advanced protection disabled', 'success');
+            }
+
+            const count = parseInt(document.getElementById('alert-count').textContent) + 1;
+            document.getElementById('alert-count').textContent = count;
+        }
+
+        // Initialize with Arabic
+        window.addEventListener('DOMContentLoaded', function () {
+            changeLanguage('ar');
+        });
+    </script>
+</body>
+
+</html>

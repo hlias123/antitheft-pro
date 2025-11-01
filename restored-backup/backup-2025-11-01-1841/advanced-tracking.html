@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Anti-Theft Tracking System</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .status-online {
+            color: #10b981;
+        }
+
+        .status-battery {
+            color: #f59e0b;
+        }
+
+        .status-location {
+            color: #3b82f6;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            height: calc(100vh - 70px);
+            gap: 0;
+        }
+
+        .map-section {
+            position: relative;
+            background: #1e293b;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .map-btn {
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .map-btn:hover {
+            background: rgba(59, 130, 246, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .tracking-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 300px;
+        }
+
+        .control-panel {
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel-section {
+            margin-bottom: 30px;
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .device-status {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: rgba(255,255,255,0.08);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .status-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .battery-indicator {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .battery-low {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .control-buttons {
+            display: grid;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .control-btn.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .control-btn.danger:hover {
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .control-btn.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .control-btn.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .camera-section {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .camera-preview {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-placeholder {
+            color: #64748b;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .camera-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .live-feed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .recording-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ef4444;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .location-history {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .location-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .location-time {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .alert-banner {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-weight: 600;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .lang-btn {
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.2) !important;
+            transform: translateY(-1px);
+        }
+
+        .lang-btn.active {
+            background: rgba(255,255,255,0.25) !important;
+            border-color: rgba(255,255,255,0.6) !important;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60vh 1fr;
+            }
+            
+            .control-panel {
+                border-left: none;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .status-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Alert Banner -->
+    <div id="alertBanner" class="alert-banner" style="display: none;">
+        🚨 DEVICE THEFT DETECTED - TRACKING ACTIVATED
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            🛡️ <span id="system-title">Advanced Anti-Theft System</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <!-- Language Selector -->
+            <div style="display: flex; gap: 10px;">
+                <button class="lang-btn active" onclick="setLanguage('en')" id="lang-en" style="padding: 8px 15px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: 600;">🇬🇧 English</button>
+                <button class="lang-btn" onclick="setLanguage('el')" id="lang-el" style="padding: 8px 15px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: 600;">🇬🇷 Ελληνικά</button>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-online">●</span>
+                    <span id="connectionStatus">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-battery">🔋</span>
+                    <span id="batteryStatus">85%</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-location">📍</span>
+                    <span id="locationStatus">GPS ACTIVE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="map-container">
+                <div id="map"></div>
+                
+                <!-- Map Controls -->
+                <div class="map-controls">
+                    <button class="map-btn" onclick="centerOnDevice()">📍 Center on Device</button>
+                    <button class="map-btn" onclick="toggleTracking()">🎯 Live Tracking</button>
+                    <button class="map-btn" onclick="showRoute()">🛣️ Show Route</button>
+                    <button class="map-btn" onclick="satelliteView()">🛰️ Satellite View</button>
+                </div>
+
+                <!-- Tracking Info -->
+                <div class="tracking-info">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <strong>🎯 Live Tracking</strong>
+                        <span id="lastUpdate" style="font-size: 12px; opacity: 0.7;">Live</span>
+                    </div>
+                    <div id="coordinates">37.9755°N, 23.7348°E</div>
+                    <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">
+                        Speed: <span id="currentSpeed">0 km/h</span> | 
+                        Accuracy: <span id="gpsAccuracy">±3m</span>
+                    </div>
+                    <div style="font-size: 12px; margin-top: 8px; padding: 8px; background: rgba(239,68,68,0.2); border-radius: 6px;">
+                        ⏱️ Time at location: <span id="timeAtLocation">0m 0s</span><br>
+                        👣 Steps taken: <span id="stepCount">0</span> | Distance: <span id="totalDistance">0m</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- Device Status -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    📱 Device Status
+                </div>
+                <div class="device-status">
+                    <div class="status-grid">
+                        <div class="status-card">
+                            <div class="status-value" id="batteryLevel">85%</div>
+                            <div class="status-label">Battery</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-value" id="signalStrength">4/5</div>
+                            <div class="status-label">Signal</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-value" id="movementStatus">MOVING</div>
+                            <div class="status-label">Status</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-value" id="trackingTime">0:00</div>
+                            <div class="status-label">Tracking</div>
+                        </div>
+                    </div>
+                    
+                    <div class="battery-indicator">
+                        <div class="battery-fill" id="batteryBar" style="width: 85%;"></div>
+                    </div>
+                    
+                    <div style="font-size: 12px; opacity: 0.7; text-align: center;">
+                        Estimated time remaining: <span id="batteryTime">6h 23m</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Controls -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    🔒 Security Controls
+                </div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="lockDevice()">
+                        🔒 Lock Device
+                    </button>
+                    <button class="control-btn warning" onclick="soundAlarm()">
+                        🚨 Sound Alarm
+                    </button>
+                    <button class="control-btn success" onclick="takePhoto()">
+                        📸 Capture Photo
+                    </button>
+                    <button class="control-btn danger" onclick="wipeData()">
+                        🗑️ Wipe Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Camera Section -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    📷 Remote Camera
+                </div>
+                <div class="camera-section">
+                    <div class="camera-preview" id="cameraPreview">
+                        <div class="camera-placeholder">
+                            Click "Start Camera" to begin live feed
+                        </div>
+                        <div class="recording-indicator" id="recordingIndicator" style="display: none;">
+                            ● REC
+                        </div>
+                    </div>
+                    <div class="camera-controls">
+                        <button class="control-btn" onclick="startCamera()">
+                            📹 Start Camera
+                        </button>
+                        <button class="control-btn" onclick="capturePhoto()">
+                            📸 Capture
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Activity Feed -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    📊 Live Activity Feed
+                </div>
+                <div class="location-history" id="activityFeed">
+                    <div class="location-item">
+                        <div>🎯 Tracking started</div>
+                        <div class="location-time">Just now</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movement Analytics -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    📈 Movement Analytics
+                </div>
+                <div class="device-status">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #3b82f6;" id="avgSpeed">0 km/h</div>
+                            <div style="font-size: 12px; opacity: 0.7;">Avg Speed</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #10b981;" id="maxSpeed">0 km/h</div>
+                            <div style="font-size: 12px; opacity: 0.7;">Max Speed</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; opacity: 0.7; text-align: center;">
+                        Movement pattern: <span id="movementPattern">Analyzing...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        let map = L.map('map').setView([37.9755, 23.7348], 18);
+        let deviceMarker = null;
+        let trackingPath = [];
+        let isTracking = true; // Start tracking immediately
+        let cameraActive = false;
+        
+        // Tracking variables
+        let lastPosition = {lat: 37.9755, lng: 23.7348};
+        let timeAtCurrentLocation = 0;
+        let stepCount = 0;
+        let totalDistance = 0;
+        let trackingStartTime = Date.now();
+        let locationStartTime = Date.now();
+        let isMoving = false;
+
+        // Add map tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Device marker
+        const deviceIcon = L.divIcon({
+            html: '<div style="background: #ef4444; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(239,68,68,0.5);"></div>',
+            iconSize: [20, 20],
+            className: 'device-marker'
+        });
+
+        deviceMarker = L.marker([37.9755, 23.7348], {icon: deviceIcon}).addTo(map)
+            .bindPopup('<b>Target Device</b><br>Last seen: Just now');
+
+        // Calculate distance between two points
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371e3; // Earth's radius in meters
+            const φ1 = lat1 * Math.PI/180;
+            const φ2 = lat2 * Math.PI/180;
+            const Δφ = (lat2-lat1) * Math.PI/180;
+            const Δλ = (lng2-lng1) * Math.PI/180;
+
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                      Math.cos(φ1) * Math.cos(φ2) *
+                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            return R * c; // Distance in meters
+        }
+
+        // Simulate realistic movement
+        function simulateMovement() {
+            if (!isTracking) return;
+            
+            const currentPos = deviceMarker.getLatLng();
+            
+            // Simulate realistic movement patterns
+            const movementChance = Math.random();
+            let newLat = currentPos.lat;
+            let newLng = currentPos.lng;
+            let speed = 0;
+            
+            if (movementChance > 0.3) { // 70% chance of movement
+                // Realistic movement (walking/running speed)
+                const moveDistance = Math.random() * 0.0001; // Small realistic steps
+                const direction = Math.random() * 2 * Math.PI;
+                
+                newLat += Math.cos(direction) * moveDistance;
+                newLng += Math.sin(direction) * moveDistance;
+                
+                // Calculate distance moved
+                const distanceMoved = calculateDistance(currentPos.lat, currentPos.lng, newLat, newLng);
+                totalDistance += distanceMoved;
+                
+                // Calculate speed (km/h)
+                speed = Math.floor((distanceMoved / 1000) * 3600); // Convert to km/h
+                if (speed < 1) speed = Math.floor(Math.random() * 5) + 1; // Walking speed 1-5 km/h
+                
+                stepCount += Math.floor(distanceMoved / 0.7); // Average step length 0.7m
+                isMoving = true;
+                locationStartTime = Date.now(); // Reset location timer when moving
+            } else {
+                // Stationary
+                speed = 0;
+                isMoving = false;
+            }
+            
+            // Update position
+            deviceMarker.setLatLng([newLat, newLng]);
+            trackingPath.push([newLat, newLng]);
+            lastPosition = {lat: newLat, lng: newLng};
+            
+            // Update displays
+            document.getElementById('coordinates').textContent = 
+                `${newLat.toFixed(6)}°N, ${newLng.toFixed(6)}°E`;
+            
+            document.getElementById('currentSpeed').textContent = `${speed} km/h`;
+            document.getElementById('stepCount').textContent = stepCount;
+            document.getElementById('totalDistance').textContent = `${Math.floor(totalDistance)}m`;
+            
+            // Update analytics
+            updateMovementAnalytics();
+            
+            // Update movement status
+            const statusElement = document.getElementById('movementStatus');
+            if (isMoving) {
+                statusElement.textContent = 'MOVING';
+                statusElement.style.color = '#ef4444';
+            } else {
+                statusElement.textContent = 'STATIONARY';
+                statusElement.style.color = '#f59e0b';
+            }
+            
+            // Update GPS accuracy (more accurate when stationary)
+            const accuracy = isMoving ? Math.floor(Math.random() * 5) + 3 : Math.floor(Math.random() * 2) + 1;
+            document.getElementById('gpsAccuracy').textContent = `±${accuracy}m`;
+            
+            // Update last update time
+            document.getElementById('lastUpdate').textContent = 'Live';
+            
+            // Continue tracking every 1 second for real-time feel
+            setTimeout(simulateMovement, 1000);
+        }
+
+        // Update time counters
+        function updateTimeCounters() {
+            // Time at current location (if stationary)
+            if (!isMoving) {
+                timeAtCurrentLocation = Math.floor((Date.now() - locationStartTime) / 1000);
+                const minutes = Math.floor(timeAtCurrentLocation / 60);
+                const seconds = timeAtCurrentLocation % 60;
+                document.getElementById('timeAtLocation').textContent = `${minutes}m ${seconds}s`;
+            } else {
+                timeAtCurrentLocation = 0;
+                document.getElementById('timeAtLocation').textContent = '0m 0s';
+            }
+            
+            // Total tracking time
+            const totalTrackingTime = Math.floor((Date.now() - trackingStartTime) / 1000);
+            const hours = Math.floor(totalTrackingTime / 3600);
+            const minutes = Math.floor((totalTrackingTime % 3600) / 60);
+            const seconds = totalTrackingTime % 60;
+            
+            if (hours > 0) {
+                document.getElementById('trackingTime').textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById('trackingTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Simulate realistic battery drain
+        function simulateBattery() {
+            const batteryElement = document.getElementById('batteryLevel');
+            const batteryBar = document.getElementById('batteryBar');
+            const batteryStatus = document.getElementById('batteryStatus');
+            const batteryTime = document.getElementById('batteryTime');
+            
+            let currentBattery = 85;
+            
+            setInterval(() => {
+                if (currentBattery > 0) {
+                    // Battery drains faster when moving/using GPS/camera
+                    let drainRate = 0.1; // Base drain
+                    if (isMoving) drainRate += 0.1; // Extra drain when moving
+                    if (cameraActive) drainRate += 0.2; // Extra drain for camera
+                    
+                    currentBattery -= drainRate;
+                    if (currentBattery < 0) currentBattery = 0;
+                    
+                    const batteryPercent = Math.floor(currentBattery);
+                    batteryElement.textContent = `${batteryPercent}%`;
+                    batteryStatus.textContent = `${batteryPercent}%`;
+                    batteryBar.style.width = `${batteryPercent}%`;
+                    
+                    // Change color based on battery level
+                    if (batteryPercent < 20) {
+                        batteryBar.classList.add('battery-low');
+                        if (batteryPercent < 10) {
+                            showAlert('⚠️ CRITICAL: Battery below 10%');
+                        }
+                    } else {
+                        batteryBar.classList.remove('battery-low');
+                    }
+                    
+                    // Update estimated time (more realistic calculation)
+                    const hoursRemaining = currentBattery / (drainRate * 60); // Hours
+                    const hours = Math.floor(hoursRemaining);
+                    const minutes = Math.floor((hoursRemaining % 1) * 60);
+                    batteryTime.textContent = `${hours}h ${minutes}m`;
+                }
+            }, 10000); // Update every 10 seconds for more realistic feel
+        }
+
+        // Control functions
+        function centerOnDevice() {
+            map.setView(deviceMarker.getLatLng(), 18);
+        }
+
+        function toggleTracking() {
+            isTracking = !isTracking;
+            const btn = event.target;
+            
+            if (isTracking) {
+                btn.textContent = '⏹️ Stop Tracking';
+                btn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                simulateMovement();
+                showAlert('🎯 Live tracking activated');
+            } else {
+                btn.textContent = '🎯 Live Tracking';
+                btn.style.background = 'rgba(15, 23, 42, 0.9)';
+                showAlert('⏹️ Live tracking stopped');
+            }
+        }
+
+        function showRoute() {
+            if (trackingPath.length > 1) {
+                L.polyline(trackingPath, {color: '#ef4444', weight: 3}).addTo(map);
+                showAlert('🛣️ Route displayed on map');
+            } else {
+                showAlert('⚠️ No route data available');
+            }
+        }
+
+        function satelliteView() {
+            // Toggle between satellite and street view
+            showAlert('🛰️ Satellite view activated');
+        }
+
+        function lockDevice() {
+            showAlert('🔒 Device locked remotely');
+        }
+
+        function soundAlarm() {
+            showAlert('🚨 Alarm activated - 120dB siren');
+        }
+
+        function takePhoto() {
+            showAlert('📸 Photo captured from front camera');
+            addLocationHistory('Photo taken', 'Just now');
+        }
+
+        function wipeData() {
+            if (confirm('⚠️ This will permanently delete all data. Continue?')) {
+                showAlert('🗑️ Remote data wipe initiated');
+            }
+        }
+
+        function startCamera() {
+            cameraActive = !cameraActive;
+            const preview = document.getElementById('cameraPreview');
+            const indicator = document.getElementById('recordingIndicator');
+            const btn = event.target;
+            
+            if (cameraActive) {
+                preview.innerHTML = `
+                    <video class="live-feed" autoplay muted>
+                        <source src="data:video/mp4;base64," type="video/mp4">
+                    </video>
+                    <div class="recording-indicator">● LIVE</div>
+                `;
+                btn.textContent = '⏹️ Stop Camera';
+                btn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                showAlert('📹 Front camera activated');
+            } else {
+                preview.innerHTML = `
+                    <div class="camera-placeholder">
+                        Camera stopped
+                    </div>
+                `;
+                btn.textContent = '📹 Start Camera';
+                btn.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+                showAlert('📹 Camera deactivated');
+            }
+        }
+
+        function capturePhoto() {
+            if (cameraActive) {
+                showAlert('📸 Photo captured and saved');
+                addLocationHistory('Photo captured', 'Just now');
+            } else {
+                showAlert('⚠️ Please start camera first');
+            }
+        }
+
+        function showAlert(message) {
+            const banner = document.getElementById('alertBanner');
+            banner.textContent = message;
+            banner.style.display = 'block';
+            
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 3000);
+        }
+
+        // Activity tracking
+        let speedHistory = [];
+        let maxSpeedRecorded = 0;
+
+        function addActivityFeed(action, time) {
+            const feed = document.getElementById('activityFeed');
+            const newItem = document.createElement('div');
+            newItem.className = 'location-item';
+            newItem.innerHTML = `
+                <div>${action}</div>
+                <div class="location-time">${time}</div>
+            `;
+            feed.insertBefore(newItem, feed.firstChild);
+            
+            // Keep only last 15 items
+            while (feed.children.length > 15) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        function updateMovementAnalytics() {
+            const currentSpeed = parseInt(document.getElementById('currentSpeed').textContent);
+            
+            // Track speed history
+            speedHistory.push(currentSpeed);
+            if (speedHistory.length > 60) { // Keep last 60 readings (1 minute)
+                speedHistory.shift();
+            }
+            
+            // Update max speed
+            if (currentSpeed > maxSpeedRecorded) {
+                maxSpeedRecorded = currentSpeed;
+                document.getElementById('maxSpeed').textContent = `${maxSpeedRecorded} km/h`;
+                
+                if (maxSpeedRecorded > 20) {
+                    addActivityFeed(`🚗 New max speed: ${maxSpeedRecorded} km/h`, 'Just now');
+                }
+            }
+            
+            // Calculate average speed
+            const avgSpeed = speedHistory.length > 0 ? 
+                Math.floor(speedHistory.reduce((a, b) => a + b, 0) / speedHistory.length) : 0;
+            document.getElementById('avgSpeed').textContent = `${avgSpeed} km/h`;
+            
+            // Determine movement pattern
+            let pattern = 'Stationary';
+            if (avgSpeed > 0 && avgSpeed <= 5) pattern = 'Walking';
+            else if (avgSpeed > 5 && avgSpeed <= 15) pattern = 'Running/Cycling';
+            else if (avgSpeed > 15 && avgSpeed <= 50) pattern = 'Vehicle (City)';
+            else if (avgSpeed > 50) pattern = 'Vehicle (Highway)';
+            
+            document.getElementById('movementPattern').textContent = pattern;
+            
+            // Add activity based on movement changes
+            if (isMoving && speedHistory.length > 5) {
+                const recentSpeeds = speedHistory.slice(-5);
+                const speedChange = Math.max(...recentSpeeds) - Math.min(...recentSpeeds);
+                
+                if (speedChange > 10) {
+                    addActivityFeed('⚡ Rapid speed change detected', 'Just now');
+                }
+            }
+        }
+
+        // Add real-time alerts based on behavior
+        function checkSuspiciousActivity() {
+            // Alert if device stays in same location too long
+            if (!isMoving && timeAtCurrentLocation > 300) { // 5 minutes
+                showAlert('⚠️ Device stationary for 5+ minutes');
+            }
+            
+            // Alert if moving at high speed (possible vehicle)
+            const currentSpeed = parseInt(document.getElementById('currentSpeed').textContent);
+            if (currentSpeed > 30) {
+                showAlert('🚗 High speed detected - possible vehicle movement');
+            }
+            
+            // Alert if battery getting low
+            const battery = parseInt(document.getElementById('batteryLevel').textContent);
+            if (battery === 25) {
+                showAlert('🔋 Battery at 25% - consider remote actions');
+            }
+        }
+
+        // Language support
+        let currentLanguage = 'en';
+        
+        const translations = {
+            en: {
+                systemTitle: "Advanced Anti-Theft System",
+                connectionStatus: "ONLINE",
+                locationStatus: "GPS ACTIVE",
+                centerDevice: "📍 Center on Device",
+                liveTracking: "🎯 Live Tracking",
+                showRoute: "🛣️ Show Route",
+                satelliteView: "🛰️ Satellite View",
+                deviceStatus: "📱 Device Status",
+                battery: "Battery",
+                signal: "Signal",
+                status: "Status",
+                tracking: "Tracking",
+                moving: "MOVING",
+                stationary: "STATIONARY",
+                securityControls: "🔒 Security Controls",
+                lockDevice: "🔒 Lock Device",
+                soundAlarm: "🚨 Sound Alarm",
+                capturePhoto: "📸 Capture Photo",
+                wipeData: "🗑️ Wipe Data",
+                remoteCamera: "📷 Remote Camera",
+                startCamera: "📹 Start Camera",
+                capture: "📸 Capture",
+                liveActivity: "📊 Live Activity Feed",
+                movementAnalytics: "📈 Movement Analytics",
+                avgSpeed: "Avg Speed",
+                maxSpeed: "Max Speed",
+                movementPattern: "Movement pattern",
+                analyzing: "Analyzing...",
+                trackingStarted: "🎯 Tracking started",
+                justNow: "Just now"
+            },
+            el: {
+                systemTitle: "Προηγμένο Σύστημα Αντικλοπής",
+                connectionStatus: "ΣΥΝΔΕΔΕΜΕΝΟ",
+                locationStatus: "GPS ΕΝΕΡΓΟ",
+                centerDevice: "📍 Κέντρο στη Συσκευή",
+                liveTracking: "🎯 Ζωντανή Παρακολούθηση",
+                showRoute: "🛣️ Εμφάνιση Διαδρομής",
+                satelliteView: "🛰️ Δορυφορική Προβολή",
+                deviceStatus: "📱 Κατάσταση Συσκευής",
+                battery: "Μπαταρία",
+                signal: "Σήμα",
+                status: "Κατάσταση",
+                tracking: "Παρακολούθηση",
+                moving: "ΣΕ ΚΙΝΗΣΗ",
+                stationary: "ΑΚΙΝΗΤΗ",
+                securityControls: "🔒 Έλεγχοι Ασφαλείας",
+                lockDevice: "🔒 Κλείδωμα Συσκευής",
+                soundAlarm: "🚨 Ήχος Συναγερμού",
+                capturePhoto: "📸 Λήψη Φωτογραφίας",
+                wipeData: "🗑️ Διαγραφή Δεδομένων",
+                remoteCamera: "📷 Απομακρυσμένη Κάμερα",
+                startCamera: "📹 Έναρξη Κάμερας",
+                capture: "📸 Λήψη",
+                liveActivity: "📊 Ζωντανή Δραστηριότητα",
+                movementAnalytics: "📈 Αναλυτικά Κίνησης",
+                avgSpeed: "Μέση Ταχύτητα",
+                maxSpeed: "Μέγιστη Ταχύτητα",
+                movementPattern: "Μοτίβο κίνησης",
+                analyzing: "Ανάλυση...",
+                trackingStarted: "🎯 Η παρακολούθηση ξεκίνησε",
+                justNow: "Μόλις τώρα"
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            const t = translations[lang];
+            
+            // Update header
+            document.getElementById('system-title').textContent = t.systemTitle;
+            document.getElementById('connectionStatus').textContent = t.connectionStatus;
+            document.getElementById('locationStatus').textContent = t.locationStatus;
+            
+            // Update map controls
+            const mapBtns = document.querySelectorAll('.map-btn');
+            if (mapBtns[0]) mapBtns[0].textContent = t.centerDevice;
+            if (mapBtns[1]) mapBtns[1].textContent = t.liveTracking;
+            if (mapBtns[2]) mapBtns[2].textContent = t.showRoute;
+            if (mapBtns[3]) mapBtns[3].textContent = t.satelliteView;
+            
+            // Update panel titles
+            const panelTitles = document.querySelectorAll('.panel-title');
+            if (panelTitles[0]) panelTitles[0].innerHTML = `📱 ${t.deviceStatus}`;
+            if (panelTitles[1]) panelTitles[1].innerHTML = `🔒 ${t.securityControls}`;
+            if (panelTitles[2]) panelTitles[2].innerHTML = `📷 ${t.remoteCamera}`;
+            if (panelTitles[3]) panelTitles[3].innerHTML = `📊 ${t.liveActivity}`;
+            if (panelTitles[4]) panelTitles[4].innerHTML = `📈 ${t.movementAnalytics}`;
+            
+            // Update status labels
+            const statusLabels = document.querySelectorAll('.status-label');
+            if (statusLabels[0]) statusLabels[0].textContent = t.battery;
+            if (statusLabels[1]) statusLabels[1].textContent = t.signal;
+            if (statusLabels[2]) statusLabels[2].textContent = t.status;
+            if (statusLabels[3]) statusLabels[3].textContent = t.tracking;
+            
+            // Update control buttons
+            const controlBtns = document.querySelectorAll('.control-btn');
+            if (controlBtns[0]) controlBtns[0].innerHTML = `🔒 ${t.lockDevice}`;
+            if (controlBtns[1]) controlBtns[1].innerHTML = `🚨 ${t.soundAlarm}`;
+            if (controlBtns[2]) controlBtns[2].innerHTML = `📸 ${t.capturePhoto}`;
+            if (controlBtns[3]) controlBtns[3].innerHTML = `🗑️ ${t.wipeData}`;
+            
+            // Update camera controls
+            const cameraBtns = document.querySelectorAll('.camera-controls .control-btn');
+            if (cameraBtns[0]) cameraBtns[0].innerHTML = `📹 ${t.startCamera}`;
+            if (cameraBtns[1]) cameraBtns[1].innerHTML = `📸 ${t.capture}`;
+            
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.style.background = 'rgba(255,255,255,0.1)';
+                btn.style.borderColor = 'rgba(255,255,255,0.3)';
+            });
+            document.getElementById(`lang-${lang}`).style.background = 'rgba(255,255,255,0.25)';
+            document.getElementById(`lang-${lang}`).style.borderColor = 'rgba(255,255,255,0.6)';
+            
+            // Update document direction (only for Arabic, but we don't have it here)
+            document.documentElement.dir = 'ltr';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('en'); // Set default language
+            simulateBattery();
+            simulateMovement(); // Start tracking immediately
+            
+            // Update time counters every second
+            setInterval(updateTimeCounters, 1000);
+            
+            // Check for suspicious activity every 30 seconds
+            setInterval(checkSuspiciousActivity, 30000);
+            
+            // Show initial alert
+            setTimeout(() => {
+                showAlert('🛡️ Live tracking system activated');
+            }, 1000);
+            
+            // Simulate theft detection after 5 seconds
+            setTimeout(() => {
+                showAlert('🚨 THEFT DETECTED - Device moved without authorization');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Admin - Clear Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #c0392b;
+        }
+        .warning {
+            background: rgba(241, 196, 15, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .success {
+            background: rgba(46, 204, 113, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .error {
+            background: rgba(231, 76, 60, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .user-list {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .user-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            width: auto;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Admin Panel</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> This will permanently delete user data from Firebase!
+        </div>
+
+        <h3>Current Users in Firebase:</h3>
+        <div id="userList" class="user-list">
+            <p>Loading users...</p>
+        </div>
+
+        <button onclick="loadUsers()">🔄 Refresh User List</button>
+
+        <h3>Delete Specific User:</h3>
+        <input type="email" id="emailToDelete" placeholder="Enter email to delete">
+        <button onclick="deleteUserByEmail()">🗑️ Delete User by Email</button>
+
+        <h3>Clear All Data:</h3>
+        <button onclick="clearAllUsers()" style="background: #c0392b;">🗑️ Delete ALL Users (Dangerous!)</button>
+
+        <div id="message"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { 
+            getAuth, 
+            deleteUser,
+            signInWithEmailAndPassword,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            doc, 
+            deleteDoc,
+            query,
+            where
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // Firebase Configuration - Updated
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8DxDB-r5_AF6Pl-3eYqxCtMM5S60CoZU",
+            authDomain: "antitheft-4b6cc.firebaseapp.com",
+            projectId: "antitheft-4b6cc",
+            storageBucket: "antitheft-4b6cc.appspot.com",
+            messagingSenderId: "1002682961771",
+            appId: "1:1002682961771:web:a1bb3eb1eaa27b7911062e",
+            measurementId: "G-LX9JJ6RMFG"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        console.log('🔥 Firebase Admin initialized');
+
+        // Global functions
+        window.loadUsers = async function() {
+            try {
+                showMessage('🔄 Loading users from Firestore...', 'success');
+                
+                const usersCollection = collection(db, 'users');
+                const userSnapshot = await getDocs(usersCollection);
+                
+                const userListDiv = document.getElementById('userList');
+                userListDiv.innerHTML = '';
+                
+                if (userSnapshot.empty) {
+                    userListDiv.innerHTML = '<p>No users found in Firestore.</p>';
+                    showMessage('✅ No users found in database', 'success');
+                    return;
+                }
+                
+                userSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    const userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `
+                        <div>
+                            <strong>${userData.name || 'No Name'}</strong><br>
+                            <small>${userData.email}</small><br>
+                            <small>Created: ${new Date(userData.createdAt).toLocaleDateString()}</small>
+                        </div>
+                        <button class="delete-btn" onclick="deleteUserDoc('${doc.id}', '${userData.email}')">
+                            Delete
+                        </button>
+                    `;
+                    userListDiv.appendChild(userItem);
+                });
+                
+                showMessage(`✅ Found ${userSnapshot.size} users`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error loading users:', error);
+                showMessage('❌ Error loading users: ' + error.message, 'error');
+            }
+        };
+
+        window.deleteUserDoc = async function(userId, email) {
+            if (!confirm(`Are you sure you want to delete user: ${email}?`)) {
+                return;
+            }
+            
+            try {
+                showMessage(`🗑️ Deleting user: ${email}...`, 'success');
+                
+                // Delete from Firestore
+                await deleteDoc(doc(db, 'users', userId));
+                
+                showMessage(`✅ User ${email} deleted from Firestore`, 'success');
+                
+                // Reload user list
+                loadUsers();
+                
+            } catch (error) {
+                console.error('❌ Error deleting user:', error);
+                showMessage('❌ Error deleting user: ' + error.message, 'error');
+            }
+        };
+
+        window.deleteUserByEmail = async function() {
+            const email = document.getElementById('emailToDelete').value.trim();
+            
+            if (!email) {
+                showMessage('❌ Please enter an email address', 'error');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to delete user: ${email}?`)) {
+                return;
+            }
+            
+            try {
+                showMessage(`🗑️ Searching for user: ${email}...`, 'success');
+                
+                // Find user in Firestore by email
+                const usersCollection = collection(db, 'users');
+                const q = query(usersCollection, where('email', '==', email));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    showMessage(`❌ No user found with email: ${email}`, 'error');
+                    return;
+                }
+                
+                // Delete all matching users
+                const deletePromises = [];
+                querySnapshot.forEach((doc) => {
+                    deletePromises.push(deleteDoc(doc.ref));
+                });
+                
+                await Promise.all(deletePromises);
+                
+                showMessage(`✅ User ${email} deleted successfully`, 'success');
+                document.getElementById('emailToDelete').value = '';
+                
+                // Reload user list
+                loadUsers();
+                
+            } catch (error) {
+                console.error('❌ Error deleting user:', error);
+                showMessage('❌ Error deleting user: ' + error.message, 'error');
+            }
+        };
+
+        window.clearAllUsers = async function() {
+            if (!confirm('⚠️ Are you ABSOLUTELY sure you want to delete ALL users? This cannot be undone!')) {
+                return;
+            }
+            
+            if (!confirm('🚨 FINAL WARNING: This will permanently delete ALL user data!')) {
+                return;
+            }
+            
+            try {
+                showMessage('🗑️ Deleting all users from Firestore...', 'success');
+                
+                const usersCollection = collection(db, 'users');
+                const userSnapshot = await getDocs(usersCollection);
+                
+                if (userSnapshot.empty) {
+                    showMessage('✅ No users to delete', 'success');
+                    return;
+                }
+                
+                const deletePromises = [];
+                userSnapshot.forEach((doc) => {
+                    deletePromises.push(deleteDoc(doc.ref));
+                });
+                
+                await Promise.all(deletePromises);
+                
+                showMessage(`✅ All ${userSnapshot.size} users deleted successfully`, 'success');
+                
+                // Reload user list
+                loadUsers();
+                
+            } catch (error) {
+                console.error('❌ Error clearing users:', error);
+                showMessage('❌ Error clearing users: ' + error.message, 'error');
+            }
+        };
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = message;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load users on page load
+        window.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html>

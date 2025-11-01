@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب جديد - Firebase</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-right: 5px solid #667eea;
+            text-align: right;
+        }
+        .step.active {
+            background: #e3f2fd;
+            border-right-color: #2196f3;
+        }
+        .step.completed {
+            background: #e8f5e9;
+            border-right-color: #4caf50;
+        }
+        .step.error {
+            background: #ffebee;
+            border-right-color: #f44336;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: right;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .email-example {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+            text-align: right;
+        }
+        .firebase-status {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .login-link {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 إنشاء حساب جديد</h1>
+        
+        <div class="firebase-status">
+            <strong>حالة Firebase:</strong> <span id="firebase-status">🔄 جاري الاتصال...</span>
+        </div>
+
+        <!-- Step 1: Create Account -->
+        <div class="step active" id="step1">
+            <h3>📝 الخطوة 1: إدخال البيانات</h3>
+            
+            <input type="text" id="name" placeholder="اسمك الكامل" value="مستخدم تجريبي">
+            
+            <div class="email-example">
+                <strong>💡 نصيحة:</strong> استخدم بريد إلكتروني حقيقي يمكنك الوصول إليه<br>
+                مثال: yourname@gmail.com أو yourname@yahoo.com
+            </div>
+            
+            <input type="email" id="email" placeholder="بريدك الإلكتروني الجديد" required>
+            <input type="password" id="password" placeholder="كلمة مرور (6 أحرف على الأقل)" value="123456">
+            
+            <button onclick="createAccount()" id="createBtn">🚀 إنشاء الحساب</button>
+            
+            <div id="step1-result"></div>
+        </div>
+
+        <!-- Step 2: Email Verification -->
+        <div class="step" id="step2">
+            <h3>📧 الخطوة 2: تأكيد البريد الإلكتروني</h3>
+            <p>تم إرسال رسالة تحقق إلى بريدك الإلكتروني</p>
+            
+            <div class="info">
+                <strong>📍 أين تبحث عن الرسالة:</strong><br>
+                • صندوق الوارد الرئيسي<br>
+                • مجلد الرسائل غير المرغوب فيها (Spam/Junk)<br>
+                • ابحث عن رسالة من "Firebase" أو "noreply@antitheft-4b6cc.firebaseapp.com"<br>
+                • انقر على رابط التحقق في الرسالة
+            </div>
+            
+            <button onclick="checkVerification()" id="checkBtn" disabled>🔍 تحقق من حالة التأكيد</button>
+            <button onclick="resendEmail()" id="resendBtn" disabled>📧 إعادة إرسال الرسالة</button>
+            
+            <div id="step2-result"></div>
+        </div>
+
+        <!-- Step 3: Login -->
+        <div class="step" id="step3">
+            <h3>🔑 الخطوة 3: تسجيل الدخول</h3>
+            <p>بعد تأكيد بريدك الإلكتروني، يمكنك تسجيل الدخول</p>
+            
+            <input type="email" id="loginEmail" placeholder="نفس البريد الإلكتروني">
+            <input type="password" id="loginPassword" placeholder="نفس كلمة المرور" value="123456">
+            
+            <button onclick="loginAccount()" id="loginBtn" disabled>🔓 تسجيل الدخول</button>
+            
+            <div id="step3-result"></div>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="login-link">
+            <p>بعد إنشاء الحساب وتأكيده، يمكنك استخدامه في:</p>
+            <a href="final-app.html">🏠 الذهاب للتطبيق الرئيسي</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            sendEmailVerification, 
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            reload
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc 
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8DxDB-r5_AF6Pl-3eYqxCtMM5S60CoZU",
+            authDomain: "antitheft-4b6cc.firebaseapp.com",
+            projectId: "antitheft-4b6cc",
+            storageBucket: "antitheft-4b6cc.appspot.com",
+            messagingSenderId: "1002682961771",
+            appId: "1:1002682961771:web:a1bb3eb1eaa27b7911062e"
+        };
+
+        // Initialize Firebase
+        let app, auth, db, currentUser = null;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            document.getElementById('firebase-status').innerHTML = '✅ متصل بـ Firebase';
+            document.getElementById('firebase-status').style.color = 'green';
+            
+        } catch (error) {
+            document.getElementById('firebase-status').innerHTML = '❌ فشل الاتصال';
+            document.getElementById('firebase-status').style.color = 'red';
+            showResult('step1', '❌ خطأ في الاتصال بـ Firebase: ' + error.message, 'error');
+        }
+
+        // Show result in specific step
+        function showResult(stepId, message, type = 'info') {
+            const resultDiv = document.getElementById(stepId + '-result');
+            resultDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            
+            // Update step status
+            const step = document.getElementById(stepId);
+            step.classList.remove('active', 'completed', 'error');
+            if (type === 'success') {
+                step.classList.add('completed');
+            } else if (type === 'error') {
+                step.classList.add('error');
+            } else {
+                step.classList.add('active');
+            }
+        }
+
+        // Create Account
+        window.createAccount = async function() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            console.log('🚀 Creating account for:', email);
+
+            if (!name || name.length < 2) {
+                showResult('step1', '❌ يرجى إدخال اسم صحيح (حرفين على الأقل)', 'error');
+                return;
+            }
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                showResult('step1', '❌ يرجى إدخال بريد إلكتروني صحيح', 'error');
+                return;
+            }
+
+            if (!password || password.length < 6) {
+                showResult('step1', '❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            // Disable button
+            document.getElementById('createBtn').disabled = true;
+            document.getElementById('createBtn').textContent = '🔄 جاري الإنشاء...';
+            showResult('step1', '🔄 جاري إنشاء الحساب في Firebase...', 'info');
+
+            try {
+                console.log('📝 Calling createUserWithEmailAndPassword...');
+
+                // Create user
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                currentUser = userCredential.user;
+                
+                console.log('✅ User created:', currentUser.uid);
+
+                // Send verification email
+                console.log('📧 Sending verification email...');
+                await sendEmailVerification(currentUser);
+                console.log('✅ Verification email sent');
+
+                // Save to Firestore
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    name: name,
+                    email: email,
+                    verified: false,
+                    createdAt: new Date().toISOString()
+                });
+                console.log('✅ User data saved to Firestore');
+
+                showResult('step1', `✅ تم إنشاء الحساب بنجاح!
+📧 تم إرسال رسالة التحقق إلى: ${email}
+
+انتقل للخطوة التالية للتحقق من بريدك الإلكتروني.`, 'success');
+
+                // Enable next step
+                document.getElementById('checkBtn').disabled = false;
+                document.getElementById('resendBtn').disabled = false;
+                document.getElementById('step2').classList.add('active');
+                
+                // Copy email to login field
+                document.getElementById('loginEmail').value = email;
+
+            } catch (error) {
+                console.error('❌ Account creation error:', error);
+                
+                let errorMessage = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = `هذا البريد الإلكتروني مسجل بالفعل في Firebase.
+                    
+يمكنك:
+1. استخدام بريد إلكتروني مختلف
+2. أو الذهاب للتطبيق الرئيسي وتسجيل الدخول`;
+                    
+                    // Enable login if email exists
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('step3').classList.add('active');
+                    document.getElementById('loginEmail').value = email;
+                    
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'كلمة المرور ضعيفة. استخدم 6 أحرف على الأقل.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'تنسيق البريد الإلكتروني غير صحيح.';
+                }
+                
+                showResult('step1', '❌ فشل إنشاء الحساب:\n' + errorMessage, 'error');
+                
+                // Reset button
+                document.getElementById('createBtn').disabled = false;
+                document.getElementById('createBtn').textContent = '🚀 إنشاء الحساب';
+            }
+        };
+
+        // Check Email Verification
+        window.checkVerification = async function() {
+            if (!currentUser) {
+                showResult('step2', '❌ لا يوجد مستخدم. يرجى إنشاء حساب أولاً.', 'error');
+                return;
+            }
+
+            console.log('🔍 Checking email verification status...');
+            showResult('step2', '🔄 جاري التحقق من حالة التأكيد...', 'info');
+
+            try {
+                // Reload user to get latest verification status
+                await reload(currentUser);
+                console.log(`📧 Email verified: ${currentUser.emailVerified}`);
+
+                if (currentUser.emailVerified) {
+                    showResult('step2', `✅ تم تأكيد البريد الإلكتروني بنجاح!
+                    
+بريدك الإلكتروني ${currentUser.email} مؤكد الآن.
+يمكنك الانتقال للخطوة 3 لتسجيل الدخول.`, 'success');
+
+                    // Enable login step
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('step3').classList.add('active');
+                    
+                } else {
+                    showResult('step2', `⚠️ البريد الإلكتروني لم يتم تأكيده بعد.
+                    
+يرجى:
+1. التحقق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها
+2. البحث عن رسالة من Firebase
+3. النقر على رابط التحقق في الرسالة
+4. العودة هنا والنقر على "تحقق من حالة التأكيد" مرة أخرى`, 'warning');
+                }
+
+            } catch (error) {
+                console.error('❌ Verification check error:', error);
+                showResult('step2', '❌ خطأ في التحقق من التأكيد: ' + error.message, 'error');
+            }
+        };
+
+        // Resend Email
+        window.resendEmail = async function() {
+            if (!currentUser) {
+                showResult('step2', '❌ لا يوجد مستخدم. يرجى إنشاء حساب أولاً.', 'error');
+                return;
+            }
+
+            try {
+                showResult('step2', '🔄 جاري إعادة إرسال رسالة التحقق...', 'info');
+                await sendEmailVerification(currentUser);
+                showResult('step2', '✅ تم إعادة إرسال رسالة التحقق بنجاح!', 'success');
+            } catch (error) {
+                showResult('step2', '❌ فشل في إعادة الإرسال: ' + error.message, 'error');
+            }
+        };
+
+        // Login Account
+        window.loginAccount = async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            console.log('🔑 Attempting login for:', email);
+
+            if (!email || !password) {
+                showResult('step3', '❌ يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                return;
+            }
+
+            document.getElementById('loginBtn').disabled = true;
+            document.getElementById('loginBtn').textContent = '🔄 جاري تسجيل الدخول...';
+            showResult('step3', '🔄 جاري تسجيل الدخول...', 'info');
+
+            try {
+                console.log('🔑 Calling signInWithEmailAndPassword...');
+
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                console.log('✅ Login successful:', user.uid);
+                console.log('📧 Email verified:', user.emailVerified);
+
+                if (user.emailVerified) {
+                    showResult('step3', `🎉 تم تسجيل الدخول بنجاح!
+                    
+✅ البريد الإلكتروني: ${user.email}
+✅ مؤكد: نعم
+✅ معرف المستخدم: ${user.uid}
+
+يمكنك الآن الذهاب للتطبيق الرئيسي واستخدام هذا الحساب!`, 'success');
+
+                    // Show success message
+                    document.getElementById('message').innerHTML = `
+                        <div class="message success">
+                            <h3>🎉 مبروك! تم إنشاء حسابك بنجاح</h3>
+                            <p>يمكنك الآن استخدام هذا الحساب في التطبيق الرئيسي:</p>
+                            <p><strong>البريد الإلكتروني:</strong> ${email}</p>
+                            <p><strong>كلمة المرور:</strong> ${password}</p>
+                            <br>
+                            <a href="final-app.html" style="background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px; font-weight: bold;">
+                                🏠 الذهاب للتطبيق الرئيسي
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    showResult('step3', `⚠️ تم تسجيل الدخول ولكن البريد الإلكتروني غير مؤكد.
+                    
+يرجى تأكيد بريدك الإلكتروني أولاً، ثم حاول تسجيل الدخول مرة أخرى.`, 'warning');
+                }
+
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                
+                let errorMessage = error.message;
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = `لا يوجد حساب بالبريد الإلكتروني: ${email}
+                    
+يرجى إنشاء حساب جديد في الخطوة 1.`;
+                } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-login-credentials') {
+                    errorMessage = `كلمة المرور غير صحيحة للبريد: ${email}
+                    
+يرجى التحقق من كلمة المرور والمحاولة مرة أخرى.`;
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'تنسيق البريد الإلكتروني غير صحيح.';
+                }
+                
+                showResult('step3', '❌ فشل تسجيل الدخول:\n' + errorMessage, 'error');
+                
+                // Reset button
+                document.getElementById('loginBtn').disabled = false;
+                document.getElementById('loginBtn').textContent = '🔓 تسجيل الدخول';
+            }
+        };
+
+        // Monitor auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('👤 Auth state: User logged in -', user.email, '(verified:', user.emailVerified + ')');
+                currentUser = user;
+            } else {
+                console.log('👤 Auth state: No user logged in');
+            }
+        });
+
+        console.log('🚀 Firebase account creation page loaded');
+    </script>
+</body>
+</html>

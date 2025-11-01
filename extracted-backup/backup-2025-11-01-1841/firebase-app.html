@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian Pro - Firebase Edition</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.04)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: left;
+            margin: 40px auto;
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #667eea;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e8ecf4;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+        }
+
+        input::placeholder {
+            color: #a0a9c0;
+            font-weight: 400;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #95a5a6;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .success {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .error {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 112, 85, 0.3);
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
+        }
+
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .auth-link {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .auth-link:hover {
+            color: #764ba2;
+            transform: translateY(-1px);
+        }
+
+        select {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            color: #667eea;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard {
+            text-align: left;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 30px;
+            position: relative;
+        }
+
+        .dashboard::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(102,126,234,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .dashboard .container {
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .user-info h3,
+        .user-info p {
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #camera-video {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-btn {
+            font-size: 14px;
+            padding: 12px 16px;
+            margin-bottom: 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+
+        .start-btn:hover {
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.4);
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #e17055, #d63031);
+        }
+
+        .stop-btn:hover {
+            box-shadow: 0 8px 20px rgba(225, 112, 85, 0.4);
+        }
+
+        .location-btn {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            margin-bottom: 0;
+        }
+
+        .location-btn:hover {
+            box-shadow: 0 8px 20px rgba(253, 203, 110, 0.4);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e17055, #d63031);
+        }
+
+        .logout-btn:hover {
+            box-shadow: 0 8px 20px rgba(225, 112, 85, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 30px 25px;
+                max-width: calc(100% - 40px);
+            }
+
+            .dashboard {
+                padding: 20px 15px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="container">
+            <!-- Language Switcher -->
+            <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+                <select id="language-selector" onchange="changeLanguage()">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+            </div>
+
+            <div class="logo">🛡️</div>
+            <h1 id="app-title">Secure Guardian Pro</h1>
+
+            <div class="info-box"
+                style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; text-align: center;">
+                <strong>🔥 Pure Firebase Edition</strong><br>
+                <span style="font-size: 13px; opacity: 0.9;" id="firebase-desc">100% Firebase - Real Email
+                    Verification</span>
+            </div>
+
+            <div class="info-box"
+                style="background: linear-gradient(135deg, #00b894, #00cec9); color: white; border: none; text-align: center; margin-bottom: 20px;">
+                <strong>✅ Real Email System</strong><br>
+                <span style="font-size: 12px; opacity: 0.9;">
+                    This version sends REAL emails via Firebase. Use any valid email address!
+                </span>
+            </div>
+
+            <div class="info-box">
+                🔐 <span id="security-description">Advanced security system with live monitoring and location
+                    tracking</span>
+            </div>
+
+            <div id="login-form">
+                <div class="form-group">
+                    <label for="login-email" id="email-label">Email:</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password" id="password-label">Password:</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+
+                <button id="login-btn" class="btn" onclick="handleLogin()">
+                    <span id="login-text">Login</span>
+                    <span id="loading-text" style="display: none;">🔄 Checking...</span>
+                </button>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <span id="no-account-link" class="auth-link" onclick="showRegisterForm()">
+                        Don't have an account? Create new account
+                    </span>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden">
+                <div class="form-group">
+                    <label for="register-name" id="name-label">Full Name:</label>
+                    <input type="text" id="register-name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email" id="register-email-label">Email:</label>
+                    <input type="email" id="register-email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password" id="register-password-label">Password:</label>
+                    <input type="password" id="register-password"
+                        placeholder="Enter a strong password (at least 6 characters)" required>
+                </div>
+
+                <button id="register-btn" class="btn" onclick="handleRegister()">
+                    <span id="register-text">Create Account</span>
+                    <span id="register-loading" style="display: none;">🔄 Creating...</span>
+                </button>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <span id="has-account-link" class="auth-link" onclick="showLoginForm()">
+                        Have an account? Login
+                    </span>
+                </div>
+            </div>
+
+            <div id="message" class="message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="dashboard hidden">
+        <div class="container" style="max-width: 1200px;">
+            <!-- Language Switcher for Dashboard -->
+            <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+                <select id="language-selector-dashboard" onchange="changeLanguageFromDashboard()">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+            </div>
+
+            <div class="logo">🛡️</div>
+            <h1 id="dashboard-title">Dashboard</h1>
+
+            <div class="user-info">
+                <h3><span id="welcome-text">Welcome</span>, <span id="user-name">User</span></h3>
+                <p><span id="email-label-text">Email</span>: <span id="user-email">user@test.com</span></p>
+                <p id="verification-status-text">Verification Status: ✅ Verified</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>📍 <span id="current-location-title">Current Location</span></h4>
+                    <div id="map"></div>
+                    <button id="update-location-btn" class="btn location-btn" onclick="updateLocation()"
+                        style="margin-top: 15px;">Update Location</button>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📷 <span id="camera-title">Camera Feed</span></h4>
+                    <div id="camera-container">
+                        <video id="camera-video" autoplay muted></video>
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-top: 15px;">
+                        <button id="start-camera-btn" class="btn camera-btn start-btn" onclick="startCamera()"
+                            style="flex: 1;">Start Camera</button>
+                        <button id="stop-camera-btn" class="btn camera-btn stop-btn" onclick="stopCamera()"
+                            style="flex: 1;">Stop Camera</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="logout-btn" class="btn logout-btn" onclick="handleLogout()"
+                style="margin-top: 30px;">Logout</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, onAuthStateChanged }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // إعدادات مشروعك من Firebase Console
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8DxDB-r5_AF6Pl-3eYqxCtMM5S60CoZU",
+            authDomain: "antitheft-4b6cc.firebaseapp.com",
+            projectId: "antitheft-4b6cc",
+            storageBucket: "antitheft-4b6cc.firebasestorage.app",
+            messagingSenderId: "1002682961771",
+            appId: "1:1002682961771:web:a1bb3eb1eaa27b7911062e",
+            measurementId: "G-LX9JJ6RMFG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make Firebase functions globally available
+        window.firebaseAuth = {
+            // إنشاء حساب جديد + إرسال رسالة تحقق
+            async registerUser(name, email, password) {
+                try {
+                    console.log('🔥 Firebase: Creating user account for:', email);
+                    console.log('🔥 Firebase: Using project:', firebaseConfig.projectId);
+                    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+                    console.log('📧 Firebase: Sending email verification...');
+                    await sendEmailVerification(userCred.user);
+
+                    console.log('💾 Firebase: Saving user data to Firestore...');
+                    await setDoc(doc(db, "users", userCred.user.uid), {
+                        name: name,
+                        email: email,
+                        verified: false,
+                        createdAt: new Date().toISOString(),
+                    });
+
+                    console.log('✅ Firebase: User registration completed');
+                    return {
+                        success: true,
+                        user: userCred.user,
+                        message: 'تم إرسال رسالة التحقق إلى بريدك الإلكتروني!'
+                    };
+                } catch (err) {
+                    console.error('❌ Firebase registration error:', err);
+                    return {
+                        success: false,
+                        error: err.message
+                    };
+                }
+            },
+
+            // تسجيل الدخول
+            async loginUser(email, password) {
+                try {
+                    console.log('🔥 Firebase: Attempting login...');
+                    const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+                    if (userCred.user.emailVerified) {
+                        console.log('✅ Firebase: Login successful - email verified');
+
+                        // Get user data from Firestore
+                        const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+                        const userData = userDoc.exists() ? userDoc.data() : {};
+
+                        // Update verification status if needed
+                        if (!userData.verified) {
+                            await updateDoc(doc(db, "users", userCred.user.uid), {
+                                verified: true,
+                                lastLogin: new Date().toISOString()
+                            });
+                        }
+
+                        return {
+                            success: true,
+                            user: {
+                                uid: userCred.user.uid,
+                                email: userCred.user.email,
+                                name: userData.name || 'User',
+                                verified: true
+                            },
+                            message: 'تم تسجيل الدخول بنجاح ✅'
+                        };
+                    } else {
+                        console.log('⚠️ Firebase: Email not verified');
+                        return {
+                            success: false,
+                            requiresVerification: true,
+                            user: userCred.user,
+                            error: 'يرجى تأكيد بريدك الإلكتروني أولاً ❗'
+                        };
+                    }
+                } catch (err) {
+                    console.error('❌ Firebase login error:', err);
+                    return {
+                        success: false,
+                        error: 'خطأ أثناء تسجيل الدخول: ' + err.message
+                    };
+                }
+            },
+
+            // إعادة إرسال رسالة التحقق
+            async resendVerification() {
+                try {
+                    if (auth.currentUser) {
+                        await sendEmailVerification(auth.currentUser);
+                        return {
+                            success: true,
+                            message: 'تم إعادة إرسال رسالة التحقق'
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            error: 'لا يوجد مستخدم مسجل دخول'
+                        };
+                    }
+                } catch (err) {
+                    return {
+                        success: false,
+                        error: err.message
+                    };
+                }
+            },
+
+            // تسجيل الخروج
+            async logout() {
+                try {
+                    await auth.signOut();
+                    return { success: true };
+                } catch (err) {
+                    return { success: false, error: err.message };
+                }
+            },
+
+            // مراقبة حالة المصادقة
+            onAuthStateChanged: (callback) => {
+                return onAuthStateChanged(auth, callback);
+            }
+        };
+
+        console.log('🔥 Firebase initialized successfully');
+    </script>
+
+    <script>
+        let map = null;
+        let userMarker = null;
+        let cameraStream = null;
+
+        // Show message function
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            if (!messageDiv) return;
+
+            // Support HTML content for complex messages
+            if (text.includes('<')) {
+                messageDiv.innerHTML = text;
+            } else {
+                messageDiv.textContent = text;
+            }
+
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+
+            // Longer timeout for warning messages
+            const timeout = type === 'warning' ? 10000 : 5000;
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, timeout);
+        }
+
+        // Set loading state
+        function setLoading(loading) {
+            const btn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loadingText = document.getElementById('loading-text');
+
+            if (btn && loginText && loadingText) {
+                btn.disabled = loading;
+                loginText.style.display = loading ? 'none' : 'inline';
+                loadingText.style.display = loading ? 'inline' : 'none';
+            }
+        }
+
+        // Form switching functions
+        function showRegisterForm() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+        }
+
+        // Handle registration with Firebase ONLY
+        async function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+
+            console.log('🚀 handleRegister called with:', { name, email, password: '***' });
+
+            // Validation
+            if (!name || name.length < 2) {
+                showMessage('❌ الاسم يجب أن يكون حرفين على الأقل', 'error');
+                return;
+            }
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                showMessage('❌ يرجى إدخال بريد إلكتروني صحيح', 'error');
+                return;
+            }
+
+            if (!password || password.length < 6) {
+                showMessage('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            // Set loading state
+            const btn = document.getElementById('register-btn');
+            const registerText = document.getElementById('register-text');
+            const registerLoading = document.getElementById('register-loading');
+
+            if (btn && registerText && registerLoading) {
+                btn.disabled = true;
+                registerText.style.display = 'none';
+                registerLoading.style.display = 'inline';
+            }
+
+            try {
+                console.log('🔥 Using PURE Firebase for registration...');
+                console.log('📧 Email being registered:', email);
+                showMessage('🔥 Connecting to Firebase servers...', 'success');
+
+                const result = await window.firebaseAuth.registerUser(name, email, password);
+
+                if (result.success) {
+                    console.log('✅ Firebase registration successful');
+
+                    const successMessage = `
+                        <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 10px 0; color: #2e7d32;">
+                            <strong>✅ ${result.message}</strong><br>
+                            <small style="color: #666; margin-top: 10px; display: block;">
+                                تحقق من صندوق الوارد أو مجلد الرسائل غير المرغوب فيها (Spam)
+                            </small>
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 5px;">
+                                <strong>📧 خطوات التحقق:</strong><br>
+                                1. افتح بريدك الإلكتروني<br>
+                                2. ابحث عن رسالة من Firebase<br>
+                                3. انقر على رابط التحقق<br>
+                                4. عد هنا وسجل دخولك
+                            </div>
+                        </div>
+                    `;
+
+                    showMessage(successMessage, 'success');
+
+                    // Switch to login form after delay
+                    setTimeout(() => {
+                        showLoginForm();
+                        showMessage('✅ يمكنك الآن تسجيل الدخول بعد تأكيد بريدك الإلكتروني', 'success');
+                    }, 8000);
+
+                } else {
+                    console.log('❌ Firebase registration failed:', result.error);
+
+                    // Handle Firebase errors
+                    let errorMessage = result.error;
+                    if (result.error.includes('email-already-in-use')) {
+                        errorMessage = 'This email is already registered in Firebase. Please login instead.';
+
+                        const loginMessage = `
+                            <div style="background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 8px; margin: 10px 0; color: #0c5460;">
+                                <strong>🔥 Firebase: ${errorMessage}</strong><br>
+                                <small style="display: block; margin-top: 5px; opacity: 0.8;">
+                                    This email exists in Firebase system. Try logging in or use a different email.
+                                </small>
+                                <div style="margin-top: 10px;">
+                                    <button onclick="showLoginForm()" style="background: #17a2b8; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                                        Login Now
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        showMessage(loginMessage, 'warning');
+                    } else if (result.error.includes('weak-password')) {
+                        errorMessage = 'كلمة المرور ضعيفة. يجب أن تكون 6 أحرف على الأقل.';
+                        showMessage('❌ ' + errorMessage, 'error');
+                    } else {
+                        showMessage('❌ ' + errorMessage, 'error');
+                    }
+                }
+
+            } catch (error) {
+                console.error('🚨 Registration error:', error);
+                showMessage('❌ خطأ في الاتصال', 'error');
+            } finally {
+                // Reset loading state
+                if (btn && registerText && registerLoading) {
+                    btn.disabled = false;
+                    registerText.style.display = 'inline';
+                    registerLoading.style.display = 'none';
+                }
+            }
+        }
+
+        // Handle login with Firebase ONLY
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            console.log('🚀 handleLogin called with:', { email, password: '***' });
+
+            if (!email || !password) {
+                console.log('❌ Validation failed: missing email or password');
+                showMessage('❌ يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                return;
+            }
+
+            setLoading(true);
+            showMessage('🔄 جاري التحقق من البيانات...', 'success');
+
+            try {
+                console.log('🔥 Using Firebase for login...');
+                const result = await window.firebaseAuth.loginUser(email, password);
+
+                if (result.success) {
+                    console.log('✅ Firebase login successful');
+
+                    // Store user info
+                    localStorage.setItem('userInfo', JSON.stringify(result.user));
+                    console.log('💾 Stored user data successfully');
+
+                    showMessage('✅ تم تسجيل الدخول بنجاح!', 'success');
+
+                    // Update user info in UI
+                    const nameEl = document.getElementById('user-name');
+                    const emailEl = document.getElementById('user-email');
+                    if (nameEl) nameEl.textContent = result.user.name;
+                    if (emailEl) emailEl.textContent = result.user.email;
+                    console.log('👤 Updated user info elements');
+
+                    // Switch to dashboard
+                    setTimeout(() => {
+                        console.log('🔄 Switching to dashboard...');
+                        const loginScreen = document.getElementById('login-screen');
+                        const dashboardScreen = document.getElementById('dashboard-screen');
+
+                        if (loginScreen && dashboardScreen) {
+                            loginScreen.classList.add('hidden');
+                            dashboardScreen.classList.remove('hidden');
+                            console.log('✅ Successfully switched screens');
+
+                            if (typeof initializeDashboard === 'function') {
+                                initializeDashboard();
+                                console.log('✅ Dashboard initialized');
+                            }
+                        }
+                    }, 1000);
+
+                } else {
+                    console.log('❌ Firebase login failed:', result.error);
+
+                    // Handle unverified email
+                    if (result.requiresVerification) {
+                        const verificationMessage = `
+                            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 10px 0; color: #856404;">
+                                <strong>⚠️ ${result.error}</strong><br>
+                                <div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 5px;">
+                                    <strong>📧 لم تتلق رسالة التحقق؟</strong><br>
+                                    <button onclick="resendFirebaseVerification()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                                        إعادة إرسال رسالة التحقق
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        showMessage(verificationMessage, 'warning');
+                    } else {
+                        // Handle other Firebase errors
+                        let errorMessage = result.error;
+                        if (result.error.includes('user-not-found')) {
+                            errorMessage = 'لا يوجد حساب بهذا البريد الإلكتروني';
+                        } else if (result.error.includes('wrong-password')) {
+                            errorMessage = 'كلمة المرور غير صحيحة';
+                        } else if (result.error.includes('invalid-email')) {
+                            errorMessage = 'البريد الإلكتروني غير صحيح';
+                        }
+
+                        showMessage('❌ ' + errorMessage, 'error');
+                    }
+                }
+
+            } catch (error) {
+                console.error('🚨 Login error:', error);
+                showMessage('❌ خطأ في الاتصال', 'error');
+            } finally {
+                setLoading(false);
+                console.log('🏁 Login process completed');
+            }
+        }
+
+        // Resend Firebase verification email
+        async function resendFirebaseVerification() {
+            try {
+                console.log('📤 Resending Firebase verification email...');
+
+                const result = await window.firebaseAuth.resendVerification();
+
+                if (result.success) {
+                    showMessage('✅ ' + result.message, 'success');
+                } else {
+                    showMessage('❌ ' + result.error, 'error');
+                }
+
+            } catch (error) {
+                console.error('🚨 Resend error:', error);
+                showMessage('❌ خطأ في إعادة الإرسال', 'error');
+            }
+        }
+
+        // Handle logout with Firebase
+        async function handleLogout() {
+            try {
+                console.log('🔥 Logging out from Firebase...');
+
+                const result = await window.firebaseAuth.logout();
+
+                if (result.success) {
+                    // Clear local storage
+                    localStorage.removeItem('userInfo');
+
+                    // Switch screens
+                    document.getElementById('dashboard-screen').classList.add('hidden');
+                    document.getElementById('login-screen').classList.remove('hidden');
+
+                    // Reset forms
+                    document.getElementById('login-email').value = '';
+                    document.getElementById('login-password').value = '';
+                    document.getElementById('register-name').value = '';
+                    document.getElementById('register-email').value = '';
+                    document.getElementById('register-password').value = '';
+
+                    // Stop camera if running
+                    if (cameraStream) {
+                        stopCamera();
+                    }
+
+                    showMessage('✅ تم تسجيل الخروج بنجاح', 'success');
+                    console.log('✅ Logout successful');
+                } else {
+                    showMessage('❌ خطأ في تسجيل الخروج', 'error');
+                }
+
+            } catch (error) {
+                console.error('🚨 Logout error:', error);
+                showMessage('❌ خطأ في تسجيل الخروج', 'error');
+            }
+        }
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            console.log('🚀 Initializing dashboard...');
+            initializeMap();
+        }
+
+        // Initialize map
+        function initializeMap() {
+            if (map) return;
+
+            try {
+                map = L.map('map').setView([30.0444, 31.2357], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                userMarker = L.marker([30.0444, 31.2357]).addTo(map)
+                    .bindPopup('موقعك الحالي')
+                    .openPopup();
+
+                console.log('✅ Map initialized');
+            } catch (error) {
+                console.error('❌ Map initialization error:', error);
+            }
+        }
+
+        // Update location
+        function updateLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        if (map && userMarker) {
+                            map.setView([lat, lng], 15);
+                            userMarker.setLatLng([lat, lng]);
+                        }
+                    },
+                    (error) => {
+                        console.log('Location access denied');
+                        showMessage('تم رفض الوصول للموقع', 'error');
+                    }
+                );
+            }
+        }
+
+        // Camera functions
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    cameraStream = stream;
+                    const video = document.getElementById('camera-video');
+                    video.srcObject = stream;
+                    showMessage('✅ تم تشغيل الكاميرا', 'success');
+                })
+                .catch(err => {
+                    console.log('Camera access denied:', err);
+                    showMessage('تم رفض الوصول للكاميرا', 'error');
+                });
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+                const video = document.getElementById('camera-video');
+                video.srcObject = null;
+                showMessage('✅ تم إيقاف الكاميرا', 'success');
+            }
+        }
+
+        // Check for existing session with Firebase
+        function checkExistingSession() {
+            console.log('🔥 Setting up Firebase auth state listener...');
+
+            // Listen for Firebase auth state changes
+            window.firebaseAuth.onAuthStateChanged((user) => {
+                console.log('🔥 Firebase auth state changed:', user ? 'User logged in' : 'User logged out');
+
+                if (user && user.emailVerified) {
+                    console.log('✅ Found verified Firebase user:', user.email);
+
+                    // Update user info in UI
+                    const nameEl = document.getElementById('user-name');
+                    const emailEl = document.getElementById('user-email');
+
+                    if (nameEl) nameEl.textContent = user.displayName || 'User';
+                    if (emailEl) emailEl.textContent = user.email;
+
+                    // Store user info
+                    const userInfo = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || 'User',
+                        verified: user.emailVerified
+                    };
+                    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+                    // Switch to dashboard if not already there
+                    const loginScreen = document.getElementById('login-screen');
+                    const dashboardScreen = document.getElementById('dashboard-screen');
+
+                    if (!loginScreen.classList.contains('hidden')) {
+                        loginScreen.classList.add('hidden');
+                        dashboardScreen.classList.remove('hidden');
+                        initializeDashboard();
+                    }
+
+                } else if (user && !user.emailVerified) {
+                    console.log('⚠️ User exists but email not verified');
+
+                } else {
+                    console.log('👤 No authenticated user found');
+                }
+            });
+        }
+
+        // Language translations
+        const translations = {
+            en: {
+                title: 'Secure Guardian Pro',
+                firebaseDesc: 'Advanced and secure authentication system',
+                securityDescription: 'Advanced security system with live monitoring and location tracking',
+                email: 'Email:',
+                password: 'Password:',
+                name: 'Full Name:',
+                loginBtn: 'Login',
+                registerBtn: 'Create Account',
+                noAccount: 'Don\'t have an account? Create new account',
+                hasAccount: 'Have an account? Login',
+                dashboardTitle: 'Dashboard',
+                welcome: 'Welcome',
+                emailLabel: 'Email',
+                verificationStatus: 'Verification Status: ✅ Verified',
+                currentLocation: 'Current Location',
+                updateLocation: 'Update Location',
+                cameraFeed: 'Camera Feed',
+                startCamera: 'Start Camera',
+                stopCamera: 'Stop Camera',
+                logout: 'Logout'
+            },
+            ar: {
+                title: 'حارس الأمان المتقدم',
+                firebaseDesc: 'نظام مصادقة متقدم وآمن',
+                securityDescription: 'نظام أمان متقدم مع مراقبة مباشرة وتتبع الموقع',
+                email: 'البريد الإلكتروني:',
+                password: 'كلمة المرور:',
+                name: 'الاسم الكامل:',
+                loginBtn: 'تسجيل الدخول',
+                registerBtn: 'إنشاء حساب',
+                noAccount: 'ليس لديك حساب؟ إنشاء حساب جديد',
+                hasAccount: 'لديك حساب؟ تسجيل الدخول',
+                dashboardTitle: 'لوحة التحكم',
+                welcome: 'مرحباً',
+                emailLabel: 'البريد الإلكتروني',
+                verificationStatus: 'حالة التحقق: ✅ مُحقق',
+                currentLocation: 'الموقع الحالي',
+                updateLocation: 'تحديث الموقع',
+                cameraFeed: 'تغذية الكاميرا',
+                startCamera: 'تشغيل الكاميرا',
+                stopCamera: 'إيقاف الكاميرا',
+                logout: 'تسجيل الخروج'
+            }
+        };
+
+        // Get translated message
+        function getMessage(key) {
+            const lang = document.getElementById('language-selector')?.value ||
+                document.getElementById('language-selector-dashboard')?.value ||
+                localStorage.getItem('preferredLanguage') || 'en';
+            return translations[lang][key] || translations['en'][key] || key;
+        }
+
+        // Change language function
+        function changeLanguage() {
+            const lang = document.getElementById('language-selector').value;
+            const t = translations[lang];
+
+            console.log('🌐 Changing language to:', lang);
+
+            // Update direction and language
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // Update text content
+            const elements = {
+                'app-title': t.title,
+                'firebase-desc': t.firebaseDesc,
+                'security-description': t.securityDescription,
+                'email-label': t.email,
+                'password-label': t.password,
+                'name-label': t.name,
+                'register-email-label': t.email,
+                'register-password-label': t.password,
+                'login-text': t.loginBtn,
+                'register-text': t.registerBtn,
+                'no-account-link': t.noAccount,
+                'has-account-link': t.hasAccount,
+                'dashboard-title': t.dashboardTitle,
+                'welcome-text': t.welcome,
+                'email-label-text': t.emailLabel,
+                'verification-status-text': t.verificationStatus,
+                'current-location-title': t.currentLocation,
+                'update-location-btn': t.updateLocation,
+                'camera-title': t.cameraFeed,
+                'start-camera-btn': t.startCamera,
+                'stop-camera-btn': t.stopCamera,
+                'logout-btn': t.logout
+            };
+
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element && elements[id]) {
+                    element.textContent = elements[id];
+                }
+            });
+
+            // Store language preference
+            localStorage.setItem('preferredLanguage', lang);
+
+            console.log('✅ Language changed successfully');
+        }
+
+        // Change language from dashboard
+        function changeLanguageFromDashboard() {
+            const dashboardSelector = document.getElementById('language-selector-dashboard');
+            const loginSelector = document.getElementById('language-selector');
+
+            if (dashboardSelector && loginSelector) {
+                loginSelector.value = dashboardSelector.value;
+                changeLanguage();
+            }
+        }
+
+        // Load saved language
+        function loadSavedLanguage() {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            const loginSelector = document.getElementById('language-selector');
+            const dashboardSelector = document.getElementById('language-selector-dashboard');
+
+            if (loginSelector) loginSelector.value = savedLang;
+            if (dashboardSelector) dashboardSelector.value = savedLang;
+
+            changeLanguage();
+        }
+
+        // Handle Enter key
+        document.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter' && !document.getElementById('login-screen').classList.contains('hidden')) {
+                if (!document.getElementById('register-form').classList.contains('hidden')) {
+                    handleRegister();
+                } else {
+                    handleLogin();
+                }
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Page loaded');
+            loadSavedLanguage();
+            checkExistingSession();
+        });
+    </script>
+</body>
+
+</html>

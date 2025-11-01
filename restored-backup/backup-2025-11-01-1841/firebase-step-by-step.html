@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Step by Step Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .step {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #00b894;
+        }
+        .step.active {
+            border-left-color: #fdcb6e;
+            background: rgba(253, 203, 110, 0.2);
+        }
+        .step.completed {
+            border-left-color: #00b894;
+            background: rgba(0, 184, 148, 0.2);
+        }
+        .step.error {
+            border-left-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #00b894;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #00a085;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .error { background: rgba(231, 76, 60, 0.8); }
+        .success { background: rgba(46, 204, 113, 0.8); }
+        .warning { background: rgba(241, 196, 15, 0.8); }
+        .info { background: rgba(52, 152, 219, 0.8); }
+        h1 { text-align: center; margin-bottom: 30px; }
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.1);
+        }
+        .debug {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Step-by-Step Test</h1>
+        
+        <div class="status">
+            <strong>Firebase Status:</strong> <span id="firebase-status">🔄 Initializing...</span>
+        </div>
+
+        <!-- Step 1: Create Account -->
+        <div class="step active" id="step1">
+            <h3>📝 Step 1: Create New Account</h3>
+            <p>First, let's create a completely new account with a fresh email.</p>
+            
+            <input type="text" id="name" placeholder="Full Name" value="Test User">
+            <input type="email" id="email" placeholder="Enter a NEW email address">
+            <input type="password" id="password" placeholder="Password (min 6 chars)" value="123456">
+            
+            <button onclick="createAccount()" id="createBtn">🔥 Create Account</button>
+            
+            <div id="step1-result"></div>
+        </div>
+
+        <!-- Step 2: Check Email -->
+        <div class="step" id="step2">
+            <h3>📧 Step 2: Check Your Email</h3>
+            <p>After creating the account, check your email for a verification link from Firebase.</p>
+            
+            <div class="info">
+                <strong>📍 Where to look:</strong><br>
+                • Check your inbox<br>
+                • Check spam/junk folder<br>
+                • Look for emails from "Firebase" or "noreply@antitheft-4b6cc.firebaseapp.com"<br>
+                • Click the verification link in the email
+            </div>
+            
+            <button onclick="checkEmailVerification()" id="checkBtn" disabled>🔍 Check if Email is Verified</button>
+            
+            <div id="step2-result"></div>
+        </div>
+
+        <!-- Step 3: Login -->
+        <div class="step" id="step3">
+            <h3>🔑 Step 3: Login with Verified Account</h3>
+            <p>Once your email is verified, you can login successfully.</p>
+            
+            <input type="email" id="loginEmail" placeholder="Same email as above">
+            <input type="password" id="loginPassword" placeholder="Same password" value="123456">
+            
+            <button onclick="loginAccount()" id="loginBtn" disabled>🔑 Login</button>
+            
+            <div id="step3-result"></div>
+        </div>
+
+        <div id="debug" class="debug"></div>
+        <button onclick="clearDebug()">Clear Debug Log</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            sendEmailVerification, 
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            reload
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc 
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8DxDB-r5_AF6Pl-3eYqxCtMM5S60CoZU",
+            authDomain: "antitheft-4b6cc.firebaseapp.com",
+            projectId: "antitheft-4b6cc",
+            storageBucket: "antitheft-4b6cc.appspot.com",
+            messagingSenderId: "1002682961771",
+            appId: "1:1002682961771:web:a1bb3eb1eaa27b7911062e"
+        };
+
+        // Initialize Firebase
+        let app, auth, db, currentUser = null;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            debugLog('✅ Firebase initialized successfully');
+            document.getElementById('firebase-status').innerHTML = '✅ Connected to Firebase';
+            
+        } catch (error) {
+            debugLog('❌ Firebase initialization failed: ' + error.message);
+            document.getElementById('firebase-status').innerHTML = '❌ Connection Failed';
+            showResult('step1', '❌ Firebase initialization failed: ' + error.message, 'error');
+        }
+
+        // Debug logging
+        function debugLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const debugDiv = document.getElementById('debug');
+            debugDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+            console.log(message);
+        }
+
+        window.clearDebug = function() {
+            document.getElementById('debug').innerHTML = '';
+        };
+
+        // Show result in specific step
+        function showResult(stepId, message, type = 'info') {
+            const resultDiv = document.getElementById(stepId + '-result');
+            resultDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            
+            // Update step status
+            const step = document.getElementById(stepId);
+            step.classList.remove('active', 'completed', 'error');
+            if (type === 'success') {
+                step.classList.add('completed');
+            } else if (type === 'error') {
+                step.classList.add('error');
+            } else {
+                step.classList.add('active');
+            }
+        }
+
+        // Step 1: Create Account
+        window.createAccount = async function() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            debugLog(`🚀 Step 1: Creating account for ${email}`);
+
+            if (!name || !email || !password) {
+                showResult('step1', 'Please fill all fields', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showResult('step1', 'Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            // Disable button
+            document.getElementById('createBtn').disabled = true;
+            showResult('step1', '🔄 Creating account...', 'info');
+
+            try {
+                debugLog('📝 Calling createUserWithEmailAndPassword...');
+
+                // Create user
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                currentUser = userCredential.user;
+                
+                debugLog(`✅ User created: ${currentUser.uid}`);
+
+                // Send verification email
+                debugLog('📧 Sending verification email...');
+                await sendEmailVerification(currentUser);
+                debugLog('✅ Verification email sent');
+
+                // Save to Firestore
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    name: name,
+                    email: email,
+                    verified: false,
+                    createdAt: new Date().toISOString()
+                });
+                debugLog('✅ User data saved to Firestore');
+
+                showResult('step1', `✅ Account created successfully!
+📧 Verification email sent to: ${email}
+
+Now go to Step 2 to check your email.`, 'success');
+
+                // Enable next step
+                document.getElementById('checkBtn').disabled = false;
+                document.getElementById('step2').classList.add('active');
+                
+                // Copy email to login field
+                document.getElementById('loginEmail').value = email;
+
+            } catch (error) {
+                debugLog(`❌ Account creation error: ${error.code} - ${error.message}`);
+                
+                let errorMessage = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = `This email is already registered. 
+                    
+Try logging in instead, or use a different email address.`;
+                    
+                    // Enable login if email exists
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('step3').classList.add('active');
+                    document.getElementById('loginEmail').value = email;
+                    
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password is too weak. Use at least 6 characters.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email format.';
+                }
+                
+                showResult('step1', '❌ Account creation failed:\n' + errorMessage, 'error');
+                document.getElementById('createBtn').disabled = false;
+            }
+        };
+
+        // Step 2: Check Email Verification
+        window.checkEmailVerification = async function() {
+            if (!currentUser) {
+                showResult('step2', '❌ No user found. Please create an account first.', 'error');
+                return;
+            }
+
+            debugLog('🔍 Checking email verification status...');
+            showResult('step2', '🔄 Checking verification status...', 'info');
+
+            try {
+                // Reload user to get latest verification status
+                await reload(currentUser);
+                debugLog(`📧 Email verified: ${currentUser.emailVerified}`);
+
+                if (currentUser.emailVerified) {
+                    showResult('step2', `✅ Email verified successfully!
+                    
+Your email ${currentUser.email} is now verified.
+You can proceed to Step 3 to login.`, 'success');
+
+                    // Enable login step
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('step3').classList.add('active');
+                    
+                } else {
+                    showResult('step2', `⚠️ Email not verified yet.
+                    
+Please check your email inbox and spam folder.
+Look for an email from Firebase and click the verification link.
+Then come back and click "Check if Email is Verified" again.`, 'warning');
+                }
+
+            } catch (error) {
+                debugLog(`❌ Verification check error: ${error.message}`);
+                showResult('step2', '❌ Error checking verification: ' + error.message, 'error');
+            }
+        };
+
+        // Step 3: Login
+        window.loginAccount = async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            debugLog(`🔑 Step 3: Attempting login for ${email}`);
+
+            if (!email || !password) {
+                showResult('step3', 'Please enter email and password', 'error');
+                return;
+            }
+
+            document.getElementById('loginBtn').disabled = true;
+            showResult('step3', '🔄 Logging in...', 'info');
+
+            try {
+                debugLog('🔑 Calling signInWithEmailAndPassword...');
+
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                debugLog(`✅ Login successful: ${user.uid}`);
+                debugLog(`📧 Email verified: ${user.emailVerified}`);
+
+                if (user.emailVerified) {
+                    showResult('step3', `🎉 LOGIN SUCCESSFUL!
+                    
+✅ Email: ${user.email}
+✅ Verified: Yes
+✅ User ID: ${user.uid}
+
+You are now successfully logged in with Firebase!`, 'success');
+                } else {
+                    showResult('step3', `⚠️ Login successful but email not verified.
+                    
+Please verify your email first, then try logging in again.`, 'warning');
+                }
+
+            } catch (error) {
+                debugLog(`❌ Login error: ${error.code} - ${error.message}`);
+                
+                let errorMessage = error.message;
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = `No account found with email: ${email}
+                    
+Please create an account first in Step 1.`;
+                } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-login-credentials') {
+                    errorMessage = `Incorrect password for: ${email}
+                    
+Please check your password and try again.`;
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email format.';
+                }
+                
+                showResult('step3', '❌ Login failed:\n' + errorMessage, 'error');
+                document.getElementById('loginBtn').disabled = false;
+            }
+        };
+
+        // Monitor auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                debugLog(`👤 Auth state: User logged in - ${user.email} (verified: ${user.emailVerified})`);
+                currentUser = user;
+            } else {
+                debugLog('👤 Auth state: No user logged in');
+            }
+        });
+
+        debugLog('🚀 Firebase step-by-step test loaded');
+    </script>
+</body>
+</html>

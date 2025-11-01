@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار بسيط</title>
+</head>
+<body>
+    <h1>اختبار تسجيل الدخول البسيط</h1>
+    
+    <form id="loginForm">
+        <div>
+            <label>البريد الإلكتروني:</label>
+            <input type="email" id="email" value="test@example.com">
+        </div>
+        <div>
+            <label>كلمة المرور:</label>
+            <input type="password" id="password" value="password123">
+        </div>
+        <button type="button" onclick="testLogin()">تسجيل الدخول</button>
+    </form>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;"></div>
+
+    <script>
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const result = document.getElementById('result');
+            
+            result.innerHTML = 'جاري المحاولة...';
+            
+            try {
+                console.log('Sending login request...');
+                
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                console.log('Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (response.ok && data.success) {
+                    result.innerHTML = `
+                        <h3 style="color: green;">✅ نجح تسجيل الدخول!</h3>
+                        <p><strong>المستخدم:</strong> ${data.user.name}</p>
+                        <p><strong>البريد:</strong> ${data.user.email}</p>
+                        <p><strong>الرمز المميز:</strong> ${data.token.substring(0, 50)}...</p>
+                        <button onclick="goToApp()">الانتقال إلى التطبيق</button>
+                    `;
+                    
+                    // Store token
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userInfo', JSON.stringify(data.user));
+                    
+                } else {
+                    result.innerHTML = `
+                        <h3 style="color: red;">❌ فشل تسجيل الدخول</h3>
+                        <p><strong>الخطأ:</strong> ${data.error || 'خطأ غير معروف'}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                result.innerHTML = `
+                    <h3 style="color: red;">❌ خطأ في الشبكة</h3>
+                    <p><strong>التفاصيل:</strong> ${error.message}</p>
+                `;
+            }
+        }
+        
+        function goToApp() {
+            window.location.href = '/app.html';
+        }
+    </script>
+</body>
+</html>

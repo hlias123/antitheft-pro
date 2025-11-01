@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Firebase Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4267B2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #365899;
+        }
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+        .success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .warning { background: #fff3e0; color: #ef6c00; border: 1px solid #ffcc02; }
+        .info { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+        h1 { text-align: center; color: #333; }
+        .debug { 
+            background: #f5f5f5; 
+            padding: 10px; 
+            border-radius: 5px; 
+            font-family: monospace; 
+            font-size: 12px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Simple Firebase Test</h1>
+        
+        <div class="info">
+            <strong>Firebase Project:</strong> antitheft-4b6cc<br>
+            <strong>Status:</strong> <span id="firebase-status">Initializing...</span>
+        </div>
+
+        <h3>📝 Create Account</h3>
+        <input type="text" id="name" placeholder="Full Name" value="Test User">
+        <input type="email" id="email" placeholder="Email" value="">
+        <input type="password" id="password" placeholder="Password (min 6 chars)" value="123456">
+        <button onclick="testRegister()">🔥 Test Registration</button>
+
+        <h3>🔑 Login</h3>
+        <input type="email" id="loginEmail" placeholder="Login Email" value="">
+        <input type="password" id="loginPassword" placeholder="Login Password" value="123456">
+        <button onclick="testLogin()">🔑 Test Login</button>
+
+        <div id="message"></div>
+        
+        <h3>🔍 Debug Log</h3>
+        <div id="debug" class="debug"></div>
+        <button onclick="clearDebug()">Clear Debug</button>
+    </div>
+
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            sendEmailVerification, 
+            signInWithEmailAndPassword,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc 
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8DxDB-r5_AF6Pl-3eYqxCtMM5S60CoZU",
+            authDomain: "antitheft-4b6cc.firebaseapp.com",
+            projectId: "antitheft-4b6cc",
+            storageBucket: "antitheft-4b6cc.appspot.com",
+            messagingSenderId: "1002682961771",
+            appId: "1:1002682961771:web:a1bb3eb1eaa27b7911062e"
+        };
+
+        // Initialize Firebase
+        let app, auth, db;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            debugLog('✅ Firebase initialized successfully');
+            document.getElementById('firebase-status').textContent = '✅ Connected';
+            document.getElementById('firebase-status').style.color = 'green';
+            
+        } catch (error) {
+            debugLog('❌ Firebase initialization failed: ' + error.message);
+            document.getElementById('firebase-status').textContent = '❌ Failed';
+            document.getElementById('firebase-status').style.color = 'red';
+            showMessage('❌ Firebase initialization failed: ' + error.message, 'error');
+        }
+
+        // Debug logging function
+        function debugLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const debugDiv = document.getElementById('debug');
+            debugDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Clear debug log
+        window.clearDebug = function() {
+            document.getElementById('debug').innerHTML = '';
+        };
+
+        // Show message function
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+        }
+
+        // Test registration
+        window.testRegister = async function() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            debugLog(`🚀 Starting registration for: ${email}`);
+
+            if (!name || !email || !password) {
+                showMessage('Please fill all fields', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                showMessage('🔄 Creating account...', 'info');
+                debugLog('📝 Calling createUserWithEmailAndPassword...');
+
+                // Create user
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                debugLog(`✅ User created successfully: ${user.uid}`);
+                debugLog(`📧 User email: ${user.email}`);
+                debugLog(`🔍 Email verified: ${user.emailVerified}`);
+
+                // Send verification email
+                debugLog('📧 Sending verification email...');
+                await sendEmailVerification(user);
+                debugLog('✅ Verification email sent successfully');
+
+                // Save to Firestore
+                debugLog('💾 Saving user data to Firestore...');
+                await setDoc(doc(db, "users", user.uid), {
+                    name: name,
+                    email: email,
+                    verified: false,
+                    createdAt: new Date().toISOString()
+                });
+                debugLog('✅ User data saved to Firestore');
+
+                showMessage(`✅ Account created successfully!
+📧 Verification email sent to: ${email}
+Please check your inbox and spam folder.`, 'success');
+
+            } catch (error) {
+                debugLog(`❌ Registration error: ${error.code} - ${error.message}`);
+                
+                let errorMessage = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'This email is already registered. Try logging in instead.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password is too weak. Use at least 6 characters.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email format.';
+                } else if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid Firebase credentials. Check your Firebase configuration.';
+                }
+                
+                showMessage('❌ Registration failed: ' + errorMessage, 'error');
+            }
+        };
+
+        // Test login
+        window.testLogin = async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            debugLog(`🔑 Starting login for: ${email}`);
+
+            if (!email || !password) {
+                showMessage('Please enter email and password', 'error');
+                return;
+            }
+
+            try {
+                showMessage('🔄 Logging in...', 'info');
+                debugLog('🔑 Calling signInWithEmailAndPassword...');
+
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                debugLog(`✅ Login successful: ${user.uid}`);
+                debugLog(`📧 User email: ${user.email}`);
+                debugLog(`🔍 Email verified: ${user.emailVerified}`);
+
+                if (user.emailVerified) {
+                    showMessage('✅ Login successful! Email is verified.', 'success');
+                } else {
+                    showMessage('⚠️ Login successful but email not verified. Please check your email.', 'warning');
+                }
+
+            } catch (error) {
+                debugLog(`❌ Login error: ${error.code} - ${error.message}`);
+                
+                let errorMessage = error.message;
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email format.';
+                } else if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid credentials. Check email and password.';
+                }
+                
+                showMessage('❌ Login failed: ' + errorMessage, 'error');
+            }
+        };
+
+        // Monitor auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                debugLog(`👤 Auth state: User logged in - ${user.email} (verified: ${user.emailVerified})`);
+            } else {
+                debugLog('👤 Auth state: No user logged in');
+            }
+        });
+
+        debugLog('🚀 Firebase test page loaded');
+    </script>
+</body>
+</html>

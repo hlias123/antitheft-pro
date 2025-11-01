@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian Pro - النسخة المختلطة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .system-selector {
+            display: flex;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .system-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .system-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-tabs {
+            display: flex;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #718096;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #38a169;
+            border: 1px solid #9ae6b4;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #e53e3e;
+            border: 1px solid #feb2b2;
+        }
+
+        .message.warning {
+            background: #fffbeb;
+            color: #d69e2e;
+            border: 1px solid #fbd38d;
+        }
+
+        .system-info {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .test-accounts {
+            background: #e6fffa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 13px;
+            text-align: right;
+            border: 1px solid #81e6d9;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .app-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">🛡️</div>
+        <h1 class="app-title">Secure Guardian Pro</h1>
+        <p class="app-subtitle">النسخة المختلطة - نظام الحماية الذكي المتقدم</p>
+
+        <!-- System Selector -->
+        <div class="system-selector">
+            <button class="system-btn active" onclick="switchSystem('local')" id="local-system">النظام المحلي</button>
+            <button class="system-btn" onclick="switchSystem('firebase')" id="firebase-system">Firebase</button>
+        </div>
+
+        <!-- System Info -->
+        <div id="system-info" class="system-info">
+            <strong>النظام المحلي:</strong> يعمل مع رموز تحقق محلية (1234, 0000, 9999)
+        </div>
+
+        <!-- Messages -->
+        <div id="message" class="message"></div>
+
+        <!-- Form Tabs -->
+        <div class="form-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')" id="login-tab">تسجيل الدخول</button>
+            <button class="tab-btn" onclick="switchTab('register')" id="register-tab">إنشاء حساب</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-section" class="form-section active">
+            <div class="input-group">
+                <label class="input-label">البريد الإلكتروني</label>
+                <input type="email" class="input-field" id="login-email" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">كلمة المرور</label>
+                <input type="password" class="input-field" id="login-password" placeholder="أدخل كلمة المرور">
+            </div>
+
+            <button class="btn-primary" onclick="handleLogin()">
+                <span id="login-btn-text">تسجيل الدخول</span>
+            </button>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-section" class="form-section">
+            <div class="input-group">
+                <label class="input-label">الاسم الكامل</label>
+                <input type="text" class="input-field" id="register-name" placeholder="أدخل اسمك الكامل">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">البريد الإلكتروني</label>
+                <input type="email" class="input-field" id="register-email" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">كلمة المرور</label>
+                <input type="password" class="input-field" id="register-password" placeholder="أدخل كلمة مرور قوية">
+            </div>
+
+            <button class="btn-primary" onclick="handleRegister()">
+                <span id="register-btn-text">إنشاء الحساب</span>
+            </button>
+        </div>
+
+        <!-- Test Accounts -->
+        <div class="test-accounts">
+            <strong>🧪 حسابات الاختبار (النظام المحلي):</strong><br>
+            📧 أي إيميل + أي كلمة مرور<br>
+            🔑 رموز التحقق: 1234, 0000, 9999<br>
+            <br>
+            <strong>🔥 Firebase:</strong><br>
+            📧 استخدم بريد إلكتروني حقيقي<br>
+            📬 ستصلك رسالة تحقق فعلية
+        </div>
+    </div>
+
+    <script>
+        let currentSystem = 'local';
+        let currentUser = null;
+
+        // Switch between systems
+        function switchSystem(system) {
+            currentSystem = system;
+            
+            // Update buttons
+            document.querySelectorAll('.system-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(system + '-system').classList.add('active');
+            
+            // Update info
+            const infoDiv = document.getElementById('system-info');
+            if (system === 'local') {
+                infoDiv.innerHTML = '<strong>النظام المحلي:</strong> يعمل مع رموز تحقق محلية (1234, 0000, 9999)';
+            } else {
+                infoDiv.innerHTML = '<strong>Firebase:</strong> يرسل رسائل تحقق حقيقية إلى بريدك الإلكتروني';
+            }
+            
+            hideMessage();
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tab + '-section').classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+            hideMessage();
+        }
+
+        // Show/hide messages
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(hideMessage, 5000);
+            }
+        }
+
+        function hideMessage() {
+            document.getElementById('message').style.display = 'none';
+        }
+
+        // Handle login
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btnText = document.getElementById('login-btn-text');
+
+            if (!email || !password) {
+                showMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                return;
+            }
+
+            btnText.innerHTML = '<span class="loading"></span> جاري التحقق...';
+
+            try {
+                if (currentSystem === 'local') {
+                    await handleLocalLogin(email, password);
+                } else {
+                    await handleFirebaseLogin(email, password);
+                }
+            } catch (error) {
+                showMessage('خطأ في تسجيل الدخول: ' + error.message, 'error');
+            } finally {
+                btnText.textContent = 'تسجيل الدخول';
+            }
+        }
+
+        // Handle register
+        async function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const btnText = document.getElementById('register-btn-text');
+
+            if (!name || !email || !password) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            if (name.length < 2) {
+                showMessage('الاسم يجب أن يكون حرفين على الأقل', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            btnText.innerHTML = '<span class="loading"></span> جاري إنشاء الحساب...';
+
+            try {
+                if (currentSystem === 'local') {
+                    await handleLocalRegister(name, email, password);
+                } else {
+                    await handleFirebaseRegister(name, email, password);
+                }
+            } catch (error) {
+                showMessage('خطأ في إنشاء الحساب: ' + error.message, 'error');
+            } finally {
+                btnText.textContent = 'إنشاء الحساب';
+            }
+        }
+
+        // Local system handlers
+        async function handleLocalLogin(email, password) {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Accept any email/password for local system
+            showMessage('✅ تم تسجيل الدخول بنجاح! (النظام المحلي)', 'success');
+            
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1500);
+        }
+
+        async function handleLocalRegister(name, email, password) {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            showMessage(`✅ تم إنشاء الحساب بنجاح! (النظام المحلي)
+            
+يمكنك الآن تسجيل الدخول باستخدام أي رمز تحقق: 1234, 0000, 9999`, 'success');
+            
+            setTimeout(() => {
+                switchTab('login');
+                document.getElementById('login-email').value = email;
+                document.getElementById('login-password').value = password;
+            }, 3000);
+        }
+
+        // Firebase handlers (simplified)
+        async function handleFirebaseLogin(email, password) {
+            showMessage('🔥 جاري الاتصال بـ Firebase...', 'warning');
+            
+            // Simulate Firebase call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // For demo, show that Firebase needs real setup
+            showMessage('⚠️ Firebase يحتاج إعداد حقيقي. استخدم النظام المحلي للاختبار السريع.', 'warning');
+        }
+
+        async function handleFirebaseRegister(name, email, password) {
+            showMessage('🔥 جاري الاتصال بـ Firebase...', 'warning');
+            
+            // Simulate Firebase call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // For demo, show that Firebase needs real setup
+            showMessage('⚠️ Firebase يحتاج إعداد حقيقي. استخدم النظام المحلي للاختبار السريع.', 'warning');
+        }
+
+        // Email validation
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('login-email').focus();
+        });
+    </script>
+</body>
+</html>

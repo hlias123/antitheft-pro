@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian - App PIN Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(30px);
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #f0f9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .lang-btn {
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(15px);
+        }
+
+        .info-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-list {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .info-list li {
+            margin-bottom: 8px;
+            padding-left: 10px;
+        }
+
+        .demo-note {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .download-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            color: #4CAF50;
+        }
+
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            color: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+            
+            .logo {
+                font-size: 4rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .language-selector {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️🛡️</div>
+        <h1 class="title" id="main-title">Secure Guardian</h1>
+        <p class="subtitle" id="main-subtitle">App-Controlled Web Access</p>
+
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <button class="lang-btn active" onclick="setLanguage('en')" id="lang-en">🇬🇧 English</button>
+            <button class="lang-btn" onclick="setLanguage('el')" id="lang-el">🇬🇷 Ελληνικά</button>
+            <button class="lang-btn" onclick="setLanguage('ar')" id="lang-ar">🇸🇦 العربية</button>
+        </div>
+
+        <!-- Login Form -->
+        <div class="form-group">
+            <label for="email" id="email-label">📱 App PIN Login</label>
+            <input type="email" id="email" placeholder="Email Address" required>
+        </div>
+
+        <div class="form-group">
+            <input type="text" id="pin" placeholder="6-Digit PIN from Mobile App" maxlength="6" required>
+        </div>
+
+        <button class="btn" onclick="handleLogin()" id="login-btn">🚀 Access Website</button>
+
+        <div id="message" class="message"></div>
+
+        <!-- How it works -->
+        <div class="info-section">
+            <div class="info-title" id="how-it-works-title">📋 How it works:</div>
+            <ol class="info-list" id="how-it-works-list">
+                <li>Open the Secure Guardian mobile app</li>
+                <li>Generate a 6-digit PIN for web access</li>
+                <li>Enter your email and PIN above</li>
+                <li>Access granted for this session only</li>
+            </ol>
+        </div>
+
+        <!-- Demo Mode -->
+        <div class="demo-note">
+            <div id="demo-title">🧪 Demo Mode: Enter any 6-digit PIN to test the dashboard</div>
+        </div>
+
+        <!-- Download App -->
+        <div class="download-section">
+            <div id="download-title">📱 Don't have the app?</div>
+            <p id="download-desc">Download Secure Guardian mobile app to generate access PINs</p>
+            <a href="#" class="download-btn" id="download-btn">📱 Android App</a>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'en';
+
+        // Complete translations
+        const translations = {
+            en: {
+                mainTitle: "Secure Guardian",
+                mainSubtitle: "App-Controlled Web Access",
+                loginTitle: "📱 App PIN Login",
+                emailLabel: "Email Address",
+                pinLabel: "6-Digit PIN from Mobile App",
+                loginBtn: "🚀 Access Website",
+                howItWorksTitle: "📋 How it works:",
+                howItWorksList: [
+                    "Open the Secure Guardian mobile app",
+                    "Generate a 6-digit PIN for web access", 
+                    "Enter your email and PIN above",
+                    "Access granted for this session only"
+                ],
+                demoTitle: "🧪 Demo Mode: Enter any 6-digit PIN to test the dashboard",
+                downloadTitle: "📱 Don't have the app?",
+                downloadDesc: "Download Secure Guardian mobile app to generate access PINs",
+                downloadBtn: "📱 Android App"
+            },
+            el: {
+                mainTitle: "Ασφαλής Φύλακας",
+                mainSubtitle: "Πρόσβαση Ιστού μέσω Εφαρμογής",
+                loginTitle: "📱 Σύνδεση με PIN Εφαρμογής",
+                emailLabel: "Διεύθυνση Email",
+                pinLabel: "6ψήφιος PIN από την Εφαρμογή",
+                loginBtn: "🚀 Πρόσβαση στον Ιστότοπο",
+                howItWorksTitle: "📋 Πώς λειτουργεί:",
+                howItWorksList: [
+                    "Ανοίξτε την εφαρμογή Ασφαλής Φύλακας",
+                    "Δημιουργήστε έναν 6ψήφιο PIN για πρόσβαση",
+                    "Εισάγετε το email και PIN παραπάνω",
+                    "Πρόσβαση μόνο για αυτή τη συνεδρία"
+                ],
+                demoTitle: "🧪 Λειτουργία Demo: Εισάγετε οποιονδήποτε 6ψήφιο PIN για δοκιμή",
+                downloadTitle: "📱 Δεν έχετε την εφαρμογή;",
+                downloadDesc: "Κατεβάστε την εφαρμογή Ασφαλής Φύλακας για δημιουργία PIN",
+                downloadBtn: "📱 Android Εφαρμογή"
+            },
+            ar: {
+                mainTitle: "الحارس الآمن",
+                mainSubtitle: "الوصول للويب عبر التطبيق",
+                loginTitle: "📱 تسجيل دخول برقم PIN",
+                emailLabel: "عنوان البريد الإلكتروني",
+                pinLabel: "رقم PIN من 6 أرقام من التطبيق",
+                loginBtn: "🚀 الوصول للموقع",
+                howItWorksTitle: "📋 كيف يعمل:",
+                howItWorksList: [
+                    "افتح تطبيق الحارس الآمن",
+                    "أنشئ رقم PIN من 6 أرقام للوصول للويب",
+                    "أدخل بريدك الإلكتروني ورقم PIN أعلاه",
+                    "الوصول مُتاح لهذه الجلسة فقط"
+                ],
+                demoTitle: "🧪 وضع التجريب: أدخل أي رقم PIN من 6 أرقام لتجربة لوحة التحكم",
+                downloadTitle: "📱 ليس لديك التطبيق؟",
+                downloadDesc: "حمّل تطبيق الحارس الآمن لإنشاء أرقام PIN للوصول",
+                downloadBtn: "📱 تطبيق أندرويد"
+            }
+        };
+
+        // Set language function
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            const t = translations[lang];
+            
+            // Update text content
+            document.getElementById('main-title').textContent = t.mainTitle;
+            document.getElementById('main-subtitle').textContent = t.mainSubtitle;
+            document.getElementById('email-label').textContent = t.loginTitle;
+            document.getElementById('email').placeholder = t.emailLabel;
+            document.getElementById('pin').placeholder = t.pinLabel;
+            document.getElementById('login-btn').textContent = t.loginBtn;
+            document.getElementById('how-it-works-title').textContent = t.howItWorksTitle;
+            document.getElementById('demo-title').textContent = t.demoTitle;
+            document.getElementById('download-title').textContent = t.downloadTitle;
+            document.getElementById('download-desc').textContent = t.downloadDesc;
+            document.getElementById('download-btn').textContent = t.downloadBtn;
+            
+            // Update how it works list
+            const listElement = document.getElementById('how-it-works-list');
+            listElement.innerHTML = '';
+            t.howItWorksList.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                listElement.appendChild(li);
+            });
+            
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+            
+            // Update document direction for Arabic
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle login
+        function handleLogin() {
+            const email = document.getElementById('email').value.trim();
+            const pin = document.getElementById('pin').value.trim();
+            
+            // Validation
+            if (!email || !email.includes('@')) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (!pin || pin.length !== 6 || !/^\d{6}$/.test(pin)) {
+                showMessage('Please enter a 6-digit PIN', 'error');
+                return;
+            }
+            
+            // Simulate login success
+            showMessage('Login successful! Redirecting to dashboard...', 'success');
+            
+            setTimeout(() => {
+                // Redirect to advanced tracking dashboard
+                window.location.href = 'advanced-tracking.html';
+            }, 2000);
+        }
+
+        // Handle Enter key
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('en');
+            document.getElementById('email').focus();
+        });
+    </script>
+</body>
+</html>
