@@ -552,7 +552,7 @@ app.get('/api/admin/bindings', (req, res) => {
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'device-binding-app.html'));
+    res.sendFile(path.join(__dirname, 'public', 'app-pin-login.html'));
 });
 
 app.get('/device-register', (req, res) => {
@@ -561,10 +561,11 @@ app.get('/device-register', (req, res) => {
 
 // Start server
 server.listen(PORT, async () => {
-    console.log(`🔗 Device Binding System running on port ${PORT}`);
+    console.log(`🛡️ Secure Guardian System running on port ${PORT}`);
+    console.log(`📱 Main App (PIN Login): http://localhost:${PORT}`);
     console.log(`📱 Device Registration: http://localhost:${PORT}/device-register`);
-    console.log(`🌐 Web Access: http://localhost:${PORT}`);
-    console.log(`🔒 Security: Device-Email binding enforced`);
+    console.log(`🗺️ Advanced Tracking: http://localhost:${PORT}/advanced-tracking.html`);
+    console.log(`🔒 Security: Multi-language PIN authentication`);
     
     await initializeEmail();
     
