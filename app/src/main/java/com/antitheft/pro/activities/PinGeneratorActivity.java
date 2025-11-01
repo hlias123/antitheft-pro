@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.antitheft.pro.api.ApiService;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +29,7 @@ public class PinGeneratorActivity extends AppCompatActivity {
     private String currentPin = "";
     private CountDownTimer pinTimer;
     private SharedPreferences prefs;
+    private ApiService apiService;
     private static final long PIN_VALIDITY_DURATION = 5 * 60 * 1000; // 5 minutes
     
     @Override
@@ -35,6 +37,7 @@ public class PinGeneratorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         
         prefs = getSharedPreferences("AntiTheftPro", MODE_PRIVATE);
+        apiService = new ApiService(this);
         
         createPinGeneratorInterface();
         
@@ -185,6 +188,9 @@ public class PinGeneratorActivity extends AppCompatActivity {
              .putString("pin_created", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()))
              .apply();
         
+        // Send PIN to server for validation
+        sendPinToServer(currentPin, expiryTime);
+        
         // Update UI
         pinDisplay.setText(formatPin(currentPin));
         copyButton.setEnabled(true);
@@ -281,6 +287,63 @@ public class PinGeneratorActivity extends AppCompatActivity {
                           "⚠️ This PIN expires in 5 minutes and can only be used once.")
                .setPositiveButton("Got it!", null)
                .show();
+    }
+    
+    private void sendPinToServer(String pin, long expiry) {
+        // Get registered email
+        String email = prefs.getString("registered_email", "");
+        if (email.isEmpty()) {
+            // Try to get email from user input or device registration
+            email = "user@example.com"; // Default for demo
+        }
+        
+        // Send PIN to server via API
+        try {
+            java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                try {
+                    org.json.JSONObject pinData = new org.json.JSONObject();
+                    pinData.put("email", email);
+                    pinData.put("pin", pin);
+                    pinData.put("device_id", getDeviceId());
+                    pinData.put("expiry", expiry);
+                    
+                    // Send to server
+                    java.net.URL url = new java.net.URL(getServerUrl() + "/api/pin/store");
+                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setDoOutput(true);
+                    
+                    java.io.OutputStream os = conn.getOutputStream();
+                    os.write(pinData.toString().getBytes("UTF-8"));
+                    os.close();
+                    
+                    int responseCode = conn.getResponseCode();
+                    if (responseCode == java.net.HttpURLConnection.HTTP_OK) {
+                        android.util.Log.d("PinGenerator", "PIN sent to server successfully");
+                    }
+                    
+                } catch (Exception e) {
+                    android.util.Log.e("PinGenerator", "Error sending PIN to server", e);
+                }
+            });
+        } catch (Exception e) {
+            android.util.Log.e("PinGenerator", "Error creating executor", e);
+        }
+    }
+    
+    private String getDeviceId() {
+        String deviceId = prefs.getString("device_id", "");
+        if (deviceId.isEmpty()) {
+            deviceId = "android_" + android.os.Build.SERIAL + "_" + System.currentTimeMillis();
+            prefs.edit().putString("device_id", deviceId).apply();
+        }
+        return deviceId;
+    }
+    
+    private String getServerUrl() {
+        return prefs.getString("server_url", "http://localhost:8080");
     }
     
     @Override

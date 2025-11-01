@@ -1063,11 +1063,209 @@
             document.documentElement.dir = 'ltr';
         }
 
+        // Load real device data
+        async function loadDeviceData() {
+            try {
+                const userEmail = localStorage.getItem('userEmail');
+                if (!userEmail) {
+                    window.location.href = '/';
+                    return;
+                }
+                
+                const response = await fetch(`/api/device/${encodeURIComponent(userEmail)}`);
+                const result = await response.json();
+                
+                if (result.success && result.device) {
+                    const device = result.device;
+                    
+                    // Update device status
+                    updateRealDeviceStatus(device);
+                    
+                    // Update map with real location
+                    if (device.location) {
+                        updateMapWithRealLocation(device.location);
+                    }
+                    
+                    // Show location history
+                    if (result.location_history) {
+                        showLocationHistory(result.location_history);
+                    }
+                    
+                    // Show recent alerts
+                    if (result.recent_alerts) {
+                        showRecentAlerts(result.recent_alerts);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading device data:', error);
+            }
+        }
+        
+        function updateRealDeviceStatus(device) {
+            // Update battery
+            if (device.battery_level !== undefined) {
+                document.getElementById('batteryLevel').textContent = Math.round(device.battery_level) + '%';
+                document.getElementById('batteryStatus').textContent = Math.round(device.battery_level) + '%';
+                
+                const batteryBar = document.getElementById('batteryBar');
+                if (batteryBar) {
+                    batteryBar.style.width = device.battery_level + '%';
+                    
+                    // Color based on battery level
+                    if (device.battery_level < 20) {
+                        batteryBar.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+                    } else if (device.battery_level < 50) {
+                        batteryBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+                    } else {
+                        batteryBar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+                    }
+                }
+            }
+            
+            // Update connection status
+            const lastSeen = device.last_seen || 0;
+            const timeDiff = Date.now() - lastSeen;
+            
+            if (timeDiff < 60000) { // Less than 1 minute
+                document.getElementById('connectionStatus').textContent = 'ONLINE';
+                document.getElementById('connectionStatus').style.color = '#10b981';
+            } else if (timeDiff < 300000) { // Less than 5 minutes
+                document.getElementById('connectionStatus').textContent = 'RECENT';
+                document.getElementById('connectionStatus').style.color = '#f59e0b';
+            } else {
+                document.getElementById('connectionStatus').textContent = 'OFFLINE';
+                document.getElementById('connectionStatus').style.color = '#ef4444';
+            }
+            
+            // Update security status
+            const securityStatus = device.security_status || 'unknown';
+            let statusText = 'Unknown';
+            let statusColor = '#6b7280';
+            
+            switch (securityStatus) {
+                case 'emergency':
+                    statusText = 'EMERGENCY MODE';
+                    statusColor = '#ef4444';
+                    break;
+                case 'full_protection':
+                    statusText = 'FULLY PROTECTED';
+                    statusColor = '#10b981';
+                    break;
+                case 'partial_protection':
+                    statusText = 'PARTIAL PROTECTION';
+                    statusColor = '#f59e0b';
+                    break;
+                case 'disabled':
+                    statusText = 'PROTECTION DISABLED';
+                    statusColor = '#ef4444';
+                    break;
+            }
+            
+            const movementStatusEl = document.getElementById('movementStatus');
+            if (movementStatusEl) {
+                movementStatusEl.textContent = statusText;
+                movementStatusEl.style.color = statusColor;
+            }
+        }
+        
+        function updateMapWithRealLocation(location) {
+            if (map && location.latitude && location.longitude) {
+                const lat = location.latitude;
+                const lng = location.longitude;
+                
+                // Update map center
+                map.setView([lat, lng], 18);
+                
+                // Update or create device marker
+                if (deviceMarker) {
+                    deviceMarker.setLatLng([lat, lng]);
+                } else {
+                    const deviceIcon = L.divIcon({
+                        html: '<div style="background: #ef4444; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(239,68,68,0.5);"></div>',
+                        iconSize: [20, 20],
+                        className: 'device-marker'
+                    });
+                    
+                    deviceMarker = L.marker([lat, lng], { icon: deviceIcon }).addTo(map);
+                }
+                
+                // Update coordinates display
+                document.getElementById('coordinates').textContent = 
+                    `${lat.toFixed(6)}°N, ${lng.toFixed(6)}°E`;
+                
+                // Update accuracy
+                if (location.accuracy) {
+                    document.getElementById('gpsAccuracy').textContent = `±${Math.round(location.accuracy)}m`;
+                }
+                
+                // Update last update time
+                if (location.timestamp) {
+                    const updateTime = new Date(location.timestamp);
+                    document.getElementById('lastUpdate').textContent = 
+                        updateTime.toLocaleTimeString();
+                }
+            }
+        }
+        
+        function showLocationHistory(history) {
+            if (history && history.length > 1) {
+                // Draw path on map
+                const pathCoords = history.map(loc => [loc.latitude, loc.longitude]);
+                L.polyline(pathCoords, {
+                    color: '#3b82f6',
+                    weight: 3,
+                    opacity: 0.7
+                }).addTo(map);
+            }
+        }
+        
+        function showRecentAlerts(alerts) {
+            const activityFeed = document.getElementById('activityFeed');
+            if (activityFeed && alerts.length > 0) {
+                // Clear existing items
+                activityFeed.innerHTML = '';
+                
+                alerts.forEach(alert => {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'location-item';
+                    
+                    const alertTime = new Date(alert.timestamp).toLocaleString();
+                    let alertIcon = '🚨';
+                    
+                    switch (alert.alert_type) {
+                        case 'theft_detected':
+                            alertIcon = '🚨';
+                            break;
+                        case 'intruder_attempt':
+                            alertIcon = '👁️';
+                            break;
+                        case 'low_battery':
+                            alertIcon = '🔋';
+                            break;
+                        default:
+                            alertIcon = '⚠️';
+                    }
+                    
+                    alertItem.innerHTML = `
+                        <div>${alertIcon} ${alert.message}</div>
+                        <div class="location-time">${alertTime}</div>
+                    `;
+                    
+                    activityFeed.appendChild(alertItem);
+                });
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setLanguage('en'); // Set default language
-            simulateBattery();
-            simulateMovement(); // Start tracking immediately
+            
+            // Load real device data instead of simulation
+            loadDeviceData();
+            
+            // Refresh data every 30 seconds
+            setInterval(loadDeviceData, 30000);
             
             // Update time counters every second
             setInterval(updateTimeCounters, 1000);

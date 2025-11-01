@@ -16,9 +16,11 @@ import com.antitheft.pro.activities.PinGeneratorActivity;
 import com.antitheft.pro.activities.TrackingActivity;
 import com.antitheft.pro.activities.SettingsActivity;
 import com.antitheft.pro.activities.IntrudersActivity;
+import com.antitheft.pro.activities.DeviceRegistrationActivity;
 import com.antitheft.pro.services.LocationTrackingService;
 import com.antitheft.pro.utils.SecurityManager;
 import com.antitheft.pro.utils.PermissionManager;
+import com.antitheft.pro.api.ApiService;
 
 public class MainActivity extends AppCompatActivity {
     
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private SecurityManager securityManager;
     private PermissionManager permissionManager;
     private SharedPreferences prefs;
+    private ApiService apiService;
     
     // UI Elements
     private TextView statusText;
@@ -46,6 +49,17 @@ public class MainActivity extends AppCompatActivity {
             securityManager = new SecurityManager(this);
             permissionManager = new PermissionManager(this);
             prefs = getSharedPreferences("AntiTheftPro", MODE_PRIVATE);
+            apiService = new ApiService(this);
+            
+            // Check if device is registered
+            if (!prefs.getBoolean("device_registered", false) && 
+                !prefs.getBoolean("registration_skipped", false)) {
+                // Go to registration activity
+                Intent registrationIntent = new Intent(this, DeviceRegistrationActivity.class);
+                startActivity(registrationIntent);
+                finish();
+                return;
+            }
             
             // Create UI programmatically for better control
             createMainInterface();
@@ -58,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
             
             // Update status
             updateDeviceStatus();
+            
+            // Start periodic sync with server
+            apiService.startPeriodicSync();
             
         } catch (Exception e) {
             Toast.makeText(this, "خطأ في تحميل التطبيق: " + e.getMessage(), Toast.LENGTH_LONG).show();

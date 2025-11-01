@@ -14,7 +14,7 @@ import android.os.Build;
 import android.os.IBinder;
 import androidx.core.app.NotificationCompat;
 import com.antitheft.pro.MainActivity;
-import com.antitheft.pro.R;
+import com.antitheft.pro.api.ApiService;
 
 public class LocationTrackingService extends Service implements LocationListener {
     
@@ -23,6 +23,7 @@ public class LocationTrackingService extends Service implements LocationListener
     
     private LocationManager locationManager;
     private SharedPreferences prefs;
+    private ApiService apiService;
     
     @Override
     public void onCreate() {
@@ -30,6 +31,7 @@ public class LocationTrackingService extends Service implements LocationListener
         
         prefs = getSharedPreferences("AntiTheftPro", MODE_PRIVATE);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        apiService = new ApiService(this);
         
         createNotificationChannel();
     }
@@ -113,6 +115,9 @@ public class LocationTrackingService extends Service implements LocationListener
         // Update notification with current location
         updateNotification(location);
         
+        // Send location to server
+        apiService.sendLocationUpdate(location.getLatitude(), location.getLongitude(), location.getAccuracy());
+        
         // Check if device has moved significantly (potential theft)
         checkForUnauthorizedMovement(location);
     }
@@ -170,6 +175,10 @@ public class LocationTrackingService extends Service implements LocationListener
              .putFloat("theft_latitude", (float) location.getLatitude())
              .putFloat("theft_longitude", (float) location.getLongitude())
              .apply();
+        
+        // Send theft alert to server
+        apiService.sendSecurityAlert("theft_detected", 
+            String.format("Device moved %.0f meters without authorization", distance));
     }
     
     @Override

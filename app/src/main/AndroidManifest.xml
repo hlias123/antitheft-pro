@@ -87,6 +87,12 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- Device Registration Activity -->
+        <activity
+            android:name=".activities.DeviceRegistrationActivity"
+            android:exported="false"
+            android.screenOrientation="portrait" />
+
         <!-- Tracking Activity -->
         <activity
             android:name=".activities.TrackingActivity"

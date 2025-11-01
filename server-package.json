@@ -1,0 +1,34 @@
+{
+  "name": "secure-guardian-sync-server",
+  "version": "1.0.0",
+  "description": "Sync server for Secure Guardian mobile app and web dashboard",
+  "main": "sync-server.js",
+  "scripts": {
+    "start": "node sync-server.js",
+    "dev": "nodemon sync-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "antitheft",
+    "security",
+    "tracking",
+    "mobile",
+    "sync"
+  ],
+  "author": "Secure Guardian Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

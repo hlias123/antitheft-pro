@@ -442,8 +442,8 @@
             }, 5000);
         }
 
-        // Handle login
-        function handleLogin() {
+        // Handle login with real PIN validation
+        async function handleLogin() {
             const email = document.getElementById('email').value.trim();
             const pin = document.getElementById('pin').value.trim();
             
@@ -458,13 +458,50 @@
                 return;
             }
             
-            // Simulate login success
-            showMessage('Login successful! Redirecting to dashboard...', 'success');
+            // Show loading
+            const loginBtn = document.getElementById('login-btn');
+            const originalText = loginBtn.textContent;
+            loginBtn.textContent = '🔄 Validating PIN...';
+            loginBtn.disabled = true;
             
-            setTimeout(() => {
-                // Redirect to advanced tracking dashboard
-                window.location.href = 'advanced-tracking.html';
-            }, 2000);
+            try {
+                // Validate PIN with server
+                const response = await fetch('/api/pin/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        pin: pin,
+                        timestamp: Date.now()
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.valid) {
+                    // Store device info for dashboard
+                    localStorage.setItem('deviceInfo', JSON.stringify(result.device_info));
+                    localStorage.setItem('userEmail', email);
+                    
+                    showMessage('✅ PIN validated! Redirecting to dashboard...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'advanced-tracking.html';
+                    }, 1500);
+                } else {
+                    showMessage('❌ ' + result.message, 'error');
+                }
+                
+            } catch (error) {
+                console.error('PIN validation error:', error);
+                showMessage('❌ Connection error. Please try again.', 'error');
+            } finally {
+                // Reset button
+                loginBtn.textContent = originalText;
+                loginBtn.disabled = false;
+            }
         }
 
         // Handle Enter key
