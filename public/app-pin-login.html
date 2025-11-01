@@ -791,10 +791,20 @@
                 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
             `;
             
-            // Initialize full-screen map
-            setTimeout(() => {
-                initializeFullScreenMap();
-            }, 100);
+            // Load Leaflet and initialize map
+            const leafletCSS = document.createElement('link');
+            leafletCSS.rel = 'stylesheet';
+            leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            document.head.appendChild(leafletCSS);
+            
+            const leafletJS = document.createElement('script');
+            leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            leafletJS.onload = () => {
+                setTimeout(() => {
+                    initializeFullScreenMap();
+                }, 500);
+            };
+            document.head.appendChild(leafletJS);
         }
 
         // Initialize full-screen advanced map
