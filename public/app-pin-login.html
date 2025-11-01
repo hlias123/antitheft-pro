@@ -258,6 +258,17 @@
             50% { transform: translateY(-10px); }
         }
 
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(239,68,68,0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(239,68,68,0.8);
+                transform: scale(1.1);
+            }
+        }
+
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -382,17 +393,37 @@
                 <p id="sessionInfo" style="font-size: 12px; opacity: 0.8;">Session active - PIN verified via mobile app</p>
             </div>
 
-            <!-- Live Map Section -->
-            <div class="info-panel" style="margin-bottom: 20px;" id="mapContainer">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h4 id="mapTitle">🗺️ Live Device Location</h4>
-                    <button onclick="toggleFullscreenMap()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 12px;">
-                        <span id="fullscreenBtn">🔍 Fullscreen</span>
-                    </button>
+            <!-- Advanced Map Section (Full Size) -->
+            <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 0; margin-bottom: 20px; overflow: hidden;">
+                <!-- Map Header -->
+                <div style="background: linear-gradient(135deg, #1e293b, #334155); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <h4 id="mapTitle" style="color: white; margin: 0; display: flex; align-items: center; gap: 10px;">🗺️ Advanced Live Tracking</h4>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="centerOnDevice()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 15px; cursor: pointer; font-size: 12px;">📍 Center</button>
+                        <button onclick="toggleTracking()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 15px; cursor: pointer; font-size: 12px;">🎯 Track</button>
+                    </div>
                 </div>
-                <div id="map" style="width: 100%; height: 500px; border-radius: 12px; overflow: hidden; transition: all 0.3s ease;"></div>
-                <div style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
-                    <span id="mapInfo">📍 Last updated: Just now • Accuracy: ±5 meters</span>
+                
+                <!-- Large Map Container -->
+                <div style="position: relative;">
+                    <div id="map" style="width: 100%; height: 600px;"></div>
+                    
+                    <!-- Map Info Overlay -->
+                    <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.95); padding: 15px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); min-width: 280px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="color: white;">🎯 Live Tracking</strong>
+                            <span style="font-size: 12px; opacity: 0.7; color: white;">Live</span>
+                        </div>
+                        <div id="coordinates" style="color: white; font-family: monospace;">37.9755°N, 23.7348°E</div>
+                        <div style="font-size: 12px; opacity: 0.7; margin-top: 8px; color: white;">
+                            Speed: <span id="currentSpeed">0 km/h</span> | 
+                            Accuracy: <span id="gpsAccuracy">±3m</span>
+                        </div>
+                        <div style="font-size: 12px; margin-top: 8px; padding: 8px; background: rgba(16,185,129,0.2); border-radius: 6px; color: white;">
+                            ⏱️ Tracking: <span id="trackingTime">0:00</span> | 
+                            Distance: <span id="totalDistance">0m</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -466,7 +497,7 @@
                 lockDesc: "Lock your device",
                 alarmTitle: "Sound Alarm",
                 alarmDesc: "Activate alarm",
-                mapTitle: "🗺️ Live Device Location",
+                mapTitle: "🗺️ Advanced Live Tracking",
                 mapInfo: "📍 Last updated: Just now • Accuracy: ±5 meters",
                 fullscreenBtn: "🔍 Fullscreen",
                 exitFullscreenBtn: "❌ Exit Fullscreen",
@@ -504,7 +535,7 @@
                 lockDesc: "Κλειδώστε τη συσκευή σας",
                 alarmTitle: "Ήχος Συναγερμού",
                 alarmDesc: "Ενεργοποίηση συναγερμού",
-                mapTitle: "🗺️ Ζωντανή Τοποθεσία Συσκευής",
+                mapTitle: "🗺️ Προηγμένη Ζωντανή Παρακολούθηση",
                 mapInfo: "📍 Τελευταία ενημέρωση: Μόλις τώρα • Ακρίβεια: ±5 μέτρα",
                 fullscreenBtn: "🔍 Πλήρης Οθόνη",
                 exitFullscreenBtn: "❌ Έξοδος από Πλήρη Οθόνη",
@@ -542,7 +573,7 @@
                 lockDesc: "اقفل جهازك",
                 alarmTitle: "تشغيل الإنذار",
                 alarmDesc: "تفعيل الإنذار",
-                mapTitle: "🗺️ موقع الجهاز المباشر",
+                mapTitle: "🗺️ التتبع المباشر المتقدم",
                 mapInfo: "📍 آخر تحديث: الآن • الدقة: ±5 أمتار",
                 fullscreenBtn: "🔍 ملء الشاشة",
                 exitFullscreenBtn: "❌ إغلاق ملء الشاشة",
@@ -640,11 +671,16 @@
             }, 1500);
         }
 
-        // Map variables
+        // Advanced Map variables
         let map = null;
         let deviceMarker = null;
         let currentLat = 37.9755; // Athens coordinates as default
         let currentLng = 23.7348;
+        let trackingPath = [];
+        let isTracking = true;
+        let trackingStartTime = Date.now();
+        let totalDistance = 0;
+        let isMoving = false;
 
         // Show dashboard
         function showDashboard() {
@@ -661,23 +697,23 @@
             }, 100);
         }
 
-        // Initialize map
+        // Initialize advanced map
         function initializeMap() {
             if (map) {
                 map.remove(); // Remove existing map
             }
             
-            // Create map
-            map = L.map('map').setView([currentLat, currentLng], 15);
+            // Create map with higher zoom for better detail
+            map = L.map('map').setView([currentLat, currentLng], 18);
             
             // Add tile layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
             
-            // Add device marker
+            // Advanced device marker with pulsing effect
             const deviceIcon = L.divIcon({
-                html: '<div style="background: #ef4444; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>',
+                html: '<div style="background: #ef4444; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(239,68,68,0.5); animation: pulse 2s infinite;"></div>',
                 iconSize: [20, 20],
                 className: 'device-marker'
             });
@@ -686,39 +722,108 @@
             
             // Add popup to marker
             const popupTexts = {
-                en: '<b>📱 Your Device</b><br>Last seen: Just now<br>Battery: 85%',
-                el: '<b>📱 Η Συσκευή σας</b><br>Τελευταία φορά: Μόλις τώρα<br>Μπαταρία: 85%',
-                ar: '<b>📱 جهازك</b><br>آخر ظهور: الآن<br>البطارية: 85%'
+                en: '<b>📱 Target Device</b><br>Status: Active<br>Battery: 85%<br>Signal: Strong',
+                el: '<b>📱 Συσκευή Στόχος</b><br>Κατάσταση: Ενεργή<br>Μπαταρία: 85%<br>Σήμα: Ισχυρό',
+                ar: '<b>📱 الجهاز المستهدف</b><br>الحالة: نشط<br>البطارية: 85%<br>الإشارة: قوية'
             };
             
             deviceMarker.bindPopup(popupTexts[currentLanguage]).openPopup();
             
-            // Simulate live tracking
-            startLiveTracking();
+            // Start advanced tracking
+            startAdvancedTracking();
         }
 
-        // Simulate live tracking with small movements
-        function startLiveTracking() {
+        // Calculate distance between two points
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371e3; // Earth's radius in meters
+            const φ1 = lat1 * Math.PI/180;
+            const φ2 = lat2 * Math.PI/180;
+            const Δφ = (lat2-lat1) * Math.PI/180;
+            const Δλ = (lng2-lng1) * Math.PI/180;
+
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                      Math.cos(φ1) * Math.cos(φ2) *
+                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            return R * c; // Distance in meters
+        }
+
+        // Advanced tracking simulation
+        function startAdvancedTracking() {
             setInterval(() => {
-                // Small random movement (±0.0001 degrees ≈ ±10 meters)
-                const deltaLat = (Math.random() - 0.5) * 0.0002;
-                const deltaLng = (Math.random() - 0.5) * 0.0002;
+                if (!isTracking) return;
                 
-                currentLat += deltaLat;
-                currentLng += deltaLng;
+                const currentPos = deviceMarker.getLatLng();
                 
-                if (deviceMarker && map) {
-                    deviceMarker.setLatLng([currentLat, currentLng]);
+                // Realistic movement simulation
+                const movementChance = Math.random();
+                let newLat = currentPos.lat;
+                let newLng = currentPos.lng;
+                let speed = 0;
+                
+                if (movementChance > 0.3) { // 70% chance of movement
+                    const moveDistance = Math.random() * 0.0001; // Realistic steps
+                    const direction = Math.random() * 2 * Math.PI;
                     
-                    // Update popup
-                    const popupTexts = {
-                        en: '<b>📱 Your Device</b><br>Last seen: Just now<br>Battery: 85%',
-                        el: '<b>📱 Η Συσκευή σας</b><br>Τελευταία φορά: Μόλις τώρα<br>Μπαταρία: 85%',
-                        ar: '<b>📱 جهازك</b><br>آخر ظهور: الآن<br>البطارية: 85%'
-                    };
-                    deviceMarker.getPopup().setContent(popupTexts[currentLanguage]);
+                    newLat += Math.cos(direction) * moveDistance;
+                    newLng += Math.sin(direction) * moveDistance;
+                    
+                    // Calculate distance and speed
+                    const distanceMoved = calculateDistance(currentPos.lat, currentPos.lng, newLat, newLng);
+                    totalDistance += distanceMoved;
+                    speed = Math.floor((distanceMoved / 1000) * 3600); // km/h
+                    if (speed < 1) speed = Math.floor(Math.random() * 5) + 1;
+                    
+                    isMoving = true;
+                } else {
+                    speed = 0;
+                    isMoving = false;
                 }
-            }, 3000); // Update every 3 seconds
+                
+                // Update position
+                deviceMarker.setLatLng([newLat, newLng]);
+                trackingPath.push([newLat, newLng]);
+                currentLat = newLat;
+                currentLng = newLng;
+                
+                // Update displays
+                document.getElementById('coordinates').textContent = 
+                    `${newLat.toFixed(6)}°N, ${newLng.toFixed(6)}°E`;
+                document.getElementById('currentSpeed').textContent = `${speed} km/h`;
+                document.getElementById('totalDistance').textContent = `${Math.floor(totalDistance)}m`;
+                
+                // Update GPS accuracy
+                const accuracy = isMoving ? Math.floor(Math.random() * 5) + 3 : Math.floor(Math.random() * 2) + 1;
+                document.getElementById('gpsAccuracy').textContent = `±${accuracy}m`;
+                
+                // Update tracking time
+                const trackingTime = Math.floor((Date.now() - trackingStartTime) / 1000);
+                const minutes = Math.floor(trackingTime / 60);
+                const seconds = trackingTime % 60;
+                document.getElementById('trackingTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+            }, 1000); // Update every second for smooth tracking
+        }
+
+        // Map control functions
+        function centerOnDevice() {
+            if (map && deviceMarker) {
+                map.setView(deviceMarker.getLatLng(), 18);
+            }
+        }
+
+        function toggleTracking() {
+            isTracking = !isTracking;
+            const btn = event.target;
+            
+            if (isTracking) {
+                btn.textContent = '⏹️ Stop';
+                btn.style.background = 'rgba(239, 68, 68, 0.8)';
+            } else {
+                btn.textContent = '🎯 Track';
+                btn.style.background = 'rgba(255,255,255,0.1)';
+            }
         }
 
         // Dashboard functions
@@ -790,39 +895,7 @@
             showMessage(messages[currentLanguage], 'info');
         }
 
-        // Fullscreen map toggle
-        let isMapFullscreen = false;
-        function toggleFullscreenMap() {
-            const mapContainer = document.getElementById('mapContainer');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const t = translations[currentLanguage];
-            
-            if (isMapFullscreen) {
-                // Exit fullscreen
-                mapContainer.classList.remove('map-fullscreen');
-                fullscreenBtn.textContent = t.fullscreenBtn;
-                isMapFullscreen = false;
-                
-                // Resize map after animation
-                setTimeout(() => {
-                    if (map) {
-                        map.invalidateSize();
-                    }
-                }, 300);
-            } else {
-                // Enter fullscreen
-                mapContainer.classList.add('map-fullscreen');
-                fullscreenBtn.textContent = t.exitFullscreenBtn;
-                isMapFullscreen = true;
-                
-                // Resize map after animation
-                setTimeout(() => {
-                    if (map) {
-                        map.invalidateSize();
-                    }
-                }, 300);
-            }
-        }
+
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
