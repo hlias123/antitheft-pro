@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الإيميل البسيط</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #38a169;
+            border: 1px solid #9ae6b4;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #e53e3e;
+            border: 1px solid #feb2b2;
+        }
+
+        .verification-step {
+            display: none;
+        }
+
+        .verification-step.active {
+            display: block;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 3px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            color: #234e52;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .preview-link {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .preview-link:hover {
+            background: #3182ce;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📧</div>
+        <h1 class="title">اختبار الإيميل البسيط</h1>
+        
+        <div id="messageDiv"></div>
+        
+        <!-- خطوة الإرسال -->
+        <div id="sendStep">
+            <div class="form-group">
+                <label for="name">الاسم (اختياري)</label>
+                <input type="text" id="name" placeholder="أدخل اسمك">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+            </div>
+            
+            <button class="btn" id="sendBtn" onclick="sendCode()">
+                إرسال رمز التحقق
+            </button>
+            
+            <div class="info-box">
+                📧 سيتم إرسال رمز مكون من 6 أرقام إلى بريدك الإلكتروني
+            </div>
+        </div>
+        
+        <!-- خطوة التحقق -->
+        <div id="verifyStep" class="verification-step">
+            <h3>أدخل رمز التحقق</h3>
+            <p>تحقق من صندوق بريدك الإلكتروني</p>
+            
+            <input type="text" id="codeInput" class="code-input" placeholder="000000" maxlength="6">
+            
+            <button class="btn" onclick="verifyCode()">
+                تأكيد الرمز
+            </button>
+            
+            <button class="btn" onclick="goBack()" style="background: #718096;">
+                العودة
+            </button>
+            
+            <div id="previewLinkDiv"></div>
+            
+            <div class="info-box">
+                ✅ الرمز صالح لمدة 10 دقائق
+            </div>
+        </div>
+        
+        <!-- خطوة النجاح -->
+        <div id="successStep" class="verification-step">
+            <div class="logo">🎉</div>
+            <h3>تم التحقق بنجاح!</h3>
+            <p>تم تأكيد بريدك الإلكتروني</p>
+            
+            <button class="btn" onclick="startOver()">
+                اختبار جديد
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+
+        // عرض الرسائل
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('messageDiv');
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 8000);
+        }
+
+        // إرسال رمز التحقق
+        async function sendCode() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const sendBtn = document.getElementById('sendBtn');
+
+            if (!email) {
+                showMessage('يرجى إدخال البريد الإلكتروني', 'error');
+                return;
+            }
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'جاري الإرسال...';
+
+            try {
+                const response = await fetch('/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUserId = data.userId;
+                    
+                    let message = '✅ تم إرسال رمز التحقق بنجاح!';
+                    if (data.testCode) {
+                        message += `<br><strong>رمز الاختبار: ${data.testCode}</strong>`;
+                    }
+                    
+                    showMessage(message, 'success');
+                    
+                    // عرض رابط المعاينة إذا كان متوفراً
+                    if (data.previewUrl) {
+                        document.getElementById('previewLinkDiv').innerHTML = 
+                            `<a href="${data.previewUrl}" target="_blank" class="preview-link">🔗 معاينة الإيميل</a>`;
+                    }
+                    
+                    showVerifyStep();
+                } else {
+                    showMessage(data.error || 'فشل في الإرسال', 'error');
+                }
+
+            } catch (error) {
+                console.error('خطأ:', error);
+                showMessage('خطأ في الاتصال بالخادم', 'error');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'إرسال رمز التحقق';
+            }
+        }
+
+        // عرض خطوة التحقق
+        function showVerifyStep() {
+            document.getElementById('sendStep').style.display = 'none';
+            document.getElementById('verifyStep').classList.add('active');
+            document.getElementById('codeInput').focus();
+        }
+
+        // تحقق من الرمز
+        async function verifyCode() {
+            const code = document.getElementById('codeInput').value;
+
+            if (!code || code.length !== 6) {
+                showMessage('يرجى إدخال رمز مكون من 6 أرقام', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/verify-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showMessage('✅ تم التحقق بنجاح!', 'success');
+                    showSuccessStep();
+                } else {
+                    showMessage(data.error || 'رمز التحقق غير صحيح', 'error');
+                    document.getElementById('codeInput').value = '';
+                    document.getElementById('codeInput').focus();
+                }
+
+            } catch (error) {
+                console.error('خطأ:', error);
+                showMessage('خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        // عرض خطوة النجاح
+        function showSuccessStep() {
+            document.getElementById('verifyStep').classList.remove('active');
+            document.getElementById('successStep').classList.add('active');
+        }
+
+        // العودة للخطوة الأولى
+        function goBack() {
+            document.getElementById('verifyStep').classList.remove('active');
+            document.getElementById('sendStep').style.display = 'block';
+        }
+
+        // بدء جديد
+        function startOver() {
+            document.getElementById('successStep').classList.remove('active');
+            document.getElementById('sendStep').style.display = 'block';
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('codeInput').value = '';
+            document.getElementById('previewLinkDiv').innerHTML = '';
+            currentUserId = null;
+        }
+
+        // التركيز على أول حقل
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('email').focus();
+        });
+
+        // إرسال عند الضغط على Enter
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const activeStep = document.querySelector('#sendStep:not([style*="none"])');
+                if (activeStep) {
+                    sendCode();
+                } else if (document.getElementById('verifyStep').classList.contains('active')) {
+                    verifyCode();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

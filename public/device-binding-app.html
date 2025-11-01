@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian - Device Binding Security</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .security-header {
+            background: linear-gradient(90deg, #059669, #10b981);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .auth-container {
+            min-height: calc(100vh - 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(16, 185, 129, 0.2);
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .security-notice {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .security-notice h3 {
+            color: #10b981;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .security-features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .security-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #64748b;
+        }
+
+        .device-selector {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .device-selector label {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .device-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .verification-step {
+            display: none;
+        }
+
+        .verification-step.active {
+            display: block;
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 55px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .code-input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .device-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .register-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .register-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .preview-link {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Security Header -->
+    <div class="security-header">
+        🔗 DEVICE-EMAIL BINDING SECURITY - Only registered devices can access this system
+    </div>
+
+    <!-- Authentication Section -->
+    <div id="authSection" class="auth-container">
+        <div class="auth-card">
+            <div class="logo">🔗</div>
+            <h1 class="title" id="mainTitle">Secure Guardian</h1>
+            <p class="subtitle" id="mainSubtitle">Device-Email Binding Security System</p>
+            
+            <!-- Language Selector -->
+            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <button class="lang-btn active" onclick="setLanguage('en')" style="padding: 8px 16px; border: 2px solid rgba(16,185,129,0.3); background: rgba(16,185,129,0.8); color: white; border-radius: 20px; cursor: pointer; font-size: 12px;">🇬🇧 English</button>
+                <button class="lang-btn" onclick="setLanguage('el')" style="padding: 8px 16px; border: 2px solid rgba(16,185,129,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 20px; cursor: pointer; font-size: 12px;">🇬🇷 Ελληνικά</button>
+                <button class="lang-btn" onclick="setLanguage('ar')" style="padding: 8px 16px; border: 2px solid rgba(16,185,129,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 20px; cursor: pointer; font-size: 12px;">🇸🇦 العربية</button>
+            </div>
+            
+            <!-- Security Notice -->
+            <div class="security-notice">
+                <h3 id="securityTitle">🔒 Maximum Security Protocol</h3>
+                <div class="security-features" id="securityFeatures">
+                    <div class="security-feature" id="feature1">✅ Device must be pre-registered via mobile app</div>
+                    <div class="security-feature" id="feature2">✅ Email address must match device registration</div>
+                    <div class="security-feature" id="feature3">✅ Binding verification required for access</div>
+                    <div class="security-feature" id="feature4">✅ One device per email address policy</div>
+                    <div class="security-feature" id="feature5">✅ Permanent device-email linkage</div>
+                </div>
+            </div>
+            
+            <div id="messageDiv"></div>
+            
+            <!-- Registration Step -->
+            <div id="registerStep">
+                <div class="form-group">
+                    <label for="name" id="nameLabel">Full Name *</label>
+                    <input type="text" id="name" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" id="emailLabel">Registered Email Address *</label>
+                    <input type="email" id="email" placeholder="Enter the email used for device registration" required>
+                    <div id="emailNote" style="font-size: 12px; color: #94a3b8; margin-top: 5px;">
+                        This must be the same email used when registering your device
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" id="passwordLabel">Password *</label>
+                    <input type="password" id="password" placeholder="Create a secure password" required>
+                </div>
+                
+                <div class="device-selector">
+                    <label for="deviceId" id="deviceIdLabel">Device ID (from your mobile app) *</label>
+                    <input type="text" id="deviceId" class="device-input" placeholder="device_1234567890_abcdef123" required>
+                    <div id="deviceIdNote" style="font-size: 12px; color: #94a3b8; margin-top: 8px;">
+                        Find this in your mobile app settings under "Device Information"
+                    </div>
+                </div>
+                
+                <button class="btn" id="registerBtn" onclick="registerUser()">
+                    🔗 Verify Device Binding & Register
+                </button>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <p id="noDeviceText" style="font-size: 14px; color: #94a3b8; margin-bottom: 10px;">
+                        Don't have a registered device?
+                    </p>
+                    <a href="/device-register" class="register-link" id="registerDeviceBtn">
+                        📱 Register Your Device First
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Verification Step -->
+            <div id="verificationStep" class="verification-step">
+                <h3 id="verificationTitle">🔐 Device Binding Verification</h3>
+                <p id="verificationDesc">Enter the verification code sent to your registered email</p>
+                
+                <div class="device-info" id="deviceBindingInfo">
+                    <strong id="bindingConfirmed">🔗 Device Binding Confirmed:</strong><br>
+                    <span id="confirmedDevice">Device information will appear here</span>
+                </div>
+                
+                <div class="code-inputs">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 0)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 1)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 2)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 3)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 4)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 5)">
+                </div>
+                
+                <button class="btn" id="verifyBtn" onclick="verifyCode()">
+                    ✅ Verify & Access Dashboard
+                </button>
+                
+                <div id="previewLinkDiv"></div>
+                
+                <div id="securityNote" style="font-size: 12px; opacity: 0.7; margin-top: 20px; text-align: center;">
+                    🔒 This verification confirms that you own both the device and the email address
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+        let currentLanguage = 'en';
+
+        // Language translations
+        const translations = {
+            en: {
+                mainTitle: "Secure Guardian",
+                mainSubtitle: "Device-Email Binding Security System",
+                securityTitle: "🔒 Maximum Security Protocol",
+                nameLabel: "Full Name *",
+                namePlaceholder: "Enter your full name",
+                emailLabel: "Registered Email Address *",
+                emailPlaceholder: "Enter the email used for device registration",
+                emailNote: "This must be the same email used when registering your device",
+                passwordLabel: "Password *",
+                passwordPlaceholder: "Create a secure password",
+                deviceIdLabel: "Device ID (from your mobile app) *",
+                deviceIdPlaceholder: "device_1234567890_abcdef123",
+                deviceIdNote: "Find this in your mobile app settings under \"Device Information\"",
+                registerBtn: "🔗 Verify Device Binding & Register",
+                noDeviceText: "Don't have a registered device?",
+                registerDeviceBtn: "📱 Register Your Device First",
+                verificationTitle: "🔐 Device Binding Verification",
+                verificationDesc: "Enter the verification code sent to your registered email",
+                bindingConfirmed: "🔗 Device Binding Confirmed:",
+                verifyBtn: "✅ Verify & Access Dashboard",
+                securityNote: "🔒 This verification confirms that you own both the device and the email address",
+                currentDeviceTitle: "🔍 Current Device Detected",
+                deviceType: "Device",
+                deviceOS: "OS",
+                deviceBrowser: "Browser",
+                tipText: "💡 Tip: Make sure this matches the device you registered in the mobile app",
+                feature1: "✅ Device must be pre-registered via mobile app",
+                feature2: "✅ Email address must match device registration", 
+                feature3: "✅ Binding verification required for access",
+                feature4: "✅ One device per email address policy",
+                feature5: "✅ Permanent device-email linkage"
+            },
+            el: {
+                mainTitle: "Secure Guardian", 
+                mainSubtitle: "Σύστημα Ασφαλείας Σύνδεσης Συσκευής-Email",
+                securityTitle: "🔒 Πρωτόκολλο Μέγιστης Ασφαλείας",
+                nameLabel: "Πλήρες Όνομα *",
+                namePlaceholder: "Εισάγετε το πλήρες όνομά σας",
+                emailLabel: "Εγγεγραμμένη Διεύθυνση Email *",
+                emailPlaceholder: "Εισάγετε το email που χρησιμοποιήθηκε για εγγραφή συσκευής",
+                emailNote: "Αυτό πρέπει να είναι το ίδιο email που χρησιμοποιήθηκε κατά την εγγραφή της συσκευής",
+                passwordLabel: "Κωδικός Πρόσβασης *",
+                passwordPlaceholder: "Δημιουργήστε έναν ασφαλή κωδικό",
+                deviceIdLabel: "ID Συσκευής (από την εφαρμογή σας) *",
+                deviceIdPlaceholder: "device_1234567890_abcdef123",
+                deviceIdNote: "Βρείτε αυτό στις ρυθμίσεις της εφαρμογής σας στο \"Πληροφορίες Συσκευής\"",
+                registerBtn: "🔗 Επαλήθευση Σύνδεσης Συσκευής & Εγγραφή",
+                noDeviceText: "Δεν έχετε εγγεγραμμένη συσκευή;",
+                registerDeviceBtn: "📱 Εγγράψτε Πρώτα τη Συσκευή σας",
+                verificationTitle: "🔐 Επαλήθευση Σύνδεσης Συσκευής",
+                verificationDesc: "Εισάγετε τον κωδικό επαλήθευσης που στάλθηκε στο εγγεγραμμένο email σας",
+                bindingConfirmed: "🔗 Σύνδεση Συσκευής Επιβεβαιωμένη:",
+                verifyBtn: "✅ Επαλήθευση & Πρόσβαση στον Πίνακα",
+                securityNote: "🔒 Αυτή η επαλήθευση επιβεβαιώνει ότι είστε κάτοχος τόσο της συσκευής όσο και της διεύθυνσης email",
+                currentDeviceTitle: "🔍 Τρέχουσα Συσκευή Ανιχνεύθηκε",
+                deviceType: "Συσκευή",
+                deviceOS: "Λειτουργικό Σύστημα",
+                deviceBrowser: "Περιηγητής",
+                tipText: "💡 Συμβουλή: Βεβαιωθείτε ότι αυτό ταιριάζει με τη συσκευή που εγγράψατε στην εφαρμογή",
+                feature1: "✅ Η συσκευή πρέπει να είναι προ-εγγεγραμμένη μέσω εφαρμογής",
+                feature2: "✅ Η διεύθυνση email πρέπει να ταιριάζει με την εγγραφή συσκευής",
+                feature3: "✅ Απαιτείται επαλήθευση σύνδεσης για πρόσβαση",
+                feature4: "✅ Πολιτική μίας συσκευής ανά διεύθυνση email",
+                feature5: "✅ Μόνιμη σύνδεση συσκευής-email"
+            },
+            ar: {
+                mainTitle: "الحارس الآمن",
+                mainSubtitle: "نظام أمان ربط الجهاز بالبريد الإلكتروني",
+                securityTitle: "🔒 بروتوكول الأمان الأقصى",
+                nameLabel: "الاسم الكامل *",
+                namePlaceholder: "أدخل اسمك الكامل",
+                emailLabel: "عنوان البريد الإلكتروني المسجل *",
+                emailPlaceholder: "أدخل البريد الإلكتروني المستخدم لتسجيل الجهاز",
+                emailNote: "يجب أن يكون هذا نفس البريد الإلكتروني المستخدم عند تسجيل الجهاز",
+                passwordLabel: "كلمة المرور *",
+                passwordPlaceholder: "أنشئ كلمة مرور آمنة",
+                deviceIdLabel: "معرف الجهاز (من تطبيق الهاتف) *",
+                deviceIdPlaceholder: "device_1234567890_abcdef123",
+                deviceIdNote: "ستجد هذا في إعدادات التطبيق تحت \"معلومات الجهاز\"",
+                registerBtn: "🔗 التحقق من ربط الجهاز والتسجيل",
+                noDeviceText: "ليس لديك جهاز مسجل؟",
+                registerDeviceBtn: "📱 سجل جهازك أولاً",
+                verificationTitle: "🔐 التحقق من ربط الجهاز",
+                verificationDesc: "أدخل رمز التحقق المرسل إلى بريدك الإلكتروني المسجل",
+                bindingConfirmed: "🔗 تم تأكيد ربط الجهاز:",
+                verifyBtn: "✅ التحقق والوصول للوحة التحكم",
+                securityNote: "🔒 هذا التحقق يؤكد أنك تملك كلاً من الجهاز وعنوان البريد الإلكتروني",
+                currentDeviceTitle: "🔍 تم اكتشاف الجهاز الحالي",
+                deviceType: "الجهاز",
+                deviceOS: "نظام التشغيل",
+                deviceBrowser: "المتصفح",
+                tipText: "💡 نصيحة: تأكد من أن هذا يطابق الجهاز الذي سجلته في التطبيق",
+                feature1: "✅ يجب تسجيل الجهاز مسبقاً عبر التطبيق",
+                feature2: "✅ عنوان البريد الإلكتروني يجب أن يطابق تسجيل الجهاز",
+                feature3: "✅ مطلوب التحقق من الربط للوصول",
+                feature4: "✅ سياسة جهاز واحد لكل عنوان بريد إلكتروني",
+                feature5: "✅ ربط دائم بين الجهاز والبريد الإلكتروني"
+            }
+        };
+
+        // Set language function
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = 'rgba(255,255,255,0.1)';
+            });
+            event.target.classList.add('active');
+            event.target.style.background = 'rgba(16,185,129,0.8)';
+            
+            // Update text direction
+            if (lang === 'ar') {
+                document.documentElement.dir = 'rtl';
+            } else {
+                document.documentElement.dir = 'ltr';
+            }
+            
+            // Update text
+            const t = translations[lang];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('messageDiv');
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        async function registerUser() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            const deviceId = document.getElementById('deviceId').value.trim();
+            const registerBtn = document.getElementById('registerBtn');
+
+            if (!name || !email || !password || !deviceId) {
+                showMessage('All fields are required', 'error');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            // Validate device ID format
+            if (!deviceId.startsWith('device_') || deviceId.length < 20) {
+                showMessage('Invalid device ID format. Please check your mobile app.', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters long', 'error');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.textContent = '🔍 Verifying device binding...';
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, deviceId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUserId = data.userId;
+                    
+                    // Show device binding confirmation
+                    document.getElementById('confirmedDevice').innerHTML = `
+                        📱 Device: ${data.deviceName}<br>
+                        🆔 Device ID: ${deviceId}<br>
+                        📧 Registered Email: ${email}<br>
+                        ✅ Binding Status: Verified
+                    `;
+                    
+                    // Show preview link if available
+                    if (data.previewUrl) {
+                        document.getElementById('previewLinkDiv').innerHTML = 
+                            `<a href="${data.previewUrl}" target="_blank" class="preview-link">📧 Preview Email</a>`;
+                    }
+                    
+                    showMessage('✅ Device binding verified! Verification code sent.', 'success');
+                    showVerificationStep();
+                } else {
+                    showMessage(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Please try again.', 'error');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = '🔗 Verify Device Binding & Register';
+            }
+        }
+
+        function showVerificationStep() {
+            document.getElementById('registerStep').style.display = 'none';
+            document.getElementById('verificationStep').classList.add('active');
+            document.querySelector('.code-input').focus();
+        }
+
+        function moveToNext(current, index) {
+            if (current.value.length === 1 && index < 5) {
+                document.querySelectorAll('.code-input')[index + 1].focus();
+            }
+        }
+
+        async function verifyCode() {
+            const codeInputs = document.querySelectorAll('.code-input');
+            const code = Array.from(codeInputs).map(input => input.value).join('');
+
+            if (code.length !== 6) {
+                showMessage('Please enter the complete 6-digit code', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showMessage('✅ Device binding verified! Access granted.', 'success');
+                    
+                    // Store session token
+                    localStorage.setItem('deviceBindingToken', data.token);
+                    
+                    setTimeout(() => {
+                        // Redirect to secure dashboard
+                        alert('🎉 Success! Device-email binding verified.\n\nYou now have secure access to your anti-theft dashboard.\n\nOnly this registered device and email combination can access the controls.');
+                    }, 1000);
+                } else {
+                    showMessage(data.error || 'Invalid verification code', 'error');
+                    codeInputs.forEach(input => input.value = '');
+                    codeInputs[0].focus();
+                }
+            } catch (error) {
+                showMessage('Verification failed. Please try again.', 'error');
+            }
+        }
+
+        // Device detection for web access
+        function detectCurrentDevice() {
+            const userAgent = navigator.userAgent;
+            
+            let deviceInfo = {
+                type: 'Unknown',
+                model: 'Unknown',
+                os: 'Unknown',
+                browser: 'Unknown',
+                fingerprint: ''
+            };
+            
+            // Detect OS and device
+            if (/Windows/.test(userAgent)) {
+                deviceInfo.os = 'Windows';
+                deviceInfo.type = 'Desktop';
+                deviceInfo.model = 'Windows PC';
+            } else if (/Mac/.test(userAgent)) {
+                deviceInfo.os = 'macOS';
+                deviceInfo.type = 'Desktop';
+                deviceInfo.model = 'Mac';
+            } else if (/iPhone/.test(userAgent)) {
+                deviceInfo.os = 'iOS';
+                deviceInfo.type = 'Mobile';
+                deviceInfo.model = detectiPhoneModel(userAgent);
+            } else if (/iPad/.test(userAgent)) {
+                deviceInfo.os = 'iPadOS';
+                deviceInfo.type = 'Tablet';
+                deviceInfo.model = 'iPad';
+            } else if (/Android/.test(userAgent)) {
+                deviceInfo.os = 'Android';
+                deviceInfo.type = /Mobile/.test(userAgent) ? 'Mobile' : 'Tablet';
+                deviceInfo.model = detectAndroidModel(userAgent);
+            }
+            
+            // Detect Browser
+            if (/Chrome/.test(userAgent) && !/Edge/.test(userAgent)) {
+                deviceInfo.browser = 'Chrome';
+            } else if (/Firefox/.test(userAgent)) {
+                deviceInfo.browser = 'Firefox';
+            } else if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent)) {
+                deviceInfo.browser = 'Safari';
+            } else if (/Edge/.test(userAgent)) {
+                deviceInfo.browser = 'Edge';
+            }
+            
+            return deviceInfo;
+        }
+        
+        function detectiPhoneModel(userAgent) {
+            if (/iPhone15,2/.test(userAgent)) return 'iPhone 14 Pro';
+            if (/iPhone15,3/.test(userAgent)) return 'iPhone 14 Pro Max';
+            if (/iPhone14,7/.test(userAgent)) return 'iPhone 14';
+            if (/iPhone/.test(userAgent)) return 'iPhone';
+            return 'iPhone (Unknown Model)';
+        }
+        
+        function detectAndroidModel(userAgent) {
+            if (/SM-S24/.test(userAgent)) return 'Samsung Galaxy S24';
+            if (/SM-S23/.test(userAgent)) return 'Samsung Galaxy S23';
+            if (/Pixel 8/.test(userAgent)) return 'Google Pixel 8';
+            if (/Samsung/.test(userAgent)) return 'Samsung Device';
+            return 'Android Device';
+        }
+        
+        function autoDetectAndFillDevice() {
+            const deviceInfo = detectCurrentDevice();
+            
+            // Show current device info
+            const currentDeviceInfo = document.createElement('div');
+            currentDeviceInfo.style.cssText = `
+                background: rgba(16, 185, 129, 0.1);
+                border: 1px solid rgba(16, 185, 129, 0.3);
+                padding: 15px;
+                border-radius: 10px;
+                margin: 15px 0;
+                font-size: 14px;
+            `;
+            
+            const t = translations[currentLanguage];
+            
+            currentDeviceInfo.innerHTML = `
+                <h4 style="color: #10b981; margin-bottom: 10px;">${t.currentDeviceTitle}</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div><strong>${t.deviceType}:</strong> ${deviceInfo.model}</div>
+                    <div><strong>${t.deviceOS}:</strong> ${deviceInfo.os}</div>
+                    <div><strong>${t.deviceBrowser}:</strong> ${deviceInfo.browser}</div>
+                    <div><strong>Type:</strong> ${deviceInfo.type}</div>
+                </div>
+                <div style="margin-top: 10px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-radius: 5px; font-size: 12px;">
+                    ${t.tipText}
+                </div>
+            `;
+            
+            // Insert after security notice
+            const securityNotice = document.querySelector('.security-notice');
+            if (securityNotice) {
+                securityNotice.parentNode.insertBefore(currentDeviceInfo, securityNotice.nextSibling);
+            }
+            
+            // Auto-suggest device ID format
+            const deviceIdInput = document.getElementById('deviceId');
+            if (deviceIdInput) {
+                const suggestedId = `device_${deviceInfo.model.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`;
+                deviceIdInput.placeholder = suggestedId;
+                
+                // Add helper text
+                const helperText = document.createElement('div');
+                helperText.style.cssText = 'font-size: 12px; color: #10b981; margin-top: 5px;';
+                helperText.innerHTML = `💡 Expected format for ${deviceInfo.model}: <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px;">${suggestedId}</code>`;
+                deviceIdInput.parentNode.appendChild(helperText);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('name').focus();
+            autoDetectAndFillDevice();
+        });
+    </script>
+</body>
+</html>

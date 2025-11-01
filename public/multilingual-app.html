@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian - Anti-Theft System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group.rtl {
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .verification-step {
+            display: none;
+        }
+
+        .verification-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 25px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 55px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e6fffa, #b2f5ea);
+            border: 1px solid #4fd1c7;
+            color: #234e52;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .preview-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+        }
+
+        .preview-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+        }
+
+        .map-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-step {
+            display: none;
+        }
+
+        .dashboard-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 1.6rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️</div>
+        <h1 class="title" id="mainTitle">Secure Guardian</h1>
+        <p class="subtitle" id="mainSubtitle">Advanced Anti-Theft Protection System</p>
+        
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <button class="lang-btn active" onclick="setLanguage('en')">🇬🇧 English</button>
+            <button class="lang-btn" onclick="setLanguage('el')">🇬🇷 Ελληνικά</button>
+            <button class="lang-btn" onclick="setLanguage('ar')">🇸🇦 العربية</button>
+        </div>
+        
+        <div id="messageDiv"></div>
+        
+        <!-- Authentication Step -->
+        <div id="authStep">
+            <div class="form-group" id="emailGroup">
+                <label for="email" id="emailLabel">Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group" id="passwordGroup">
+                <label for="password" id="passwordLabel">Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+            
+            <button class="btn" id="loginBtn" onclick="loginUser()">
+                <span id="loginText">Sign In</span>
+            </button>
+            
+            <button class="btn secondary" id="registerBtn" onclick="registerUser()">
+                <span id="registerText">Create Account</span>
+            </button>
+            
+            <div class="info-box">
+                <span id="infoText">🔐 Secure email verification will be sent to your inbox</span>
+            </div>
+        </div>
+        
+        <!-- Verification Step -->
+        <div id="verificationStep" class="verification-step">
+            <h3 id="verifyTitle">Email Verification</h3>
+            <p id="verifyDesc">Enter the 6-digit code sent to your email</p>
+            
+            <div class="code-inputs">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 0)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 1)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 2)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 3)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 4)">
+                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 5)">
+            </div>
+            
+            <button class="btn" onclick="verifyCode()">
+                <span id="verifyBtnText">Verify Code</span>
+            </button>
+            
+            <button class="btn secondary" onclick="resendCode()">
+                <span id="resendText">Resend Code</span>
+            </button>
+            
+            <div class="info-box">
+                <span id="verifyInfoText">📧 Check your inbox and spam folder</span>
+            </div>
+            
+            <div id="previewLinkDiv" style="margin: 15px 0;"></div>
+        </div>
+        
+        <!-- Dashboard Step -->
+        <div id="dashboardStep" class="dashboard-step">
+            <h3 id="dashboardTitle">Security Dashboard</h3>
+            
+            <div class="feature-grid">
+                <div class="feature-card" onclick="showMap()">
+                    <div class="feature-icon">🗺️</div>
+                    <div class="feature-title" id="mapTitle">Device Location</div>
+                    <div class="feature-desc" id="mapDesc">Track your device</div>
+                </div>
+                
+                <div class="feature-card" onclick="lockDevice()">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title" id="lockTitle">Remote Lock</div>
+                    <div class="feature-desc" id="lockDesc">Lock your device</div>
+                </div>
+                
+                <div class="feature-card" onclick="soundAlarm()">
+                    <div class="feature-icon">🚨</div>
+                    <div class="feature-title" id="alarmTitle">Sound Alarm</div>
+                    <div class="feature-desc" id="alarmDesc">Activate alarm</div>
+                </div>
+                
+                <div class="feature-card" onclick="wipeData()">
+                    <div class="feature-icon">🗑️</div>
+                    <div class="feature-title" id="wipeTitle">Wipe Data</div>
+                    <div class="feature-desc" id="wipeDesc">Erase all data</div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="logout()" style="background: #e53e3e;">
+                <span id="logoutText">Sign Out</span>
+            </button>
+        </div>
+        
+        <!-- Map Step -->
+        <div id="mapStep" class="dashboard-step">
+            <h3 id="mapStepTitle">Device Location</h3>
+            
+            <div class="map-container">
+                <div id="map" style="width: 100%; height: 100%;"></div>
+            </div>
+            
+            <button class="btn" onclick="backToDashboard()">
+                <span id="backText">Back to Dashboard</span>
+            </button>
+            
+            <div class="info-box">
+                <span id="mapInfoText">🌍 Real-time location tracking</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                mainTitle: "Secure Guardian",
+                mainSubtitle: "Advanced Anti-Theft Protection System",
+                emailLabel: "Email Address",
+                passwordLabel: "Password",
+                loginText: "Sign In",
+                registerText: "Create Account",
+                infoText: "🔐 Secure email verification will be sent to your inbox",
+                verifyTitle: "Email Verification",
+                verifyDesc: "Enter the 6-digit code sent to your email",
+                verifyBtnText: "Verify Code",
+                resendText: "Resend Code",
+                verifyInfoText: "📧 Check your inbox and spam folder",
+                dashboardTitle: "Security Dashboard",
+                mapTitle: "Device Location",
+                mapDesc: "Track your device",
+                lockTitle: "Remote Lock",
+                lockDesc: "Lock your device",
+                alarmTitle: "Sound Alarm",
+                alarmDesc: "Activate alarm",
+                wipeTitle: "Wipe Data",
+                wipeDesc: "Erase all data",
+                logoutText: "Sign Out",
+                mapStepTitle: "Device Location",
+                backText: "Back to Dashboard",
+                mapInfoText: "🌍 Real-time location tracking",
+                emailPlaceholder: "Enter your email",
+                passwordPlaceholder: "Enter password"
+            },
+            el: {
+                mainTitle: "Secure Guardian",
+                mainSubtitle: "Προηγμένο Σύστημα Προστασίας από Κλοπή",
+                emailLabel: "Διεύθυνση Email",
+                passwordLabel: "Κωδικός Πρόσβασης",
+                loginText: "Σύνδεση",
+                registerText: "Δημιουργία Λογαριασμού",
+                infoText: "🔐 Θα σταλεί ασφαλής επαλήθευση email στα εισερχόμενά σας",
+                verifyTitle: "Επαλήθευση Email",
+                verifyDesc: "Εισάγετε τον 6ψήφιο κωδικό που στάλθηκε στο email σας",
+                verifyBtnText: "Επαλήθευση Κωδικού",
+                resendText: "Επαναποστολή Κωδικού",
+                verifyInfoText: "📧 Ελέγξτε τα εισερχόμενα και τον φάκελο spam",
+                dashboardTitle: "Πίνακας Ασφαλείας",
+                mapTitle: "Τοποθεσία Συσκευής",
+                mapDesc: "Εντοπισμός συσκευής",
+                lockTitle: "Απομακρυσμένο Κλείδωμα",
+                lockDesc: "Κλείδωμα συσκευής",
+                alarmTitle: "Ήχος Συναγερμού",
+                alarmDesc: "Ενεργοποίηση συναγερμού",
+                wipeTitle: "Διαγραφή Δεδομένων",
+                wipeDesc: "Διαγραφή όλων των δεδομένων",
+                logoutText: "Αποσύνδεση",
+                mapStepTitle: "Τοποθεσία Συσκευής",
+                backText: "Επιστροφή στον Πίνακα",
+                mapInfoText: "🌍 Παρακολούθηση τοποθεσίας σε πραγματικό χρόνο",
+                emailPlaceholder: "Εισάγετε το email σας",
+                passwordPlaceholder: "Εισάγετε κωδικό"
+            },
+            ar: {
+                mainTitle: "الحارس الآمن",
+                mainSubtitle: "نظام حماية متقدم ضد السرقة",
+                emailLabel: "البريد الإلكتروني",
+                passwordLabel: "كلمة المرور",
+                loginText: "تسجيل الدخول",
+                registerText: "إنشاء حساب",
+                infoText: "🔐 سيتم إرسال رمز التحقق الآمن إلى بريدك الإلكتروني",
+                verifyTitle: "التحقق من البريد الإلكتروني",
+                verifyDesc: "أدخل الرمز المكون من 6 أرقام المرسل إلى بريدك",
+                verifyBtnText: "تأكيد الرمز",
+                resendText: "إعادة الإرسال",
+                verifyInfoText: "📧 تحقق من صندوق الوارد والرسائل المزعجة",
+                dashboardTitle: "لوحة الأمان",
+                mapTitle: "موقع الجهاز",
+                mapDesc: "تتبع جهازك",
+                lockTitle: "القفل عن بُعد",
+                lockDesc: "قفل الجهاز",
+                alarmTitle: "تشغيل الإنذار",
+                alarmDesc: "تفعيل الإنذار",
+                wipeTitle: "مسح البيانات",
+                wipeDesc: "حذف جميع البيانات",
+                logoutText: "تسجيل الخروج",
+                mapStepTitle: "موقع الجهاز",
+                backText: "العودة للوحة التحكم",
+                mapInfoText: "🌍 تتبع الموقع في الوقت الفعلي",
+                emailPlaceholder: "أدخل بريدك الإلكتروني",
+                passwordPlaceholder: "أدخل كلمة المرور"
+            }
+        };
+
+        let currentLanguage = 'en';
+        let currentUserId = null;
+        let map = null;
+
+        // Set language
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update text direction
+            const container = document.querySelector('.container');
+            const formGroups = document.querySelectorAll('.form-group');
+            
+            if (lang === 'ar') {
+                document.documentElement.dir = 'rtl';
+                formGroups.forEach(group => group.classList.add('rtl'));
+            } else {
+                document.documentElement.dir = 'ltr';
+                formGroups.forEach(group => group.classList.remove('rtl'));
+            }
+            
+            // Update all text
+            const t = translations[lang];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+            
+            // Update placeholders
+            document.getElementById('email').placeholder = t.emailPlaceholder;
+            document.getElementById('password').placeholder = t.passwordPlaceholder;
+        }
+
+        // Show message
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('messageDiv');
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // Register user
+        async function registerUser() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                const messages = {
+                    en: 'Please fill in all fields',
+                    el: 'Παρακαλώ συμπληρώστε όλα τα πεδία',
+                    ar: 'يرجى ملء جميع الحقول'
+                };
+                showMessage(messages[currentLanguage], 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, name: 'User' })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUserId = data.userId;
+                    const messages = {
+                        en: '✅ Verification code sent successfully!',
+                        el: '✅ Ο κωδικός επαλήθευσης στάλθηκε επιτυχώς!',
+                        ar: '✅ تم إرسال رمز التحقق بنجاح!'
+                    };
+                    showMessage(messages[currentLanguage], 'success');
+                    
+                    // Show preview link if available
+                    if (data.previewUrl) {
+                        const previewTexts = {
+                            en: '🔗 Preview Email',
+                            el: '🔗 Προεπισκόπηση Email',
+                            ar: '🔗 معاينة الإيميل'
+                        };
+                        document.getElementById('previewLinkDiv').innerHTML = 
+                            `<a href="${data.previewUrl}" target="_blank" class="preview-link">${previewTexts[currentLanguage]}</a>`;
+                    }
+                    
+                    // Show test code if available
+                    if (data.testCode) {
+                        const codeTexts = {
+                            en: `Test Code: ${data.testCode}`,
+                            el: `Κωδικός Δοκιμής: ${data.testCode}`,
+                            ar: `رمز الاختبار: ${data.testCode}`
+                        };
+                        showMessage(messages[currentLanguage] + '<br><strong>' + codeTexts[currentLanguage] + '</strong>', 'success');
+                    }
+                    
+                    showVerificationStep();
+                } else {
+                    showMessage(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                const messages = {
+                    en: 'Connection error',
+                    el: 'Σφάλμα σύνδεσης',
+                    ar: 'خطأ في الاتصال'
+                };
+                showMessage(messages[currentLanguage], 'error');
+            }
+        }
+
+        // Login user (same as register for demo)
+        function loginUser() {
+            registerUser();
+        }
+
+        // Show verification step
+        function showVerificationStep() {
+            document.getElementById('authStep').style.display = 'none';
+            document.getElementById('verificationStep').classList.add('active');
+            document.querySelector('.code-input').focus();
+        }
+
+        // Move to next input
+        function moveToNext(current, index) {
+            if (current.value.length === 1 && index < 5) {
+                document.querySelectorAll('.code-input')[index + 1].focus();
+            }
+        }
+
+        // Verify code
+        async function verifyCode() {
+            const codeInputs = document.querySelectorAll('.code-input');
+            const code = Array.from(codeInputs).map(input => input.value).join('');
+
+            if (code.length !== 6) {
+                const messages = {
+                    en: 'Please enter the complete code',
+                    el: 'Παρακαλώ εισάγετε τον πλήρη κωδικό',
+                    ar: 'يرجى إدخال الرمز كاملاً'
+                };
+                showMessage(messages[currentLanguage], 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/verify-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const messages = {
+                        en: '✅ Verification successful!',
+                        el: '✅ Η επαλήθευση ήταν επιτυχής!',
+                        ar: '✅ تم التحقق بنجاح!'
+                    };
+                    showMessage(messages[currentLanguage], 'success');
+                    showDashboard();
+                } else {
+                    const messages = {
+                        en: 'Invalid verification code',
+                        el: 'Μη έγκυρος κωδικός επαλήθευσης',
+                        ar: 'رمز التحقق غير صحيح'
+                    };
+                    showMessage(messages[currentLanguage], 'error');
+                    codeInputs.forEach(input => input.value = '');
+                    codeInputs[0].focus();
+                }
+            } catch (error) {
+                const messages = {
+                    en: 'Connection error',
+                    el: 'Σφάλμα σύνδεσης',
+                    ar: 'خطأ في الاتصال'
+                };
+                showMessage(messages[currentLanguage], 'error');
+            }
+        }
+
+        // Resend code
+        async function resendCode() {
+            try {
+                const response = await fetch('/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: document.getElementById('email').value, 
+                        name: 'User' 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUserId = data.userId;
+                    
+                    const messages = {
+                        en: '📧 Code resent successfully!',
+                        el: '📧 Ο κωδικός στάλθηκε ξανά επιτυχώς!',
+                        ar: '📧 تم إعادة إرسال الرمز بنجاح!'
+                    };
+                    
+                    // Show preview link if available
+                    if (data.previewUrl) {
+                        const previewTexts = {
+                            en: '🔗 Preview Email',
+                            el: '🔗 Προεπισκόπηση Email',
+                            ar: '🔗 معاينة الإيميل'
+                        };
+                        document.getElementById('previewLinkDiv').innerHTML = 
+                            `<a href="${data.previewUrl}" target="_blank" class="preview-link">${previewTexts[currentLanguage]}</a>`;
+                    }
+                    
+                    // Show test code if available
+                    if (data.testCode) {
+                        const codeTexts = {
+                            en: `New Test Code: ${data.testCode}`,
+                            el: `Νέος Κωδικός Δοκιμής: ${data.testCode}`,
+                            ar: `رمز الاختبار الجديد: ${data.testCode}`
+                        };
+                        showMessage(messages[currentLanguage] + '<br><strong>' + codeTexts[currentLanguage] + '</strong>', 'success');
+                    } else {
+                        showMessage(messages[currentLanguage], 'success');
+                    }
+                } else {
+                    showMessage('Failed to resend code', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error', 'error');
+            }
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('verificationStep').classList.remove('active');
+            document.getElementById('dashboardStep').classList.add('active');
+        }
+
+        // Show map (English/Greek only)
+        function showMap() {
+            // Redirect to advanced tracking system
+            window.location.href = '/advanced-tracking.html';
+        }
+
+        // Back to dashboard
+        function backToDashboard() {
+            document.getElementById('mapStep').classList.remove('active');
+            document.getElementById('dashboardStep').classList.add('active');
+        }
+
+        // Device actions
+        function lockDevice() {
+            const messages = {
+                en: '🔒 Device locked successfully!',
+                el: '🔒 Η συσκευή κλειδώθηκε επιτυχώς!',
+                ar: '🔒 تم قفل الجهاز بنجاح!'
+            };
+            showMessage(messages[currentLanguage], 'success');
+        }
+
+        function soundAlarm() {
+            const messages = {
+                en: '🚨 Alarm activated!',
+                el: '🚨 Ο συναγερμός ενεργοποιήθηκε!',
+                ar: '🚨 تم تفعيل الإنذار!'
+            };
+            showMessage(messages[currentLanguage], 'success');
+        }
+
+        function wipeData() {
+            const messages = {
+                en: '🗑️ Data wipe initiated!',
+                el: '🗑️ Η διαγραφή δεδομένων ξεκίνησε!',
+                ar: '🗑️ تم بدء مسح البيانات!'
+            };
+            showMessage(messages[currentLanguage], 'success');
+        }
+
+        // Logout
+        function logout() {
+            document.getElementById('dashboardStep').classList.remove('active');
+            document.getElementById('mapStep').classList.remove('active');
+            document.getElementById('verificationStep').classList.remove('active');
+            document.getElementById('authStep').style.display = 'block';
+            
+            // Clear form
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            document.querySelectorAll('.code-input').forEach(input => input.value = '');
+            
+            currentUserId = null;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('en');
+            document.getElementById('email').focus();
+        });
+    </script>
+</body>
+</html>

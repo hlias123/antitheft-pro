@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase - إيميلات حقيقية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #38a169;
+            border: 1px solid #9ae6b4;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #e53e3e;
+            border: 1px solid #feb2b2;
+        }
+
+        .toggle-link {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .verification-step {
+            display: none;
+        }
+
+        .verification-step.active {
+            display: block;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            color: #234e52;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️</div>
+        <h1 class="title">Firebase - إيميلات حقيقية</h1>
+        
+        <div id="messageDiv"></div>
+        
+        <!-- خطوة التسجيل/تسجيل الدخول -->
+        <div id="authStep">
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+            </div>
+            
+            <button class="btn" id="registerBtn" onclick="registerUser()">
+                إنشاء حساب جديد
+            </button>
+            
+            <button class="btn" id="loginBtn" onclick="loginUser()" style="background: #48bb78;">
+                تسجيل الدخول
+            </button>
+            
+            <div class="info-box">
+                📧 سيتم إرسال إيميل تحقق حقيقي إلى بريدك الإلكتروني
+            </div>
+        </div>
+        
+        <!-- خطوة التحقق -->
+        <div id="verificationStep" class="verification-step">
+            <h3>تحقق من بريدك الإلكتروني</h3>
+            <p>تم إرسال رابط التحقق إلى بريدك الإلكتروني. انقر على الرابط لتأكيد حسابك.</p>
+            
+            <button class="btn" onclick="checkVerification()">
+                تحقق من حالة التأكيد
+            </button>
+            
+            <button class="btn" onclick="resendVerification()" style="background: #ed8936;">
+                إعادة إرسال الإيميل
+            </button>
+            
+            <div class="info-box">
+                ✅ تحقق من صندوق الوارد وصندوق الرسائل المزعجة
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            sendEmailVerification,
+            onAuthStateChanged
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // إعدادات Firebase الصحيحة من مشروعك
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8DxDB-r5_AF6Pl-3eYqxCtMM5S60CoZU",
+            authDomain: "antitheft-4b6cc.firebaseapp.com",
+            projectId: "antitheft-4b6cc",
+            storageBucket: "antitheft-4b6cc.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // تهيئة Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // متغيرات عامة
+        let currentUser = null;
+
+        // عرض الرسائل
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('messageDiv');
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // إنشاء حساب جديد
+        window.registerUser = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const registerBtn = document.getElementById('registerBtn');
+
+            if (!email || !password) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'جاري الإنشاء...';
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                currentUser = userCredential.user;
+                
+                // إرسال إيميل التحقق
+                await sendEmailVerification(currentUser);
+                
+                showMessage('✅ تم إنشاء الحساب بنجاح! تم إرسال إيميل التحقق', 'success');
+                showVerificationStep();
+                
+            } catch (error) {
+                console.error('خطأ في التسجيل:', error);
+                let errorMessage = 'فشل في إنشاء الحساب';
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'هذا البريد الإلكتروني مستخدم بالفعل';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'كلمة المرور ضعيفة جداً';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'البريد الإلكتروني غير صحيح';
+                }
+                
+                showMessage(errorMessage, 'error');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'إنشاء حساب جديد';
+            }
+        };
+
+        // تسجيل الدخول
+        window.loginUser = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!email || !password) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'جاري تسجيل الدخول...';
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                currentUser = userCredential.user;
+                
+                if (!currentUser.emailVerified) {
+                    showMessage('⚠️ يرجى تأكيد بريدك الإلكتروني أولاً', 'error');
+                    showVerificationStep();
+                } else {
+                    showMessage('✅ تم تسجيل الدخول بنجاح!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                console.error('خطأ في تسجيل الدخول:', error);
+                let errorMessage = 'فشل في تسجيل الدخول';
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'المستخدم غير موجود';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'كلمة المرور غير صحيحة';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'البريد الإلكتروني غير صحيح';
+                }
+                
+                showMessage(errorMessage, 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'تسجيل الدخول';
+            }
+        };
+
+        // عرض خطوة التحقق
+        function showVerificationStep() {
+            document.getElementById('authStep').style.display = 'none';
+            document.getElementById('verificationStep').classList.add('active');
+        }
+
+        // التحقق من حالة التأكيد
+        window.checkVerification = async function() {
+            if (!currentUser) {
+                showMessage('لا يوجد مستخدم مسجل', 'error');
+                return;
+            }
+
+            try {
+                await currentUser.reload();
+                
+                if (currentUser.emailVerified) {
+                    showMessage('✅ تم تأكيد البريد الإلكتروني بنجاح!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 2000);
+                } else {
+                    showMessage('⚠️ لم يتم تأكيد البريد الإلكتروني بعد', 'error');
+                }
+            } catch (error) {
+                console.error('خطأ في التحقق:', error);
+                showMessage('خطأ في التحقق من الحالة', 'error');
+            }
+        };
+
+        // إعادة إرسال إيميل التحقق
+        window.resendVerification = async function() {
+            if (!currentUser) {
+                showMessage('لا يوجد مستخدم مسجل', 'error');
+                return;
+            }
+
+            try {
+                await sendEmailVerification(currentUser);
+                showMessage('✅ تم إعادة إرسال إيميل التحقق', 'success');
+            } catch (error) {
+                console.error('خطأ في إعادة الإرسال:', error);
+                showMessage('فشل في إعادة إرسال الإيميل', 'error');
+            }
+        };
+
+        // مراقبة حالة المصادقة
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                console.log('المستخدم مسجل:', user.email);
+                console.log('البريد مؤكد:', user.emailVerified);
+            } else {
+                currentUser = null;
+                console.log('لا يوجد مستخدم مسجل');
+            }
+        });
+    </script>
+</body>
+</html>

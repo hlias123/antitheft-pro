@@ -1,6 +1,3 @@
-// Load environment variables
-require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
@@ -12,7 +9,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 // Configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'secure-guardian-2024-secret-key';
@@ -25,7 +22,16 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
-app.use(express.static('public'));
+// Serve static files with no-cache headers for development
+app.use(express.static('public', {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+    }
+}));
 
 // Redirect root to app.html
 app.get('/', (req, res) => {
@@ -35,6 +41,11 @@ app.get('/', (req, res) => {
 // Explicit route for app.html
 app.get('/app.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'app.html'));
+});
+
+// Dashboard route
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 // Database setup
@@ -77,107 +88,69 @@ db.serialize(() => {
         FOREIGN KEY (user_id) REFERENCES users (id)
     )`);
 
-    // No test users - Real registration system only
-    console.log('✅ Database initialized - Ready for real user registration');
-
     console.log('✅ Database initialized successfully');
 });
 
 // Email configuration
 let transporter = null;
-// Email service DISABLED - Show codes in UI instead
-transporter = null;
-console.log('📧 Email service DISABLED - All verification codes will be displayed in UI');
-console.log('🎯 You can register with any email and get the code instantly');
+if (EMAIL_USER && EMAIL_PASS) {
+    transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: EMAIL_USER,
+            pass: EMAIL_PASS
+        }
+    });
+    console.log('✅ Email service configured');
+} else {
+    console.log('⚠️ Email service not configured');
+    console.log('📧 To enable real email sending:');
+    console.log('   1. Edit .env file');
+    console.log('   2. Set EMAIL_USER to your Gmail address');
+    console.log('   3. Set EMAIL_PASS to your Gmail App Password');
+    console.log('   4. Restart the server');
+    console.log('');
+    console.log('🔍 For now, verification codes will be logged here:');
+}
 
 // Helper functions
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Clean expired verification codes (disabled for debugging)
-function cleanExpiredCodes() {
-    db.run('DELETE FROM verification_codes WHERE expires_at < datetime("now")', function(err) {
-        if (err) {
-            console.error('Error cleaning expired codes:', err);
-        } else {
-            if (this.changes > 0) {
-                console.log(`🧹 Cleaned ${this.changes} expired verification codes`);
-            }
-        }
-    });
-}
-
-// Clean expired codes every 5 minutes (reduced frequency for debugging)
-setInterval(cleanExpiredCodes, 5 * 60 * 1000);
-
 async function sendVerificationEmail(email, code, type = 'login') {
-    const subject = 'Secure Guardian Pro - Verification Code';
-    
-    // Simple and clean email template
+    const subject = type === 'login' ? 'رمز تسجيل الدخول - Secure Guardian' : 'رمز التحقق - Secure Guardian';
     const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Secure Guardian Pro</title>
-        </head>
-        <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px;">
-            <div style="max-width: 500px; margin: 0 auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                
-                <!-- App Name -->
-                <h1 style="text-align: center; color: #2c3e50; margin: 0 0 30px 0; font-size: 24px;">
-                    🛡️ Secure Guardian Pro
-                </h1>
-                
-                <!-- Verification Code -->
-                <div style="text-align: center; background-color: #ecf0f1; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                    <p style="margin: 0 0 10px 0; color: #34495e; font-size: 16px;">Your Verification Code:</p>
-                    <div style="font-size: 32px; font-weight: bold; color: #3498db; letter-spacing: 5px; margin: 10px 0;">
-                        ${code}
-                    </div>
-                </div>
-                
-                <!-- Simple message -->
-                <p style="text-align: center; color: #7f8c8d; font-size: 14px; margin: 20px 0 0 0;">
-                    This code expires in 3 minutes.
-                </p>
-                
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #667eea;">🛡️ Secure Guardian</h1>
             </div>
-        </body>
-        </html>
-    `;
-    
-    // Simple text version
-    const textVersion = `
-Secure Guardian Pro
-
-Your Verification Code: ${code}
-
-This code expires in 3 minutes.
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                <h2 style="color: #333;">رمز التحقق الخاص بك</h2>
+                <div style="font-size: 32px; font-weight: bold; color: #667eea; margin: 20px 0; padding: 15px; background: white; border-radius: 8px; letter-spacing: 5px;">
+                    ${code}
+                </div>
+                <p style="color: #666; margin-top: 20px;">
+                    هذا الرمز صالح لمدة 10 دقائق فقط
+                </p>
+                <p style="color: #999; font-size: 14px;">
+                    إذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة
+                </p>
+            </div>
+        </div>
     `;
 
     if (transporter) {
         try {
-            const mailOptions = {
-                from: `"Secure Guardian Pro" <${EMAIL_USER}>`,
+            await transporter.sendMail({
+                from: EMAIL_USER,
                 to: email,
                 subject: subject,
-                html: html,
-                text: textVersion.trim(),
-                headers: {
-                    'X-Priority': '1',
-                    'X-MSMail-Priority': 'High',
-                    'Importance': 'high'
-                }
-            };
-            
-            await transporter.sendMail(mailOptions);
-            console.log(`✅ Email sent successfully to ${email}`);
+                html: html
+            });
             return true;
         } catch (error) {
-            console.error('❌ Email sending error:', error);
-            console.log(`📧 Verification code for ${email}: ${code}`);
+            console.error('Email sending error:', error);
             return false;
         }
     } else {
@@ -240,8 +213,7 @@ app.get('/api', (req, res) => {
             'POST /auth/register': 'Register new user',
             'POST /auth/login': 'Login user',
             'POST /auth/verify': 'Verify MFA code',
-            'POST /auth/resend-verification': 'Resend verification code',
-            'POST /auth/create-test-user': 'Create test user (development only)',
+            'POST /auth/google': 'Google OAuth login',
             'GET /auth/profile': 'Get user profile',
             'POST /auth/logout': 'Logout user',
             'GET /health': 'Health check'
@@ -251,44 +223,25 @@ app.get('/api', (req, res) => {
 
 // Register
 app.post('/auth/register', async (req, res) => {
-    console.log('📥 Registration request received');
-    console.log('📋 Request body:', { 
-        name: req.body?.name, 
-        email: req.body?.email, 
-        password: req.body?.password ? '***' : 'missing' 
-    });
-    
     try {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ error: 'All fields are required' });
+            return res.status(400).json({ error: 'جميع الحقول مطلوبة' });
         }
 
         if (password.length < 8) {
-            return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+            return res.status(400).json({ error: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل' });
         }
 
         // Check if user exists
         db.get('SELECT id FROM users WHERE email = ?', [email], async (err, row) => {
             if (err) {
-                return res.status(500).json({ error: 'Database error' });
+                return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
             }
 
             if (row) {
-                // Check if user is verified
-                if (row.is_verified) {
-                    return res.status(400).json({ 
-                        error: 'Email already in use. You can login directly.',
-                        canLogin: true
-                    });
-                } else {
-                    return res.status(400).json({ 
-                        error: 'Email already in use but account is not verified. Please check your email or request a new code.',
-                        needsVerification: true,
-                        userId: row.id
-                    });
-                }
+                return res.status(400).json({ error: 'البريد الإلكتروني مستخدم بالفعل' });
             }
 
             // Hash password
@@ -299,43 +252,29 @@ app.post('/auth/register', async (req, res) => {
             db.run('INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)',
                 [userId, name, email, passwordHash], function(err) {
                     if (err) {
-                        return res.status(500).json({ error: 'Failed to create account' });
+                        return res.status(500).json({ error: 'فشل في إنشاء الحساب' });
                     }
 
                     // Generate verification code
                     const code = generateVerificationCode();
                     const codeId = uuidv4();
-                    const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
-
-                    console.log('📝 Creating verification code:', {
-                        codeId,
-                        userId,
-                        code,
-                        type: 'register',
-                        expiresAt: expiresAt.toISOString(),
-                        currentTime: new Date().toISOString()
-                    });
+                    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
                     db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
-                        [codeId, userId, code, 'register', expiresAt.toISOString()], async (err) => {
+                        [codeId, userId, code, 'register', expiresAt], async (err) => {
                             if (err) {
-                                console.error('❌ Error creating verification code:', err);
-                                return res.status(500).json({ error: 'Failed to send verification code' });
+                                return res.status(500).json({ error: 'فشل في إرسال رمز التحقق' });
                             }
-                            
-                            console.log('✅ Verification code created successfully in database');
 
                             const emailSent = await sendVerificationEmail(email, code, 'register');
 
                             res.json({
                                 success: true,
-                                message: emailSent ? 'Account created successfully! Verification code sent to your email.' : 'Account created successfully! Verification code is displayed below.',
+                                message: 'تم إنشاء الحساب بنجاح',
                                 userId: userId,
                                 requiresVerification: true,
                                 emailSent: emailSent,
-                                verificationCode: emailSent ? null : code,
-                                note: emailSent ? 'Check your email (and spam folder) for the verification code.' : 'Email service not configured. Use the verification code shown above.',
-                                spamWarning: emailSent
+                                verificationCode: emailSent ? null : code
                             });
                         });
                 });
@@ -352,72 +291,45 @@ app.post('/auth/login', async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
+            return res.status(400).json({ error: 'البريد الإلكتروني وكلمة المرور مطلوبان' });
         }
 
         // Find user
         db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
             if (err) {
-                console.error('Database error during login:', err);
                 return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
             }
 
             if (!user) {
-                console.log(`Login attempt with non-existent email: ${email}`);
-                return res.status(401).json({ error: 'Invalid login credentials' });
+                return res.status(401).json({ error: 'بيانات تسجيل الدخول غير صحيحة' });
             }
 
             // Check password
             const validPassword = await bcrypt.compare(password, user.password_hash);
             if (!validPassword) {
-                console.log(`Invalid password for email: ${email}`);
-                return res.status(401).json({ error: 'Invalid login credentials' });
+                return res.status(401).json({ error: 'بيانات تسجيل الدخول غير صحيحة' });
             }
 
-            console.log(`Successful login attempt for: ${email}`);
+            // Generate MFA code
+            const code = generateVerificationCode();
+            const codeId = uuidv4();
+            const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-            // Check if account is verified
-            if (!user.is_verified) {
-                return res.status(403).json({ 
-                    error: 'Account not verified. Please check your email first',
-                    requiresVerification: true,
-                    userId: user.id,
-                    message: 'You need to verify your account first. Check your email or request a new verification code.'
-                });
-            }
-
-            // Generate JWT token for direct login (no MFA required for verified users)
-            const token = jwt.sign(
-                { 
-                    userId: user.id, 
-                    email: user.email,
-                    name: user.name
-                },
-                JWT_SECRET,
-                { expiresIn: '24h' }
-            );
-
-            // Create session
-            const sessionId = uuidv4();
-            const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-            db.run('INSERT INTO sessions (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)',
-                [sessionId, user.id, token, expiresAt], (err) => {
+            db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
+                [codeId, user.id, code, 'login', expiresAt], async (err) => {
                     if (err) {
-                        console.error('Session creation error:', err);
+                        return res.status(500).json({ error: 'فشل في إرسال رمز التحقق' });
                     }
+
+                    const emailSent = await sendVerificationEmail(email, code, 'login');
 
                     res.json({
                         success: true,
-                        message: 'تم تسجيل الدخول بنجاح',
-                        token: token,
-                        requiresMFA: false, // No MFA required for verified users
-                        user: {
-                            id: user.id,
-                            name: user.name,
-                            email: user.email,
-                            isVerified: true
-                        }
+                        message: 'تم إرسال رمز التحقق',
+                        userId: user.id,
+                        requiresMFA: true,
+                        emailSent: emailSent,
+                        verificationCode: emailSent ? null : code
                     });
                 });
         });
@@ -436,73 +348,18 @@ app.post('/auth/verify', (req, res) => {
             return res.status(400).json({ error: 'معرف المستخدم ورمز التحقق مطلوبان' });
         }
 
-        console.log('🔍 Verifying code:', {
-            userId,
-            code,
-            currentTime: new Date().toISOString()
-        });
-
         // Find valid code
-        db.get(`SELECT vc.*, u.name, u.email, u.is_verified,
-                datetime('now') as current_db_time,
-                CASE WHEN vc.expires_at > datetime('now') THEN 'valid' ELSE 'expired' END as time_status
+        db.get(`SELECT vc.*, u.name, u.email, u.is_verified 
                 FROM verification_codes vc 
                 JOIN users u ON vc.user_id = u.id 
-                WHERE vc.user_id = ? AND vc.code = ? AND vc.used = 0`,
+                WHERE vc.user_id = ? AND vc.code = ? AND vc.used = 0 AND vc.expires_at > datetime('now')`,
             [userId, code], (err, row) => {
-                console.log('📊 Database query result:', row);
-                
                 if (err) {
-                    console.error('❌ Database error during verification:', err);
                     return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
                 }
 
                 if (!row) {
-                    console.log('❌ No valid code found, checking for expired/used codes...');
-                    
-                    // Check if code exists but expired or used
-                    db.get('SELECT *, datetime("now") as current_time FROM verification_codes WHERE user_id = ? AND code = ?', 
-                        [userId, code], (err, anyRow) => {
-                            console.log('🔍 Code check result:', anyRow);
-                            
-                            if (anyRow) {
-                                if (anyRow.used === 1) {
-                                    console.log('⚠️ Code already used');
-                                    return res.status(400).json({ 
-                                        error: 'رمز التحقق مستخدم بالفعل. يرجى طلب رمز جديد',
-                                        used: true
-                                    });
-                                } else if (anyRow.expires_at <= anyRow.current_time) {
-                                    console.log('⏰ Code expired');
-                                    return res.status(400).json({ 
-                                        error: 'رمز التحقق منتهي الصلاحية. يرجى طلب رمز جديد',
-                                        expired: true
-                                    });
-                                }
-                            }
-                            
-                            console.log('🔍 Code not found in database');
-                            return res.status(400).json({ 
-                                error: 'رمز التحقق غير صحيح. تأكد من إدخال الرمز بشكل صحيح',
-                                invalid: true
-                            });
-                        });
-                    return;
-                }
-                
-                console.log('✅ Valid code found:', {
-                    code: row.code,
-                    expires_at: row.expires_at,
-                    time_status: row.time_status,
-                    current_db_time: row.current_db_time
-                });
-                
-                if (row.time_status === 'expired') {
-                    console.log('⏰ Code is expired according to database');
-                    return res.status(400).json({ 
-                        error: 'رمز التحقق منتهي الصلاحية. يرجى طلب رمز جديد',
-                        expired: true
-                    });
+                    return res.status(400).json({ error: 'رمز التحقق غير صحيح أو منتهي الصلاحية' });
                 }
 
                 // Mark code as used
@@ -557,113 +414,82 @@ app.post('/auth/verify', (req, res) => {
     }
 });
 
-// Resend verification code
-app.post('/auth/resend-verification', async (req, res) => {
+// Google OAuth (Demo)
+app.post('/auth/google', async (req, res) => {
     try {
-        const { userId } = req.body;
+        // For demo purposes, we'll simulate Google login
+        const mockGoogleUser = {
+            email: 'demo@google.com',
+            name: 'Google Demo User',
+            googleId: 'google_demo_123'
+        };
 
-        if (!userId) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-
-        // Get user info
-        db.get('SELECT email, name, is_verified FROM users WHERE id = ?', [userId], async (err, user) => {
-            if (err) {
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            if (!user) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            if (user.is_verified) {
-                return res.status(400).json({ error: 'Account already verified' });
-            }
-
-            // Generate new verification code
-            const code = generateVerificationCode();
-            const codeId = uuidv4();
-            const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
-
-            // Delete old codes for this user
-            db.run('DELETE FROM verification_codes WHERE user_id = ? AND type = ?', [userId, 'register'], (err) => {
-                if (err) {
-                    console.error('Error deleting old codes:', err);
-                }
-
-                // Insert new code
-                db.run('INSERT INTO verification_codes (id, user_id, code, type, expires_at) VALUES (?, ?, ?, ?, ?)',
-                    [codeId, userId, code, 'register', expiresAt.toISOString()], async (err) => {
-                        if (err) {
-                            return res.status(500).json({ error: 'Failed to create verification code' });
-                        }
-
-                        const emailSent = await sendVerificationEmail(user.email, code, 'register');
-
-                        res.json({
-                            success: true,
-                            message: emailSent ? 'New verification code sent to your email' : 'New verification code generated',
-                            emailSent: emailSent,
-                            verificationCode: emailSent ? null : code,
-                            note: emailSent ? 'Check your email for the new verification code.' : 'Email service not configured. Use the verification code shown above.'
-                        });
-                    });
-            });
-        });
-    } catch (error) {
-        console.error('Resend verification error:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Create test user (development only)
-app.post('/auth/create-test-user', async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-
-        if (!name || !email || !password) {
-            return res.status(400).json({ error: 'الاسم والإيميل وكلمة المرور مطلوبة' });
-        }
-
-        // Check if user already exists
-        db.get('SELECT id FROM users WHERE email = ?', [email], async (err, existingUser) => {
+        // Check if user exists
+        db.get('SELECT * FROM users WHERE email = ?', [mockGoogleUser.email], (err, user) => {
             if (err) {
                 return res.status(500).json({ error: 'خطأ في قاعدة البيانات' });
             }
 
-            if (existingUser) {
-                return res.status(400).json({ error: 'المستخدم موجود بالفعل' });
-            }
+            if (user) {
+                // User exists, generate token
+                const token = jwt.sign(
+                    { 
+                        userId: user.id, 
+                        email: user.email,
+                        name: user.name
+                    },
+                    JWT_SECRET,
+                    { expiresIn: '24h' }
+                );
 
-            try {
-                const passwordHash = await bcrypt.hash(password, 12);
+                res.json({
+                    success: true,
+                    message: 'تم تسجيل الدخول بنجاح',
+                    token: token,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        isVerified: true
+                    }
+                });
+            } else {
+                // Create new user
                 const userId = uuidv4();
+                const passwordHash = bcrypt.hashSync(uuidv4(), 12); // Random password for Google users
 
-                db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, ?)',
-                    [userId, name, email, passwordHash, 1], (err) => {
+                db.run('INSERT INTO users (id, name, email, password_hash, is_verified) VALUES (?, ?, ?, ?, 1)',
+                    [userId, mockGoogleUser.name, mockGoogleUser.email, passwordHash], function(err) {
                         if (err) {
-                            return res.status(500).json({ error: 'فشل في إنشاء المستخدم' });
+                            return res.status(500).json({ error: 'فشل في إنشاء الحساب' });
                         }
 
-                        console.log(`✅ Test user created via API: ${email}`);
+                        const token = jwt.sign(
+                            { 
+                                userId: userId, 
+                                email: mockGoogleUser.email,
+                                name: mockGoogleUser.name
+                            },
+                            JWT_SECRET,
+                            { expiresIn: '24h' }
+                        );
+
                         res.json({
                             success: true,
-                            message: 'تم إنشاء المستخدم التجريبي بنجاح',
+                            message: 'تم إنشاء الحساب وتسجيل الدخول بنجاح',
+                            token: token,
                             user: {
                                 id: userId,
-                                name,
-                                email,
+                                name: mockGoogleUser.name,
+                                email: mockGoogleUser.email,
                                 isVerified: true
                             }
                         });
                     });
-            } catch (error) {
-                console.error('Error hashing password:', error);
-                res.status(500).json({ error: 'خطأ في تشفير كلمة المرور' });
             }
         });
     } catch (error) {
-        console.error('Create test user error:', error);
+        console.error('Google OAuth error:', error);
         res.status(500).json({ error: 'خطأ في الخادم' });
     }
 });
@@ -708,159 +534,6 @@ app.post('/auth/logout', authenticateToken, (req, res) => {
             message: 'تم تسجيل الخروج بنجاح'
         });
     });
-});
-
-// Admin endpoint to clean test users
-app.post('/admin/clean-test-users', (req, res) => {
-    try {
-        console.log('🧹 Starting database cleanup...');
-        
-        // Delete all verification codes first
-        db.run('DELETE FROM verification_codes', (err) => {
-            if (err) {
-                console.error('Error deleting verification codes:', err);
-                return res.status(500).json({ error: 'Failed to clean verification codes' });
-            }
-            
-            console.log('✅ Verification codes deleted');
-            
-            // Delete all users
-            db.run('DELETE FROM users', (err) => {
-                if (err) {
-                    console.error('Error deleting users:', err);
-                    return res.status(500).json({ error: 'Failed to clean users' });
-                }
-                
-                console.log('✅ Users deleted');
-                
-                // Delete all sessions
-                db.run('DELETE FROM sessions', (err) => {
-                    if (err) {
-                        console.error('Error deleting sessions:', err);
-                        // Don't fail if sessions table doesn't exist
-                    }
-                    
-                    console.log('🧹 All test accounts, verification codes, and sessions deleted');
-                    res.json({
-                        success: true,
-                        message: 'All test accounts cleaned successfully',
-                        deletedUsers: 'all',
-                        deletedCodes: 'all',
-                        deletedSessions: 'all'
-                    });
-                });
-            });
-        });
-    } catch (error) {
-        console.error('Clean test users error:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Admin endpoint to delete specific user by email
-app.post('/admin/delete-user', (req, res) => {
-    try {
-        const { email } = req.body;
-        
-        if (!email) {
-            return res.status(400).json({ error: 'Email is required' });
-        }
-        
-        console.log(`🗑️ Deleting user with email: ${email}`);
-        
-        // Get user ID first
-        db.get('SELECT id FROM users WHERE email = ?', [email], (err, user) => {
-            if (err) {
-                console.error('Error finding user:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-            
-            if (!user) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-            
-            const userId = user.id;
-            
-            // Delete verification codes for this user
-            db.run('DELETE FROM verification_codes WHERE user_id = ?', [userId], (err) => {
-                if (err) {
-                    console.error('Error deleting verification codes:', err);
-                }
-                
-                // Delete sessions for this user
-                db.run('DELETE FROM sessions WHERE user_id = ?', [userId], (err) => {
-                    if (err) {
-                        console.error('Error deleting sessions:', err);
-                    }
-                    
-                    // Delete the user
-                    db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
-                        if (err) {
-                            console.error('Error deleting user:', err);
-                            return res.status(500).json({ error: 'Failed to delete user' });
-                        }
-                        
-                        console.log(`✅ User ${email} deleted successfully`);
-                        res.json({
-                            success: true,
-                            message: `User ${email} deleted successfully`,
-                            deletedEmail: email
-                        });
-                    });
-                });
-            });
-        });
-    } catch (error) {
-        console.error('Delete user error:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Debug endpoint to check email configuration
-app.get('/debug/email-config', (req, res) => {
-    try {
-        res.json({
-            success: true,
-            emailUser: EMAIL_USER || null,
-            hasPassword: !!EMAIL_PASS,
-            transporterConfigured: !!transporter,
-            emailServiceStatus: transporter ? 'configured' : 'not configured'
-        });
-    } catch (error) {
-        console.error('Email config check error:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Debug endpoint to check database
-app.get('/debug/database', (req, res) => {
-    try {
-        // Check verification_codes table
-        db.all("SELECT * FROM verification_codes ORDER BY created_at DESC LIMIT 20", (err, rows) => {
-            if (err) {
-                console.error('❌ Database debug error:', err);
-                res.json({ error: err.message, codes: [] });
-                return;
-            }
-            
-            console.log(`📊 Database debug: Found ${rows.length} verification codes`);
-            res.json({
-                success: true,
-                totalCodes: rows.length,
-                codes: rows.map(row => ({
-                    code: row.code,
-                    userId: row.user_id,
-                    expires_at: row.expires_at,
-                    used: row.used,
-                    created_at: row.created_at,
-                    type: row.type
-                }))
-            });
-        });
-    } catch (error) {
-        console.error('❌ Debug endpoint error:', error);
-        res.status(500).json({ error: error.message });
-    }
 });
 
 // Start server
