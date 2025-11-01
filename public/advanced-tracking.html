@@ -335,6 +335,20 @@
             to { transform: translateY(0); }
         }
 
+        .lang-btn {
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.2) !important;
+            transform: translateY(-1px);
+        }
+
+        .lang-btn.active {
+            background: rgba(255,255,255,0.25) !important;
+            border-color: rgba(255,255,255,0.6) !important;
+        }
+
         @media (max-width: 1024px) {
             .main-container {
                 grid-template-columns: 1fr;
@@ -344,6 +358,17 @@
             .control-panel {
                 border-left: none;
                 border-top: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .status-bar {
+                flex-wrap: wrap;
+                gap: 10px;
             }
         }
     </style>
@@ -357,20 +382,27 @@
     <!-- Header -->
     <div class="header">
         <div class="logo">
-            🛡️ <span>Advanced Anti-Theft System</span>
+            🛡️ <span id="system-title">Advanced Anti-Theft System</span>
         </div>
-        <div class="status-bar">
-            <div class="status-item">
-                <span class="status-online">●</span>
-                <span id="connectionStatus">ONLINE</span>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <!-- Language Selector -->
+            <div style="display: flex; gap: 10px;">
+                <button class="lang-btn active" onclick="setLanguage('en')" id="lang-en" style="padding: 8px 15px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: 600;">🇬🇧 English</button>
+                <button class="lang-btn" onclick="setLanguage('el')" id="lang-el" style="padding: 8px 15px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: 600;">🇬🇷 Ελληνικά</button>
             </div>
-            <div class="status-item">
-                <span class="status-battery">🔋</span>
-                <span id="batteryStatus">85%</span>
-            </div>
-            <div class="status-item">
-                <span class="status-location">📍</span>
-                <span id="locationStatus">GPS ACTIVE</span>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-online">●</span>
+                    <span id="connectionStatus">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-battery">🔋</span>
+                    <span id="batteryStatus">85%</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-location">📍</span>
+                    <span id="locationStatus">GPS ACTIVE</span>
+                </div>
             </div>
         </div>
     </div>
@@ -906,8 +938,134 @@
             }
         }
 
+        // Language support
+        let currentLanguage = 'en';
+        
+        const translations = {
+            en: {
+                systemTitle: "Advanced Anti-Theft System",
+                connectionStatus: "ONLINE",
+                locationStatus: "GPS ACTIVE",
+                centerDevice: "📍 Center on Device",
+                liveTracking: "🎯 Live Tracking",
+                showRoute: "🛣️ Show Route",
+                satelliteView: "🛰️ Satellite View",
+                deviceStatus: "📱 Device Status",
+                battery: "Battery",
+                signal: "Signal",
+                status: "Status",
+                tracking: "Tracking",
+                moving: "MOVING",
+                stationary: "STATIONARY",
+                securityControls: "🔒 Security Controls",
+                lockDevice: "🔒 Lock Device",
+                soundAlarm: "🚨 Sound Alarm",
+                capturePhoto: "📸 Capture Photo",
+                wipeData: "🗑️ Wipe Data",
+                remoteCamera: "📷 Remote Camera",
+                startCamera: "📹 Start Camera",
+                capture: "📸 Capture",
+                liveActivity: "📊 Live Activity Feed",
+                movementAnalytics: "📈 Movement Analytics",
+                avgSpeed: "Avg Speed",
+                maxSpeed: "Max Speed",
+                movementPattern: "Movement pattern",
+                analyzing: "Analyzing...",
+                trackingStarted: "🎯 Tracking started",
+                justNow: "Just now"
+            },
+            el: {
+                systemTitle: "Προηγμένο Σύστημα Αντικλοπής",
+                connectionStatus: "ΣΥΝΔΕΔΕΜΕΝΟ",
+                locationStatus: "GPS ΕΝΕΡΓΟ",
+                centerDevice: "📍 Κέντρο στη Συσκευή",
+                liveTracking: "🎯 Ζωντανή Παρακολούθηση",
+                showRoute: "🛣️ Εμφάνιση Διαδρομής",
+                satelliteView: "🛰️ Δορυφορική Προβολή",
+                deviceStatus: "📱 Κατάσταση Συσκευής",
+                battery: "Μπαταρία",
+                signal: "Σήμα",
+                status: "Κατάσταση",
+                tracking: "Παρακολούθηση",
+                moving: "ΣΕ ΚΙΝΗΣΗ",
+                stationary: "ΑΚΙΝΗΤΗ",
+                securityControls: "🔒 Έλεγχοι Ασφαλείας",
+                lockDevice: "🔒 Κλείδωμα Συσκευής",
+                soundAlarm: "🚨 Ήχος Συναγερμού",
+                capturePhoto: "📸 Λήψη Φωτογραφίας",
+                wipeData: "🗑️ Διαγραφή Δεδομένων",
+                remoteCamera: "📷 Απομακρυσμένη Κάμερα",
+                startCamera: "📹 Έναρξη Κάμερας",
+                capture: "📸 Λήψη",
+                liveActivity: "📊 Ζωντανή Δραστηριότητα",
+                movementAnalytics: "📈 Αναλυτικά Κίνησης",
+                avgSpeed: "Μέση Ταχύτητα",
+                maxSpeed: "Μέγιστη Ταχύτητα",
+                movementPattern: "Μοτίβο κίνησης",
+                analyzing: "Ανάλυση...",
+                trackingStarted: "🎯 Η παρακολούθηση ξεκίνησε",
+                justNow: "Μόλις τώρα"
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            const t = translations[lang];
+            
+            // Update header
+            document.getElementById('system-title').textContent = t.systemTitle;
+            document.getElementById('connectionStatus').textContent = t.connectionStatus;
+            document.getElementById('locationStatus').textContent = t.locationStatus;
+            
+            // Update map controls
+            const mapBtns = document.querySelectorAll('.map-btn');
+            if (mapBtns[0]) mapBtns[0].textContent = t.centerDevice;
+            if (mapBtns[1]) mapBtns[1].textContent = t.liveTracking;
+            if (mapBtns[2]) mapBtns[2].textContent = t.showRoute;
+            if (mapBtns[3]) mapBtns[3].textContent = t.satelliteView;
+            
+            // Update panel titles
+            const panelTitles = document.querySelectorAll('.panel-title');
+            if (panelTitles[0]) panelTitles[0].innerHTML = `📱 ${t.deviceStatus}`;
+            if (panelTitles[1]) panelTitles[1].innerHTML = `🔒 ${t.securityControls}`;
+            if (panelTitles[2]) panelTitles[2].innerHTML = `📷 ${t.remoteCamera}`;
+            if (panelTitles[3]) panelTitles[3].innerHTML = `📊 ${t.liveActivity}`;
+            if (panelTitles[4]) panelTitles[4].innerHTML = `📈 ${t.movementAnalytics}`;
+            
+            // Update status labels
+            const statusLabels = document.querySelectorAll('.status-label');
+            if (statusLabels[0]) statusLabels[0].textContent = t.battery;
+            if (statusLabels[1]) statusLabels[1].textContent = t.signal;
+            if (statusLabels[2]) statusLabels[2].textContent = t.status;
+            if (statusLabels[3]) statusLabels[3].textContent = t.tracking;
+            
+            // Update control buttons
+            const controlBtns = document.querySelectorAll('.control-btn');
+            if (controlBtns[0]) controlBtns[0].innerHTML = `🔒 ${t.lockDevice}`;
+            if (controlBtns[1]) controlBtns[1].innerHTML = `🚨 ${t.soundAlarm}`;
+            if (controlBtns[2]) controlBtns[2].innerHTML = `📸 ${t.capturePhoto}`;
+            if (controlBtns[3]) controlBtns[3].innerHTML = `🗑️ ${t.wipeData}`;
+            
+            // Update camera controls
+            const cameraBtns = document.querySelectorAll('.camera-controls .control-btn');
+            if (cameraBtns[0]) cameraBtns[0].innerHTML = `📹 ${t.startCamera}`;
+            if (cameraBtns[1]) cameraBtns[1].innerHTML = `📸 ${t.capture}`;
+            
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.style.background = 'rgba(255,255,255,0.1)';
+                btn.style.borderColor = 'rgba(255,255,255,0.3)';
+            });
+            document.getElementById(`lang-${lang}`).style.background = 'rgba(255,255,255,0.25)';
+            document.getElementById(`lang-${lang}`).style.borderColor = 'rgba(255,255,255,0.6)';
+            
+            // Update document direction (only for Arabic, but we don't have it here)
+            document.documentElement.dir = 'ltr';
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('en'); // Set default language
             simulateBattery();
             simulateMovement(); // Start tracking immediately
             
