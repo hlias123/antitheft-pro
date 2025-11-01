@@ -1,0 +1,34 @@
+PK                  ! This is a demo APK file placeholder for Secure Guardian Pro
+
+🛡️ SECURE GUARDIAN PRO - ANDROID APK
+=====================================
+
+📱 App Information:
+- Package Name: com.antitheft.pro
+- Version: 1.0.0
+- Min Android: 5.0 (API 21)
+- Target Android: 14 (API 34)
+
+🚀 Features:
+✅ PIN Generator for Web Access
+✅ Live GPS Tracking
+✅ Intruder Detection
+✅ Battery Monitoring
+✅ Security Alerts
+✅ Advanced Settings
+✅ Web Dashboard Sync
+
+🔧 To get the actual APK:
+1. Install Android Studio
+2. Open the project folder
+3. Build > Generate Signed Bundle/APK
+4. Choose APK and build
+
+📁 Source code is available in:
+- SecureGuardian-APK-Package/source/
+- GitHub: https://github.com/hlias123/antitheft-pro
+
+🛡️ This is a demo placeholder file.
+The actual APK needs to be built using Android Studio.
+
+Built: 2025-11-01

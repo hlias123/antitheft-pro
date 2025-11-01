@@ -1,0 +1,26 @@
+# 📱 Secure Guardian Pro APK
+
+This is a placeholder for the actual APK file.
+
+## 🔧 To build the actual APK:
+
+1. Follow instructions in BUILD-INSTRUCTIONS.md
+2. Use Android Studio or Gradle command line
+3. APK will be generated with all features included
+
+## 📋 App Information:
+- Package: com.antitheft.pro
+- Version: 1.0.0
+- Min SDK: 21
+- Target SDK: 34
+
+## 🛡️ Security Features:
+🔑 PIN Generator for Web Access
+📍 Live GPS Tracking
+👁️ Intruder Detection
+🔋 Battery Monitoring
+🚨 Security Alerts
+⚙️ Advanced Settings
+🌐 Web Dashboard Sync
+
+Built: 2025-11-01T18:10:34.841Z
