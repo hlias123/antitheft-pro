@@ -61,6 +61,11 @@
             animation: float 3s ease-in-out infinite;
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
         .title {
             font-size: 2.5rem;
             margin-bottom: 15px;
@@ -78,7 +83,6 @@
             line-height: 1.6;
         }
 
-        /* Language Selector */
         .language-selector {
             display: flex;
             justify-content: center;
@@ -99,371 +103,233 @@
             backdrop-filter: blur(10px);
         }
 
-        .lang-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .lang-btn.active {
-            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            background: rgba(255, 255, 255, 0.25);
             border-color: rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
-        }
-
-        /* Login Form */
-        .login-form {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(20px);
-            margin-bottom: 30px;
-        }
-
-        .form-title {
-            color: white;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            text-align: center;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: left;
         }
 
-        .form-group label {
+        label {
             display: block;
+            margin-bottom: 10px;
             color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 15px;
         }
 
-        .form-input {
+        input {
             width: 100%;
-            padding: 15px;
+            padding: 18px 25px;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
+            border-radius: 15px;
             font-size: 16px;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .form-input::placeholder {
+        input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
 
-        .form-input:focus {
+        input:focus {
             outline: none;
-            border-color: #10b981;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* PIN Input */
-        .pin-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .pin-input {
-            width: 50px;
-            height: 50px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .pin-input:focus {
-            outline: none;
-            border-color: #10b981;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .btn {
             width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 18px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
-        /* Info Panel */
-        .info-panel {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
+        .info-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(15px);
+        }
+
+        .info-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-list {
             color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            line-height: 1.6;
+            text-align: left;
+            line-height: 1.8;
         }
 
-        .app-download {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 20px;
+        .info-list li {
+            margin-bottom: 8px;
+            padding-left: 10px;
+        }
+
+        .demo-note {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+            border: 1px solid rgba(255, 193, 7, 0.4);
             border-radius: 15px;
-            margin-top: 20px;
-            text-align: center;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .download-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
         }
 
         .download-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            text-decoration: none;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
             font-weight: 600;
-            margin: 10px;
+            cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
         }
 
         .download-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                box-shadow: 0 0 10px rgba(239,68,68,0.5);
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 0 20px rgba(239,68,68,0.8);
-                transform: scale(1.1);
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Dashboard Styles */
-        .feature-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 600;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
+            display: none;
         }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.15);
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            color: #4CAF50;
         }
 
-        /* Fullscreen Map */
-        .map-fullscreen {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: 9999 !important;
-            background: rgba(15, 23, 42, 0.95) !important;
-            backdrop-filter: blur(10px) !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            color: #f44336;
         }
 
-        .map-fullscreen #map {
-            height: calc(100vh - 100px) !important;
-            margin-top: 50px !important;
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+            
+            .logo {
+                font-size: 4rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .language-selector {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🛡️</div>
-        <h1 class="title" id="mainTitle">Secure Guardian</h1>
-        <p class="subtitle" id="mainSubtitle">App-Controlled Web Access</p>
-        
+        <div class="logo">🛡️🛡️</div>
+        <h1 class="title" id="main-title">Secure Guardian</h1>
+        <p class="subtitle" id="main-subtitle">App-Controlled Web Access</p>
+
         <!-- Language Selector -->
         <div class="language-selector">
-            <button class="lang-btn active" onclick="setLanguage('en')">🇬🇧 English</button>
-            <button class="lang-btn" onclick="setLanguage('el')">🇬🇷 Ελληνικά</button>
-            <button class="lang-btn" onclick="setLanguage('ar')">🇸🇦 العربية</button>
+            <button class="lang-btn active" onclick="setLanguage('en')" id="lang-en">🇬🇧 English</button>
+            <button class="lang-btn" onclick="setLanguage('el')" id="lang-el">🇬🇷 Ελληνικά</button>
+            <button class="lang-btn" onclick="setLanguage('ar')" id="lang-ar">🇸🇦 العربية</button>
         </div>
 
-        <div id="messageDiv"></div>
-        
         <!-- Login Form -->
-        <div class="login-form">
-            <h3 class="form-title" id="loginTitle">📱 App PIN Login</h3>
-            
-            <div class="form-group">
-                <label for="email" id="emailLabel">Email Address</label>
-                <input type="email" id="email" class="form-input" placeholder="Enter your registered email">
-            </div>
-            
-            <div class="form-group">
-                <label id="pinLabel">6-Digit PIN from Mobile App</label>
-                <div class="pin-container">
-                    <input type="text" class="pin-input" maxlength="1" oninput="moveToNext(this, 0)">
-                    <input type="text" class="pin-input" maxlength="1" oninput="moveToNext(this, 1)">
-                    <input type="text" class="pin-input" maxlength="1" oninput="moveToNext(this, 2)">
-                    <input type="text" class="pin-input" maxlength="1" oninput="moveToNext(this, 3)">
-                    <input type="text" class="pin-input" maxlength="1" oninput="moveToNext(this, 4)">
-                    <input type="text" class="pin-input" maxlength="1" oninput="moveToNext(this, 5)">
-                </div>
-            </div>
-            
-            <button class="btn" onclick="loginWithPin()">
-                <span id="loginBtn">🚀 Access Website</span>
-            </button>
+        <div class="form-group">
+            <label for="email" id="email-label">📱 App PIN Login</label>
+            <input type="email" id="email" placeholder="Email Address" required>
         </div>
 
-        <!-- Info Panel -->
-        <div class="info-panel">
-            <h4 id="howItWorksTitle">📋 How it works:</h4>
-            <ol id="stepsList" style="text-align: left; margin: 15px 0; padding-left: 20px;">
-                <li id="step1">Open the Secure Guardian mobile app</li>
-                <li id="step2">Generate a 6-digit PIN for web access</li>
-                <li id="step3">Enter your email and PIN above</li>
-                <li id="step4">Access granted for this session only</li>
+        <div class="form-group">
+            <input type="text" id="pin" placeholder="6-Digit PIN from Mobile App" maxlength="6" required>
+        </div>
+
+        <button class="btn" onclick="handleLogin()" id="login-btn">🚀 Access Website</button>
+
+        <div id="message" class="message"></div>
+
+        <!-- How it works -->
+        <div class="info-section">
+            <div class="info-title" id="how-it-works-title">📋 How it works:</div>
+            <ol class="info-list" id="how-it-works-list">
+                <li>Open the Secure Guardian mobile app</li>
+                <li>Generate a 6-digit PIN for web access</li>
+                <li>Enter your email and PIN above</li>
+                <li>Access granted for this session only</li>
             </ol>
         </div>
 
-        <!-- Demo Notice -->
-        <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1)); border: 1px solid rgba(251, 191, 36, 0.3); padding: 15px; border-radius: 12px; margin: 15px 0; color: rgba(255,255,255,0.9); font-size: 14px; text-align: center;">
-            <strong id="demoNotice">🧪 Demo Mode: Enter any 6-digit PIN to test the dashboard</strong>
+        <!-- Demo Mode -->
+        <div class="demo-note">
+            <div id="demo-title">🧪 Demo Mode: Enter any 6-digit PIN to test the dashboard</div>
         </div>
 
-        <!-- App Download -->
-        <div class="app-download">
-            <h4 id="downloadTitle">📱 Don't have the app?</h4>
-            <p id="downloadDesc" style="margin: 10px 0; color: rgba(255,255,255,0.9);">Download Secure Guardian mobile app to generate access PINs</p>
-            <a href="#" class="download-btn" id="downloadAndroid">📱 Android App</a>
-        </div>
-
-        <!-- Dashboard (Hidden initially) -->
-        <div id="dashboardSection" style="display: none;">
-            <h2 id="dashboardTitle" style="color: white; margin-bottom: 30px;">🛡️ Security Dashboard</h2>
-            
-            <!-- User Info -->
-            <div class="info-panel" style="margin-bottom: 20px;">
-                <h4 id="welcomeTitle">👋 Welcome!</h4>
-                <p id="userEmail" style="margin: 10px 0; font-weight: bold;"></p>
-                <p id="sessionInfo" style="font-size: 12px; opacity: 0.8;">Session active - PIN verified via mobile app</p>
-            </div>
-
-            <!-- Advanced Map Section (Full Size) -->
-            <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 0; margin-bottom: 20px; overflow: hidden;">
-                <!-- Map Header -->
-                <div style="background: linear-gradient(135deg, #1e293b, #334155); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <h4 id="mapTitle" style="color: white; margin: 0; display: flex; align-items: center; gap: 10px;">🗺️ Advanced Live Tracking</h4>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="centerOnDevice()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 15px; cursor: pointer; font-size: 12px;">📍 Center</button>
-                        <button onclick="toggleTracking()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 15px; cursor: pointer; font-size: 12px;">🎯 Track</button>
-                    </div>
-                </div>
-                
-                <!-- Large Map Container -->
-                <div style="position: relative;">
-                    <div id="map" style="width: 100%; height: 600px;"></div>
-                    
-                    <!-- Map Info Overlay -->
-                    <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.95); padding: 15px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); min-width: 280px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <strong style="color: white;">🎯 Live Tracking</strong>
-                            <span style="font-size: 12px; opacity: 0.7; color: white;">Live</span>
-                        </div>
-                        <div id="coordinates" style="color: white; font-family: monospace;">37.9755°N, 23.7348°E</div>
-                        <div style="font-size: 12px; opacity: 0.7; margin-top: 8px; color: white;">
-                            Speed: <span id="currentSpeed">0 km/h</span> | 
-                            Accuracy: <span id="gpsAccuracy">±3m</span>
-                        </div>
-                        <div style="font-size: 12px; margin-top: 8px; padding: 8px; background: rgba(16,185,129,0.2); border-radius: 6px; color: white;">
-                            ⏱️ Tracking: <span id="trackingTime">0:00</span> | 
-                            Distance: <span id="totalDistance">0m</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Security Features Grid -->
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;">
-                <div class="feature-card" onclick="lockDevice()">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🔒</div>
-                    <div style="font-weight: 600; color: white; margin-bottom: 5px;" id="lockTitle">Remote Lock</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.7);" id="lockDesc">Lock your device</div>
-                </div>
-                
-                <div class="feature-card" onclick="soundAlarm()">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🚨</div>
-                    <div style="font-weight: 600; color: white; margin-bottom: 5px;" id="alarmTitle">Sound Alarm</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.7);" id="alarmDesc">Activate alarm</div>
-                </div>
-                
-                <div class="feature-card" onclick="refreshLocation()">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">📍</div>
-                    <div style="font-weight: 600; color: white; margin-bottom: 5px;" id="trackTitle">Refresh Location</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.7);" id="trackDesc">Update device position</div>
-                </div>
-                
-                <div class="feature-card" onclick="wipeData()">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🗑️</div>
-                    <div style="font-weight: 600; color: white; margin-bottom: 5px;" id="wipeTitle">Wipe Data</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.7);" id="wipeDesc">Erase all data</div>
-                </div>
-            </div>
-
-            <!-- Logout Button -->
-            <button class="btn" onclick="logout()" style="background: linear-gradient(135deg, #ef4444, #dc2626); margin-top: 20px;">
-                <span id="logoutBtn">🚪 Sign Out</span>
-            </button>
+        <!-- Download App -->
+        <div class="download-section">
+            <div id="download-title">📱 Don't have the app?</div>
+            <p id="download-desc">Download Secure Guardian mobile app to generate access PINs</p>
+            <a href="#" class="download-btn" id="download-btn">📱 Android App</a>
         </div>
     </div>
-
-    <!-- Leaflet Map CSS and JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
         let currentLanguage = 'en';
@@ -478,511 +344,135 @@
                 pinLabel: "6-Digit PIN from Mobile App",
                 loginBtn: "🚀 Access Website",
                 howItWorksTitle: "📋 How it works:",
-                step1: "Open the Secure Guardian mobile app",
-                step2: "Generate a 6-digit PIN for web access",
-                step3: "Enter your email and PIN above",
-                step4: "Access granted for this session only",
+                howItWorksList: [
+                    "Open the Secure Guardian mobile app",
+                    "Generate a 6-digit PIN for web access", 
+                    "Enter your email and PIN above",
+                    "Access granted for this session only"
+                ],
+                demoTitle: "🧪 Demo Mode: Enter any 6-digit PIN to test the dashboard",
                 downloadTitle: "📱 Don't have the app?",
                 downloadDesc: "Download Secure Guardian mobile app to generate access PINs",
-                downloadAndroid: "📱 Android App",
-                emailRequired: '⚠️ Please enter your email address',
-                pinRequired: '⚠️ Please enter the complete 6-digit PIN',
-                verifying: '🔄 Verifying PIN with mobile app...',
-                success: '✅ PIN verified! Welcome to Secure Guardian Dashboard',
-                emailPlaceholder: "Enter your registered email",
-                dashboardTitle: "🛡️ Security Dashboard",
-                welcomeTitle: "👋 Welcome!",
-                sessionInfo: "Session active - PIN verified via mobile app",
-                lockTitle: "Remote Lock",
-                lockDesc: "Lock your device",
-                alarmTitle: "Sound Alarm",
-                alarmDesc: "Activate alarm",
-                mapTitle: "🗺️ Advanced Live Tracking",
-                mapInfo: "📍 Last updated: Just now • Accuracy: ±5 meters",
-                fullscreenBtn: "🔍 Fullscreen",
-                exitFullscreenBtn: "❌ Exit Fullscreen",
-                trackTitle: "Refresh Location",
-                trackDesc: "Update device position",
-                wipeTitle: "Wipe Data",
-                wipeDesc: "Erase all data",
-                logoutBtn: "🚪 Sign Out",
-                demoNotice: "🧪 Demo Mode: Enter any 6-digit PIN to test the dashboard"
+                downloadBtn: "📱 Android App"
             },
             el: {
                 mainTitle: "Ασφαλής Φύλακας",
                 mainSubtitle: "Πρόσβαση Ιστού μέσω Εφαρμογής",
                 loginTitle: "📱 Σύνδεση με PIN Εφαρμογής",
                 emailLabel: "Διεύθυνση Email",
-                pinLabel: "6ψήφιος PIN από την Εφαρμογή Κινητού",
+                pinLabel: "6ψήφιος PIN από την Εφαρμογή",
                 loginBtn: "🚀 Πρόσβαση στον Ιστότοπο",
                 howItWorksTitle: "📋 Πώς λειτουργεί:",
-                step1: "Ανοίξτε την εφαρμογή Ασφαλής Φύλακας στο κινητό",
-                step2: "Δημιουργήστε έναν 6ψήφιο PIN για πρόσβαση στον ιστό",
-                step3: "Εισάγετε το email και τον PIN παραπάνω",
-                step4: "Η πρόσβαση παρέχεται μόνο για αυτή τη συνεδρία",
+                howItWorksList: [
+                    "Ανοίξτε την εφαρμογή Ασφαλής Φύλακας",
+                    "Δημιουργήστε έναν 6ψήφιο PIN για πρόσβαση",
+                    "Εισάγετε το email και PIN παραπάνω",
+                    "Πρόσβαση μόνο για αυτή τη συνεδρία"
+                ],
+                demoTitle: "🧪 Λειτουργία Demo: Εισάγετε οποιονδήποτε 6ψήφιο PIN για δοκιμή",
                 downloadTitle: "📱 Δεν έχετε την εφαρμογή;",
-                downloadDesc: "Κατεβάστε την εφαρμογή Ασφαλής Φύλακας για να δημιουργήσετε PIN πρόσβασης",
-                downloadAndroid: "📱 Εφαρμογή Android",
-                emailRequired: '⚠️ Παρακαλώ εισάγετε τη διεύθυνση email σας',
-                pinRequired: '⚠️ Παρακαλώ εισάγετε τον πλήρη 6ψήφιο PIN',
-                verifying: '🔄 Επαλήθευση PIN με την εφαρμογή κινητού...',
-                success: '✅ Ο PIN επαληθεύτηκε! Καλώς ήρθατε στον Πίνακα Ελέγχου του Ασφαλούς Φύλακα',
-                emailPlaceholder: "Εισάγετε το εγγεγραμμένο email σας",
-                dashboardTitle: "🛡️ Πίνακας Ασφαλείας",
-                welcomeTitle: "👋 Καλώς ήρθατε!",
-                sessionInfo: "Ενεργή συνεδρία - PIN επαληθεύτηκε μέσω εφαρμογής κινητού",
-                lockTitle: "Απομακρυσμένο Κλείδωμα",
-                lockDesc: "Κλειδώστε τη συσκευή σας",
-                alarmTitle: "Ήχος Συναγερμού",
-                alarmDesc: "Ενεργοποίηση συναγερμού",
-                mapTitle: "🗺️ Προηγμένη Ζωντανή Παρακολούθηση",
-                mapInfo: "📍 Τελευταία ενημέρωση: Μόλις τώρα • Ακρίβεια: ±5 μέτρα",
-                fullscreenBtn: "🔍 Πλήρης Οθόνη",
-                exitFullscreenBtn: "❌ Έξοδος από Πλήρη Οθόνη",
-                trackTitle: "Ανανέωση Τοποθεσίας",
-                trackDesc: "Ενημέρωση θέσης συσκευής",
-                wipeTitle: "Διαγραφή Δεδομένων",
-                wipeDesc: "Διαγραφή όλων των δεδομένων",
-                logoutBtn: "🚪 Αποσύνδεση",
-                demoNotice: "🧪 Λειτουργία Demo: Εισάγετε οποιονδήποτε 6ψήφιο PIN για να δοκιμάσετε τον πίνακα ελέγχου"
+                downloadDesc: "Κατεβάστε την εφαρμογή Ασφαλής Φύλακας για δημιουργία PIN",
+                downloadBtn: "📱 Android Εφαρμογή"
             },
             ar: {
                 mainTitle: "الحارس الآمن",
                 mainSubtitle: "الوصول للويب عبر التطبيق",
-                loginTitle: "📱 تسجيل دخول بPIN التطبيق",
-                emailLabel: "البريد الإلكتروني",
-                pinLabel: "رمز PIN مكون من 6 أرقام من تطبيق الهاتف",
+                loginTitle: "📱 تسجيل دخول برقم PIN",
+                emailLabel: "عنوان البريد الإلكتروني",
+                pinLabel: "رقم PIN من 6 أرقام من التطبيق",
                 loginBtn: "🚀 الوصول للموقع",
                 howItWorksTitle: "📋 كيف يعمل:",
-                step1: "افتح تطبيق الحارس الآمن على الهاتف",
-                step2: "أنشئ رمز PIN مكون من 6 أرقام للوصول للويب",
-                step3: "أدخل بريدك الإلكتروني والPIN أعلاه",
-                step4: "يتم منح الوصول لهذه الجلسة فقط",
+                howItWorksList: [
+                    "افتح تطبيق الحارس الآمن",
+                    "أنشئ رقم PIN من 6 أرقام للوصول للويب",
+                    "أدخل بريدك الإلكتروني ورقم PIN أعلاه",
+                    "الوصول مُتاح لهذه الجلسة فقط"
+                ],
+                demoTitle: "🧪 وضع التجريب: أدخل أي رقم PIN من 6 أرقام لتجربة لوحة التحكم",
                 downloadTitle: "📱 ليس لديك التطبيق؟",
-                downloadDesc: "حمل تطبيق الحارس الآمن لإنشاء رموز PIN للوصول",
-                downloadAndroid: "📱 تطبيق أندرويد",
-                emailRequired: '⚠️ يرجى إدخال عنوان بريدك الإلكتروني',
-                pinRequired: '⚠️ يرجى إدخال رمز PIN المكون من 6 أرقام كاملاً',
-                verifying: '🔄 التحقق من PIN مع تطبيق الهاتف...',
-                success: '✅ تم التحقق من PIN! مرحباً بك في لوحة تحكم الحارس الآمن',
-                emailPlaceholder: "أدخل بريدك الإلكتروني المسجل",
-                dashboardTitle: "🛡️ لوحة الأمان",
-                welcomeTitle: "👋 مرحباً!",
-                sessionInfo: "الجلسة نشطة - تم التحقق من PIN عبر تطبيق الهاتف",
-                lockTitle: "القفل عن بُعد",
-                lockDesc: "اقفل جهازك",
-                alarmTitle: "تشغيل الإنذار",
-                alarmDesc: "تفعيل الإنذار",
-                mapTitle: "🗺️ التتبع المباشر المتقدم",
-                mapInfo: "📍 آخر تحديث: الآن • الدقة: ±5 أمتار",
-                fullscreenBtn: "🔍 ملء الشاشة",
-                exitFullscreenBtn: "❌ إغلاق ملء الشاشة",
-                trackTitle: "تحديث الموقع",
-                trackDesc: "تحديث موضع الجهاز",
-                wipeTitle: "مسح البيانات",
-                wipeDesc: "حذف جميع البيانات",
-                logoutBtn: "🚪 تسجيل الخروج",
-                demoNotice: "🧪 وضع التجريب: أدخل أي رمز PIN مكون من 6 أرقام لتجربة لوحة التحكم"
+                downloadDesc: "حمّل تطبيق الحارس الآمن لإنشاء أرقام PIN للوصول",
+                downloadBtn: "📱 تطبيق أندرويد"
             }
         };
 
-        // Set language
+        // Set language function
         function setLanguage(lang) {
             currentLanguage = lang;
-            
-            // Update active button
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Update text direction
-            if (lang === 'ar') {
-                document.documentElement.dir = 'rtl';
-            } else {
-                document.documentElement.dir = 'ltr';
-            }
-            
-            // Update all text
             const t = translations[lang];
-            Object.keys(t).forEach(key => {
-                const element = document.getElementById(key);
-                if (element) {
-                    element.textContent = t[key];
-                }
+            
+            // Update text content
+            document.getElementById('main-title').textContent = t.mainTitle;
+            document.getElementById('main-subtitle').textContent = t.mainSubtitle;
+            document.getElementById('email-label').textContent = t.loginTitle;
+            document.getElementById('email').placeholder = t.emailLabel;
+            document.getElementById('pin').placeholder = t.pinLabel;
+            document.getElementById('login-btn').textContent = t.loginBtn;
+            document.getElementById('how-it-works-title').textContent = t.howItWorksTitle;
+            document.getElementById('demo-title').textContent = t.demoTitle;
+            document.getElementById('download-title').textContent = t.downloadTitle;
+            document.getElementById('download-desc').textContent = t.downloadDesc;
+            document.getElementById('download-btn').textContent = t.downloadBtn;
+            
+            // Update how it works list
+            const listElement = document.getElementById('how-it-works-list');
+            listElement.innerHTML = '';
+            t.howItWorksList.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                listElement.appendChild(li);
             });
             
-            // Update placeholder
-            document.getElementById('email').placeholder = t.emailPlaceholder;
-        }
-
-        // Move to next PIN input
-        function moveToNext(current, index) {
-            if (current.value.length === 1 && index < 5) {
-                document.querySelectorAll('.pin-input')[index + 1].focus();
-            }
-        }
-
-        // Show message
-        function showMessage(message, type = 'info') {
-            const messageDiv = document.getElementById('messageDiv');
-            const colors = {
-                success: 'rgba(16, 185, 129, 0.2)',
-                error: 'rgba(239, 68, 68, 0.2)',
-                info: 'rgba(59, 130, 246, 0.2)'
-            };
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
             
-            messageDiv.innerHTML = `
-                <div style="background: ${colors[type]}; border: 1px solid rgba(255,255,255,0.3); padding: 15px; border-radius: 12px; margin: 15px 0; color: white; text-align: center;">
-                    ${message}
-                </div>
-            `;
+            // Update document direction for Arabic
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
             
             setTimeout(() => {
-                messageDiv.innerHTML = '';
+                messageDiv.style.display = 'none';
             }, 5000);
         }
 
-        // Login with PIN
-        async function loginWithPin() {
-            const email = document.getElementById('email').value;
-            const pinInputs = document.querySelectorAll('.pin-input');
-            const pin = Array.from(pinInputs).map(input => input.value).join('');
-
-            if (!email) {
-                showMessage(translations[currentLanguage].emailRequired, 'error');
+        // Handle login
+        function handleLogin() {
+            const email = document.getElementById('email').value.trim();
+            const pin = document.getElementById('pin').value.trim();
+            
+            // Validation
+            if (!email || !email.includes('@')) {
+                showMessage('Please enter a valid email address', 'error');
                 return;
             }
-
-            if (pin.length !== 6) {
-                showMessage(translations[currentLanguage].pinRequired, 'error');
+            
+            if (!pin || pin.length !== 6 || !/^\d{6}$/.test(pin)) {
+                showMessage('Please enter a 6-digit PIN', 'error');
                 return;
             }
-
-            // For demo purposes - accept any 6-digit PIN
-            showMessage(translations[currentLanguage].verifying, 'info');
+            
+            // Simulate login success
+            showMessage('Login successful! Redirecting to dashboard...', 'success');
             
             setTimeout(() => {
-                // Always successful for demo (since app is not ready)
-                showMessage(translations[currentLanguage].success, 'success');
-                
-                // Show dashboard after 1 second
-                setTimeout(() => {
-                    showDashboard();
-                }, 1000);
-            }, 1500);
+                // Redirect to advanced tracking dashboard
+                window.location.href = 'advanced-tracking.html';
+            }, 2000);
         }
 
-        // Advanced Map variables
-        let map = null;
-        let deviceMarker = null;
-        let currentLat = 37.9755; // Athens coordinates as default
-        let currentLng = 23.7348;
-        let trackingPath = [];
-        let isTracking = true;
-        let trackingStartTime = Date.now();
-        let totalDistance = 0;
-        let isMoving = false;
-
-        // Show full-screen map dashboard
-        function showDashboard() {
-            const email = document.getElementById('email').value;
-            
-            // Hide login interface completely
-            document.querySelector('.container').style.display = 'none';
-            
-            // Show full-screen advanced tracking interface
-            document.body.innerHTML = `
-                <!-- Advanced Tracking Header -->
-                <div style="background: linear-gradient(135deg, #1e293b, #334155); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: relative; z-index: 1000;">
-                    <div style="display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: white;">
-                        🛡️ <span>Advanced Anti-Theft System</span>
-                    </div>
-                    <div style="display: flex; gap: 20px; align-items: center;">
-                        <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px;">
-                            <span style="color: #10b981;">●</span>
-                            <span style="color: white;">ONLINE</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px;">
-                            <span style="color: #f59e0b;">🔋</span>
-                            <span style="color: white;">85%</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px;">
-                            <span style="color: #3b82f6;">📍</span>
-                            <span style="color: white;">GPS ACTIVE</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Container -->
-                <div style="display: grid; grid-template-columns: 1fr 350px; height: calc(100vh - 70px); gap: 0;">
-                    <!-- Map Section -->
-                    <div style="position: relative; background: #1e293b;">
-                        <div style="width: 100%; height: 100%; position: relative;">
-                            <div id="map" style="width: 100%; height: 100%;"></div>
-                            
-                            <!-- Map Controls -->
-                            <div style="position: absolute; top: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;">
-                                <button onclick="centerOnDevice()" style="background: rgba(15, 23, 42, 0.9); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">📍 Center on Device</button>
-                                <button onclick="toggleTracking()" style="background: rgba(15, 23, 42, 0.9); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">🎯 Live Tracking</button>
-                                <button onclick="showRoute()" style="background: rgba(15, 23, 42, 0.9); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">🛣️ Show Route</button>
-                            </div>
-
-                            <!-- Tracking Info -->
-                            <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.95); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); min-width: 300px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <strong style="color: white;">🎯 Live Tracking</strong>
-                                    <span style="font-size: 12px; opacity: 0.7; color: white;">Live</span>
-                                </div>
-                                <div id="coordinates" style="color: white; font-family: monospace;">37.9755°N, 23.7348°E</div>
-                                <div style="font-size: 12px; opacity: 0.7; margin-top: 8px; color: white;">
-                                    Speed: <span id="currentSpeed">0 km/h</span> | 
-                                    Accuracy: <span id="gpsAccuracy">±3m</span>
-                                </div>
-                                <div style="font-size: 12px; margin-top: 8px; padding: 8px; background: rgba(239,68,68,0.2); border-radius: 6px; color: white;">
-                                    ⏱️ Time at location: <span id="timeAtLocation">0m 0s</span><br>
-                                    👣 Steps taken: <span id="stepCount">0</span> | Distance: <span id="totalDistance">0m</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Control Panel -->
-                    <div style="background: linear-gradient(180deg, #1e293b, #0f172a); padding: 20px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.1);">
-                        <!-- User Info -->
-                        <div style="margin-bottom: 30px;">
-                            <div style="color: #e2e8f0; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                                👤 User Session
-                            </div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                                <div style="color: white; font-weight: 600; margin-bottom: 5px;">${email}</div>
-                                <div style="font-size: 12px; opacity: 0.7; color: white;">PIN verified via mobile app</div>
-                            </div>
-                        </div>
-
-                        <!-- Security Controls -->
-                        <div style="margin-bottom: 30px;">
-                            <div style="color: #e2e8f0; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                                🔒 Security Controls
-                            </div>
-                            <div style="display: grid; gap: 12px;">
-                                <button onclick="lockDevice()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; justify-content: center;">
-                                    🔒 Lock Device
-                                </button>
-                                <button onclick="soundAlarm()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; justify-content: center;">
-                                    🚨 Sound Alarm
-                                </button>
-                                <button onclick="takePhoto()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; justify-content: center;">
-                                    📸 Capture Photo
-                                </button>
-                                <button onclick="wipeData()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; justify-content: center;">
-                                    🗑️ Wipe Data
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Logout -->
-                        <button onclick="logout()" style="background: linear-gradient(135deg, #6b7280, #4b5563); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 20px;">
-                            🚪 Sign Out
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Leaflet CSS and JS -->
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-            `;
-            
-            // Load Leaflet and initialize map
-            const leafletCSS = document.createElement('link');
-            leafletCSS.rel = 'stylesheet';
-            leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-            document.head.appendChild(leafletCSS);
-            
-            const leafletJS = document.createElement('script');
-            leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-            leafletJS.onload = () => {
-                setTimeout(() => {
-                    initializeFullScreenMap();
-                }, 500);
-            };
-            document.head.appendChild(leafletJS);
-        }
-
-        // Initialize full-screen advanced map
-        function initializeFullScreenMap() {
-            if (map) {
-                map.remove(); // Remove existing map
+        // Handle Enter key
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                handleLogin();
             }
-            
-            // Create map with higher zoom for better detail
-            map = L.map('map').setView([currentLat, currentLng], 18);
-            
-            // Add tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-            
-            // Advanced device marker with pulsing effect
-            const deviceIcon = L.divIcon({
-                html: '<div style="background: #ef4444; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(239,68,68,0.5); animation: pulse 2s infinite;"></div>',
-                iconSize: [20, 20],
-                className: 'device-marker'
-            });
-            
-            deviceMarker = L.marker([currentLat, currentLng], { icon: deviceIcon }).addTo(map);
-            
-            // Add popup to marker
-            const popupTexts = {
-                en: '<b>📱 Target Device</b><br>Status: Active<br>Battery: 85%<br>Signal: Strong',
-                el: '<b>📱 Συσκευή Στόχος</b><br>Κατάσταση: Ενεργή<br>Μπαταρία: 85%<br>Σήμα: Ισχυρό',
-                ar: '<b>📱 الجهاز المستهدف</b><br>الحالة: نشط<br>البطارية: 85%<br>الإشارة: قوية'
-            };
-            
-            deviceMarker.bindPopup(popupTexts[currentLanguage]).openPopup();
-            
-            // Start advanced tracking
-            startAdvancedTracking();
-        }
-
-        // Calculate distance between two points
-        function calculateDistance(lat1, lng1, lat2, lng2) {
-            const R = 6371e3; // Earth's radius in meters
-            const φ1 = lat1 * Math.PI/180;
-            const φ2 = lat2 * Math.PI/180;
-            const Δφ = (lat2-lat1) * Math.PI/180;
-            const Δλ = (lng2-lng1) * Math.PI/180;
-
-            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                      Math.cos(φ1) * Math.cos(φ2) *
-                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-            return R * c; // Distance in meters
-        }
-
-        // Advanced tracking simulation
-        function startAdvancedTracking() {
-            setInterval(() => {
-                if (!isTracking) return;
-                
-                const currentPos = deviceMarker.getLatLng();
-                
-                // Realistic movement simulation
-                const movementChance = Math.random();
-                let newLat = currentPos.lat;
-                let newLng = currentPos.lng;
-                let speed = 0;
-                
-                if (movementChance > 0.3) { // 70% chance of movement
-                    const moveDistance = Math.random() * 0.0001; // Realistic steps
-                    const direction = Math.random() * 2 * Math.PI;
-                    
-                    newLat += Math.cos(direction) * moveDistance;
-                    newLng += Math.sin(direction) * moveDistance;
-                    
-                    // Calculate distance and speed
-                    const distanceMoved = calculateDistance(currentPos.lat, currentPos.lng, newLat, newLng);
-                    totalDistance += distanceMoved;
-                    speed = Math.floor((distanceMoved / 1000) * 3600); // km/h
-                    if (speed < 1) speed = Math.floor(Math.random() * 5) + 1;
-                    
-                    isMoving = true;
-                } else {
-                    speed = 0;
-                    isMoving = false;
-                }
-                
-                // Update position
-                deviceMarker.setLatLng([newLat, newLng]);
-                trackingPath.push([newLat, newLng]);
-                currentLat = newLat;
-                currentLng = newLng;
-                
-                // Update displays
-                document.getElementById('coordinates').textContent = 
-                    `${newLat.toFixed(6)}°N, ${newLng.toFixed(6)}°E`;
-                document.getElementById('currentSpeed').textContent = `${speed} km/h`;
-                document.getElementById('totalDistance').textContent = `${Math.floor(totalDistance)}m`;
-                
-                // Update GPS accuracy
-                const accuracy = isMoving ? Math.floor(Math.random() * 5) + 3 : Math.floor(Math.random() * 2) + 1;
-                document.getElementById('gpsAccuracy').textContent = `±${accuracy}m`;
-                
-                // Update tracking time
-                const trackingTime = Math.floor((Date.now() - trackingStartTime) / 1000);
-                const minutes = Math.floor(trackingTime / 60);
-                const seconds = trackingTime % 60;
-                document.getElementById('trackingTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                
-            }, 1000); // Update every second for smooth tracking
-        }
-
-        // Map control functions
-        function centerOnDevice() {
-            if (map && deviceMarker) {
-                map.setView(deviceMarker.getLatLng(), 18);
-            }
-        }
-
-        function toggleTracking() {
-            isTracking = !isTracking;
-            const btn = event.target;
-            
-            if (isTracking) {
-                btn.textContent = '⏹️ Stop';
-                btn.style.background = 'rgba(239, 68, 68, 0.8)';
-            } else {
-                btn.textContent = '🎯 Track';
-                btn.style.background = 'rgba(255,255,255,0.1)';
-            }
-        }
-
-        // Dashboard functions
-        function lockDevice() {
-            const messages = {
-                en: '🔒 Device locked successfully!',
-                el: '🔒 Η συσκευή κλειδώθηκε επιτυχώς!',
-                ar: '🔒 تم قفل الجهاز بنجاح!'
-            };
-            showMessage(messages[currentLanguage], 'success');
-        }
-
-        function soundAlarm() {
-            const messages = {
-                en: '🚨 Alarm activated!',
-                el: '🚨 Ο συναγερμός ενεργοποιήθηκε!',
-                ar: '🚨 تم تفعيل الإنذار!'
-            };
-            showMessage(messages[currentLanguage], 'success');
-        }
-
-        // Additional map functions
-        function showRoute() {
-            if (trackingPath.length > 1) {
-                L.polyline(trackingPath, {color: '#ef4444', weight: 3}).addTo(map);
-                alert('🛣️ Route displayed on map');
-            } else {
-                alert('⚠️ No route data available');
-            }
-        }
-
-        function takePhoto() {
-            alert('📸 Photo captured from front camera');
-        }
-
-        function wipeData() {
-            const messages = {
-                en: '🗑️ Data wipe initiated! (This is a demo)',
-                el: '🗑️ Η διαγραφή δεδομένων ξεκίνησε! (Αυτό είναι demo)',
-                ar: '🗑️ بدأ مسح البيانات! (هذا عرض توضيحي)'
-            };
-            showMessage(messages[currentLanguage], 'success');
-        }
-
-        function logout() {
-            location.reload(); // Reload page to return to login
-        }
-
-
+        });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
