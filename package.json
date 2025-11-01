@@ -2,10 +2,10 @@
   "name": "secure-guardian-pro",
   "version": "1.0.0",
   "description": "🛡️ Advanced Multi-Language Security System with Real-time Monitoring - نظام الحماية المتقدم متعدد اللغات مع المراقبة المباشرة",
-  "main": "server.js",
+  "main": "device-binding-server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "node device-binding-server.js",
+    "dev": "node device-binding-server.js",
     "build": "echo 'No build step required'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
