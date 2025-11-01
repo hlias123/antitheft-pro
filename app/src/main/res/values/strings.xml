@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Secure Guardian Pro</string>
+    
+    <!-- Main Activity -->
+    <string name="main_title">Secure Guardian Pro</string>
+    <string name="device_status">Device Status: Protected</string>
+    <string name="location_status">Location: Tracking Active</string>
+    <string name="security_status">Security: All Systems Online</string>
+    
+    <!-- PIN Generator -->
+    <string name="pin_generator_title">Web Access PIN Generator</string>
+    <string name="generate_pin">Generate New PIN</string>
+    <string name="copy_pin">Copy PIN</string>
+    <string name="pin_instructions">Generate a secure 6-digit PIN to access the web dashboard.\n\n⏰ PIN expires in 5 minutes\n🔒 Each PIN can only be used once\n🌐 Use at: http://your-server.com</string>
+    
+    <!-- Tracking -->
+    <string name="tracking_title">Live Location Tracking</string>
+    <string name="current_location">Current Location:</string>
+    <string name="accuracy">Accuracy:</string>
+    <string name="last_update">Last Update:</string>
+    <string name="refresh_location">Refresh Location</string>
+    
+    <!-- Intruders -->
+    <string name="intruders_title">Intruder Detection</string>
+    <string name="detection_status">Detection Status:</string>
+    <string name="failed_attempts">Failed Attempts:</string>
+    <string name="last_attempt">Last Attempt:</string>
+    <string name="enable_detection">Enable Detection</string>
+    <string name="disable_detection">Disable Detection</string>
+    <string name="clear_history">Clear History</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="security_features">Security Features</string>
+    <string name="location_tracking">Location Tracking</string>
+    <string name="intruder_detection">Intruder Detection</string>
+    <string name="camera_monitoring">Camera Monitoring</string>
+    <string name="emergency_mode">Emergency Mode</string>
+    <string name="server_configuration">Server Configuration</string>
+    <string name="change_server_url">Change Server URL</string>
+    <string name="reset_settings">Reset All Settings</string>
+    
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="confirm">Confirm</string>
+    
+    <!-- Notifications -->
+    <string name="location_tracking_active">Location tracking is protecting your device</string>
+    <string name="theft_detected">THEFT DETECTED - Device moved without authorization</string>
+    <string name="intruder_detected">Intruder attempt detected</string>
+    
+    <!-- Permissions -->
+    <string name="permission_location_rationale">Location permission is required for device tracking and theft detection.</string>
+    <string name="permission_camera_rationale">Camera permission is required for intruder photo capture.</string>
+    <string name="permission_storage_rationale">Storage permission is required to save security photos and logs.</string>
+</resources>

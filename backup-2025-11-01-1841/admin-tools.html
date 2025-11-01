@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Tools - Clean Database</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .tool { background: #f8f9fa; padding: 20px; margin: 15px 0; border-radius: 8px; border: 1px solid #dee2e6; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .danger { background: #dc3545; color: white; }
+        .success { background: #28a745; color: white; }
+        .info { background: #17a2b8; color: white; }
+        .result { margin-top: 15px; padding: 10px; border-radius: 5px; }
+        .result.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .result.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>🛠️ Admin Tools</h1>
+    
+    <div class="tool">
+        <h3>🗑️ Clean Test Accounts</h3>
+        <p>Remove all test accounts to allow creating new ones with any email.</p>
+        <button class="danger" onclick="cleanTestAccounts()">Delete All Test Accounts</button>
+        <div id="clean-result"></div>
+    </div>
+    
+    <div class="tool">
+        <h3>🗑️ Delete Specific User</h3>
+        <p>Delete a specific user by email address.</p>
+        <input type="email" id="delete-email" placeholder="Enter email to delete" style="width: 70%; padding: 8px; margin-right: 10px;">
+        <button class="danger" onclick="deleteUser()">Delete User</button>
+        <div id="delete-result"></div>
+    </div>
+    
+    <div class="tool">
+        <h3>📧 Quick Register</h3>
+        <p>Create a new account and get the verification code immediately.</p>
+        <input type="email" id="quick-email" placeholder="Enter any email" style="width: 70%; padding: 8px; margin-right: 10px;">
+        <button class="success" onclick="quickRegister()">Create Account</button>
+        <div id="register-result"></div>
+    </div>
+    
+    <div class="tool">
+        <h3>📊 Database Status</h3>
+        <p>Check current users and verification codes in the database.</p>
+        <button class="info" onclick="checkDatabase()">Check Database</button>
+        <div id="db-result"></div>
+    </div>
+
+    <script>
+        async function cleanTestAccounts() {
+            const resultDiv = document.getElementById('clean-result');
+            resultDiv.innerHTML = '<p>⏳ Cleaning database...</p>';
+            
+            try {
+                const response = await fetch('/admin/clean-test-users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result success">✅ ${data.message}<br>Deleted: ${data.deletedUsers} users, ${data.deletedCodes} codes</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function deleteUser() {
+            const email = document.getElementById('delete-email').value;
+            if (!email) {
+                alert('Please enter an email');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('delete-result');
+            resultDiv.innerHTML = '<p>⏳ Deleting user...</p>';
+            
+            try {
+                const response = await fetch('/admin/delete-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result success">✅ ${data.message}</div>`;
+                    document.getElementById('delete-email').value = '';
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function quickRegister() {
+            const email = document.getElementById('quick-email').value;
+            if (!email) {
+                alert('Please enter an email');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('register-result');
+            resultDiv.innerHTML = '<p>⏳ Creating account...</p>';
+            
+            try {
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: 'Test User', 
+                        email: email, 
+                        password: 'testpass123' 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    let message = `✅ Account created!<br>📧 Email: ${email}<br>👤 User ID: ${data.userId}<br>`;
+                    
+                    if (data.verificationCode) {
+                        message += `🔑 <strong style="font-size: 18px; color: #007bff;">Verification Code: ${data.verificationCode}</strong><br>`;
+                        message += `<small>Use this code to verify the account</small>`;
+                    } else if (data.emailSent) {
+                        message += `📨 Verification code sent to email`;
+                    }
+                    
+                    resultDiv.innerHTML = `<div class="result success">${message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function checkDatabase() {
+            const resultDiv = document.getElementById('db-result');
+            resultDiv.innerHTML = '<p>⏳ Checking database...</p>';
+            
+            try {
+                const response = await fetch('/debug/database');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let message = `📊 Database Status:<br>`;
+                    message += `Total Verification Codes: ${data.totalCodes}<br><br>`;
+                    
+                    if (data.codes.length > 0) {
+                        message += `Recent Codes:<br>`;
+                        data.codes.slice(0, 5).forEach(code => {
+                            message += `• ${code.code} (User: ${code.userId.substring(0, 8)}..., Expires: ${code.expires_at})<br>`;
+                        });
+                    } else {
+                        message += `No verification codes found.`;
+                    }
+                    
+                    resultDiv.innerHTML = `<div class="result success">${message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

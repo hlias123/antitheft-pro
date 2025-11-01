@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار مبسط</title>
+</head>
+<body>
+    <h1>اختبار تسجيل الدخول المبسط</h1>
+    <button onclick="testLogin()">اختبار تسجيل الدخول</button>
+    <div id="result"></div>
+
+    <script>
+        async function testLogin() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'جاري الاختبار...';
+            
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: 'test@example.com', 
+                        password: 'password123' 
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                const data = await response.json();
+                console.log('Full response data:', data);
+                console.log('data.success:', data.success);
+                console.log('typeof data.success:', typeof data.success);
+                
+                result.innerHTML = `
+                    <h3>نتيجة الاختبار:</h3>
+                    <p><strong>Response Status:</strong> ${response.status}</p>
+                    <p><strong>Response OK:</strong> ${response.ok}</p>
+                    <p><strong>data.success:</strong> ${data.success}</p>
+                    <p><strong>typeof data.success:</strong> ${typeof data.success}</p>
+                    <p><strong>Condition (response.ok && data.success):</strong> ${response.ok && data.success}</p>
+                    <h4>Full Response:</h4>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                if (response.ok && data.success) {
+                    result.innerHTML += '<p style="color: green;"><strong>✅ شرط النجاح مُحقق!</strong></p>';
+                } else {
+                    result.innerHTML += '<p style="color: red;"><strong>❌ شرط النجاح غير مُحقق!</strong></p>';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                result.innerHTML = `<p style="color: red;">خطأ: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+com.antitheft.pro.app-pngs-0 C:\Users\pc\Desktop\AntiTheft.pro\app\build\generated\res\pngs\debug
+com.antitheft.pro.app-resValues-1 C:\Users\pc\Desktop\AntiTheft.pro\app\build\generated\res\resValues\debug
+com.antitheft.pro.app-mergeDebugResources-2 C:\Users\pc\Desktop\AntiTheft.pro\app\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
+com.antitheft.pro.app-mergeDebugResources-3 C:\Users\pc\Desktop\AntiTheft.pro\app\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
+com.antitheft.pro.app-merged_res-4 C:\Users\pc\Desktop\AntiTheft.pro\app\build\intermediates\merged_res\debug
+com.antitheft.pro.app-debug-5 C:\Users\pc\Desktop\AntiTheft.pro\app\src\debug\res
+com.antitheft.pro.app-main-6 C:\Users\pc\Desktop\AntiTheft.pro\app\src\main\res

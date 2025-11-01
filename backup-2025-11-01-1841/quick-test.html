@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار سريع - حساب المدير</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            color: #333;
+            text-align: center;
+        }
+        .logo { font-size: 3rem; margin-bottom: 20px; }
+        h1 { color: #1e3c72; margin-bottom: 30px; }
+        .account-info {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .btn {
+            background: #1e3c72;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover { background: #2a5298; transform: translateY(-2px); }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️</div>
+        <h1>اختبار سريع - Secure Guardian Pro</h1>
+        
+        <div class="account-info">
+            <h3>🔑 حساب المدير التجريبي</h3>
+            <p><strong>البريد الإلكتروني:</strong> admin@test.com</p>
+            <p><strong>كلمة المرور:</strong> admin123456</p>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                هذا حساب تجريبي واحد فقط للاختبار
+            </p>
+        </div>
+        
+        <button class="btn" onclick="testLogin()">🔐 اختبار تسجيل الدخول</button>
+        <button class="btn" onclick="goToMainApp()">🚀 الانتقال للتطبيق الرئيسي</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.className = 'result';
+            result.innerHTML = '🔄 جاري اختبار تسجيل الدخول...';
+            
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@test.com',
+                        password: 'admin123456'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Login test result:', data);
+                
+                if (response.ok && data.success) {
+                    result.className = 'result success';
+                    result.innerHTML = `
+                        <h4>✅ تم تسجيل الدخول بنجاح!</h4>
+                        <p><strong>المستخدم:</strong> ${data.user.name}</p>
+                        <p><strong>البريد:</strong> ${data.user.email}</p>
+                        <p><strong>موثق:</strong> ${data.user.isVerified ? 'نعم' : 'لا'}</p>
+                        <button class="btn" onclick="goToMainApp()" style="margin-top: 10px;">
+                            🚀 الانتقال للتطبيق الرئيسي
+                        </button>
+                    `;
+                    
+                    // Store credentials for main app
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userInfo', JSON.stringify(data.user));
+                    
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `
+                        <h4>❌ فشل تسجيل الدخول</h4>
+                        <p><strong>الخطأ:</strong> ${data.error || 'خطأ غير معروف'}</p>
+                        <pre style="font-size: 12px; text-align: left;">${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+                
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `
+                    <h4>❌ خطأ في الشبكة</h4>
+                    <p><strong>التفاصيل:</strong> ${error.message}</p>
+                `;
+                console.error('Login test error:', error);
+            }
+        }
+        
+        function goToMainApp() {
+            window.location.href = '/app.html';
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Quick test page loaded');
+        });
+    </script>
+</body>
+</html>

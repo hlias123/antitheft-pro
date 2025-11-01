@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="#E3F2FD"
+        android:pathData="M0,0h108v108h-108z"/>
+    
+    <!-- Gear Icon -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M54,34c-11,0-20,9-20,20s9,20,20,20s20-9,20-20S65,34,54,34zM54,66c-6.6,0-12-5.4-12-12s5.4-12,12-12s12,5.4,12,12S60.6,66,54,66z"/>
+    
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M58,22h-8l-2,6l-5.2,2.6l-5.7-2.3l-5.7,5.7l2.3,5.7L31,44.9l-6,2v8l6,2l2.6,5.2l-2.3,5.7l5.7,5.7l5.7-2.3l5.2,2.6l2,6h8l2-6l5.2-2.6l5.7,2.3l5.7-5.7l-2.3-5.7l2.6-5.2l6-2v-8l-6-2l-2.6-5.2l2.3-5.7l-5.7-5.7l-5.7,2.3L60,28L58,22zM54,70c-8.8,0-16-7.2-16-16s7.2-16,16-16s16,7.2,16,16S62.8,70,54,70z"/>
+</vector>

@@ -1,0 +1,138 @@
+{
+  "app_name": "حماية ضد السرقة",
+  "welcome": "مرحباً بك",
+  "welcome_back": "مرحباً بعودتك",
+  
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirm_password": "تأكيد كلمة المرور",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "sign_in_with_google": "تسجيل الدخول بـ Google",
+    "dont_have_account": "ليس لديك حساب؟",
+    "already_have_account": "لديك حساب بالفعل؟",
+    "create_account": "إنشاء حساب جديد",
+    "verify_email": "تحقق من بريدك الإلكتروني",
+    "please_login": "الرجاء تسجيل الدخول أولاً"
+  },
+  
+  "navigation": {
+    "dashboard": "لوحة التحكم",
+    "tracking": "التتبع",
+    "alerts": "التنبيهات",
+    "devices": "الأجهزة",
+    "settings": "الإعدادات",
+    "map": "الخريطة"
+  },
+  
+  "dashboard": {
+    "active_alerts": "التنبيهات النشطة",
+    "response_time": "زمن الاستجابة",
+    "device_tracking": "تتبع الجهاز",
+    "live_tracking": "تتبع مباشر",
+    "no_alerts": "لا توجد تنبيهات",
+    "no_data": "لا توجد بيانات",
+    "loading": "جاري التحميل",
+    "refresh": "تحديث"
+  },
+  
+  "devices": {
+    "connected_devices": "الأجهزة المتصلة",
+    "no_devices": "لا توجد أجهزة متصلة حالياً",
+    "install_app_hint": "قم بتثبيت التطبيق على جهازك لبدء التتبع",
+    "device_name": "اسم الجهاز",
+    "device_model": "موديل الجهاز",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "last_seen": "آخر ظهور",
+    "device_count": "عدد الأجهزة"
+  },
+  
+  "map": {
+    "live_map": "الخريطة المباشرة",
+    "map_loading": "الخريطة ستظهر هنا عند اتصال التطبيق",
+    "current_location": "الموقع الحالي",
+    "location_history": "سجل المواقع",
+    "accuracy": "الدقة",
+    "latitude": "خط العرض",
+    "longitude": "خط الطول",
+    "show_on_map": "عرض على الخريطة"
+  },
+  
+  "pin": {
+    "enter_pin": "أدخل PIN المكون من 4 أرقام",
+    "pin_confirmation": "تأكيد هويتك بـ PIN",
+    "pin_subtitle": "لتأكيد أنك صاحب التطبيق",
+    "wrong_pin": "PIN غير صحيح",
+    "pin_verified": "تم التحقق بنجاح",
+    "verifying": "جاري التحقق"
+  },
+  
+  "connection": {
+    "connected": "متصل",
+    "disconnected": "غير متصل",
+    "connecting": "جاري الاتصال",
+    "connection_status": "حالة الاتصال"
+  },
+  
+  "alerts_page": {
+    "alert_detected": "تم اكتشاف نشاط مشبوه",
+    "intruder_detected": "تم رصد متطفل",
+    "view_details": "عرض التفاصيل",
+    "alert_time": "وقت التنبيه",
+    "alert_location": "موقع التنبيه"
+  },
+  
+  "settings": {
+    "account_settings": "إعدادات الحساب",
+    "security": "الأمان",
+    "notifications": "الإشعارات",
+    "language": "اللغة",
+    "change_language": "تغيير اللغة",
+    "theme": "المظهر",
+    "about": "حول",
+    "version": "الإصدار",
+    "save": "حفظ",
+    "cancel": "إلغاء"
+  },
+  
+  "time": {
+    "seconds": "ثواني",
+    "minutes": "دقائق",
+    "hours": "ساعات",
+    "days": "أيام",
+    "ago": "منذ",
+    "just_now": "الآن"
+  },
+  
+  "common": {
+    "yes": "نعم",
+    "no": "لا",
+    "ok": "موافق",
+    "close": "إغلاق",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "success": "نجح",
+    "error": "خطأ",
+    "warning": "تحذير",
+    "info": "معلومات"
+  },
+  
+  "errors": {
+    "something_went_wrong": "حدث خطأ ما",
+    "network_error": "خطأ في الشبكة",
+    "try_again": "حاول مرة أخرى",
+    "user_not_found": "المستخدم غير موجود",
+    "invalid_credentials": "بيانات غير صحيحة",
+    "verification_error": "خطأ في التحقق"
+  }
+}

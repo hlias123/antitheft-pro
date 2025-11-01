@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">الحماية من السرقة Pro</string>
+    
+    <!-- Authentication -->
+    <string name="welcome">مرحباً بك في الحماية من السرقة Pro</string>
+    <string name="protect_your_device">احمِ جهازك</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="register">إنشاء حساب</string>
+    <string name="sign_in_with_google">تسجيل الدخول بواسطة Google</string>
+    <string name="dont_have_account">ليس لديك حساب؟</string>
+    <string name="already_have_account">لديك حساب بالفعل؟</string>
+    <string name="create_account">إنشاء حساب</string>
+    <string name="forgot_password">هل نسيت كلمة المرور؟</string>
+    
+    <!-- Email Verification -->
+    <string name="verify_email">تحقق من بريدك الإلكتروني</string>
+    <string name="verification_sent">تم إرسال رسالة التحقق إلى %s</string>
+    <string name="check_email">يرجى التحقق من بريدك الإلكتروني والنقر على رابط التحقق</string>
+    <string name="resend_verification">إعادة إرسال رسالة التحقق</string>
+    <string name="email_verified">تم التحقق من البريد الإلكتروني بنجاح</string>
+    
+    <!-- PIN -->
+    <string name="enter_pin">أدخل الرمز السري</string>
+    <string name="set_pin">تعيين رمز سري</string>
+    <string name="confirm_pin">تأكيد الرمز السري</string>
+    <string name="pin_mismatch">الرموز السرية غير متطابقة</string>
+    <string name="wrong_pin">رمز سري خاطئ. %d محاولات متبقية</string>
+    <string name="too_many_attempts">محاولات فاشلة كثيرة. تم تفعيل الكاميرا.</string>
+    <string name="use_fingerprint">استخدم بصمة الإصبع</string>
+    <string name="fingerprint_title">مصادقة بصمة الإصبع</string>
+    <string name="fingerprint_subtitle">ضع إصبعك على المستشعر</string>
+    <string name="fingerprint_success">تم التعرف على البصمة</string>
+    <string name="fingerprint_failed">لم يتم التعرف على البصمة. حاول مرة أخرى</string>
+    <string name="fingerprint_error">خطأ في مصادقة بصمة الإصبع</string>
+    <string name="biometric_title">مصادقة بصمة الإصبع</string>
+    <string name="biometric_subtitle">ضع إصبعك على المستشعر</string>
+    <string name="biometric_not_available">بصمة الإصبع غير متاحة</string>
+    <string name="biometric_failed">فشلت المصادقة. حاول مرة أخرى</string>
+    
+    <!-- Main Menu -->
+    <string name="dashboard">لوحة التحكم</string>
+    <string name="tracking">التتبع</string>
+    <string name="intruders">المتسللون</string>
+    <string name="settings">الإعدادات</string>
+    <string name="logout">تسجيل الخروج</string>
+    
+    <!-- Tracking -->
+    <string name="live_location">الموقع المباشر</string>
+    <string name="location_history">سجل المواقع</string>
+    <string name="current_location">الموقع الحالي</string>
+    <string name="last_seen">آخر ظهور: %s</string>
+    <string name="tracking_active">التتبع نشط</string>
+    <string name="tracking_inactive">التتبع غير نشط</string>
+    
+    <!-- Intruders -->
+    <string name="captured_photos">الصور الملتقطة</string>
+    <string name="intruder_detected">تم اكتشاف متسلل</string>
+    <string name="no_intruders">لم يتم اكتشاف أي متسللين بعد</string>
+    <string name="photo_taken_at">تم التقاط الصورة في %s</string>
+    
+    <!-- Settings -->
+    <string name="general_settings">الإعدادات العامة</string>
+    <string name="security_settings">إعدادات الأمان</string>
+    <string name="notification_settings">إعدادات الإشعارات</string>
+    <string name="enable_pin_lock">تفعيل قفل الرمز السري</string>
+    <string name="enable_intruder_detection">تفعيل كشف المتسللين</string>
+    <string name="enable_location_tracking">تفعيل تتبع الموقع</string>
+    <string name="enable_wifi_scanner">تفعيل ماسح WiFi</string>
+    <string name="email_notifications">إشعارات البريد الإلكتروني</string>
+    <string name="notification_email">بريد الإشعارات</string>
+    <string name="language">اللغة</string>
+    <string name="about">حول</string>
+    
+    <!-- WiFi -->
+    <string name="scanning_wifi">البحث عن شبكات WiFi...</string>
+    <string name="free_wifi_found">تم العثور على شبكة WiFi مجانية: %s</string>
+    <string name="connecting_wifi">الاتصال بـ WiFi...</string>
+    <string name="wifi_connected">تم الاتصال بـ WiFi</string>
+    <string name="no_free_wifi">لم يتم العثور على شبكات WiFi مجانية</string>
+    
+    <!-- Data Sync -->
+    <string name="syncing_data">مزامنة البيانات...</string>
+    <string name="sync_complete">اكتملت المزامنة بنجاح</string>
+    <string name="sync_failed">فشلت المزامنة. سيتم إعادة المحاولة عند الاتصال</string>
+    <string name="data_stored_locally">تم حفظ البيانات محلياً</string>
+    <string name="pending_uploads">%d عنصر في انتظار الرفع</string>
+    
+    <!-- Errors -->
+    <string name="error">خطأ</string>
+    <string name="error_network">خطأ في الشبكة. يرجى التحقق من اتصالك</string>
+    <string name="error_permission">تم رفض الإذن</string>
+    <string name="error_camera">خطأ في الكاميرا</string>
+    <string name="error_location">خطأ في الموقع</string>
+    <string name="error_unknown">حدث خطأ غير معروف</string>
+    
+    <!-- Permissions -->
+    <string name="permission_location">إذن الموقع مطلوب للتتبع</string>
+    <string name="permission_camera">إذن الكاميرا مطلوب لكشف المتسللين</string>
+    <string name="permission_storage">إذن التخزين مطلوب</string>
+    <string name="grant_permission">منح الإذن</string>
+    
+    <!-- Common -->
+    <string name="ok">موافق</string>
+    <string name="cancel">إلغاء</string>
+    <string name="save">حفظ</string>
+    <string name="delete">حذف</string>
+    <string name="confirm">تأكيد</string>
+    <string name="close">إغلاق</string>
+    <string name="loading">جاري التحميل...</string>
+    <string name="success">نجاح</string>
+    <string name="failed">فشل</string>
+    
+    <!-- Biometric / Fingerprint -->
+    <string name="biometric_title">فتح القفل ببصمة الإصبع</string>
+    <string name="biometric_subtitle">ضع إصبعك على المستشعر</string>
+    <string name="biometric_failed">لم يتم التعرف على البصمة</string>
+    <string name="biometric_not_available">المصادقة ببصمة الإصبع غير متاحة</string>
+    <string name="use_fingerprint">استخدم بصمة الإصبع</string>
+</resources>

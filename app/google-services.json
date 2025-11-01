@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "714591912736",
+    "project_id": "antitheftpro-e9c0e",
+    "storage_bucket": "antitheftpro-e9c0e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714591912736:android:539f6eee2c469cdd594d45",
+        "android_client_info": {
+          "package_name": "com.antitheft.pro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "714591912736-b60chbgrb6db7ji5c00a4n325pjbklio.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antitheft.pro",
+            "certificate_hash": "94ef0977e88d1c39cdbf081b268b96c886ba731a"
+          }
+        },
+        {
+          "client_id": "714591912736-gtrsor98449r9ng5ejr3g8qd1bhnti5r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByJSLzNMEkMpdwfLy23q0fL74XdZ6qaO8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "714591912736-gtrsor98449r9ng5ejr3g8qd1bhnti5r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

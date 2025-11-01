@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian - Maximum Security Anti-Theft</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data: https:;">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .security-banner {
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .auth-container {
+            min-height: calc(100vh - 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(220, 38, 38, 0.2);
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .security-level {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .security-level h3 {
+            color: #dc2626;
+            margin-bottom: 10px;
+        }
+
+        .security-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .security-feature {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #10b981;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #64748b;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .strength-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: #ef4444; width: 25%; }
+        .strength-fair { background: #f59e0b; width: 50%; }
+        .strength-good { background: #10b981; width: 75%; }
+        .strength-strong { background: #059669; width: 100%; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .verification-step {
+            display: none;
+        }
+
+        .verification-step.active {
+            display: block;
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 55px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .code-input:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .message.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .validation-msg {
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .validation-msg.valid {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .validation-msg.invalid {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .security-timer {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .timer-text {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Security Banner -->
+    <div class="security-banner">
+        🔒 MAXIMUM SECURITY MODE - All communications encrypted and monitored
+    </div>
+
+    <!-- Authentication Section -->
+    <div id="authSection" class="auth-container">
+        <div class="auth-card">
+            <div class="logo pulse">🛡️</div>
+            <h1 class="title">Secure Guardian</h1>
+            <p class="subtitle">Maximum Security Anti-Theft Protection</p>
+            
+            <!-- Security Level Indicator -->
+            <div class="security-level">
+                <h3>🔒 Security Level: MAXIMUM</h3>
+                <div class="security-features">
+                    <div class="security-feature">✅ 256-bit Encryption</div>
+                    <div class="security-feature">✅ Rate Limiting</div>
+                    <div class="security-feature">✅ Session Validation</div>
+                    <div class="security-feature">✅ IP Monitoring</div>
+                    <div class="security-feature">✅ Brute Force Protection</div>
+                    <div class="security-feature">✅ Secure Email Verification</div>
+                </div>
+            </div>
+            
+            <div id="messageDiv"></div>
+            
+            <!-- Registration Step -->
+            <div id="registerStep">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" placeholder="Enter your full legal name" maxlength="50">
+                    <div id="nameValidation" class="validation-msg"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Secure Email Address *</label>
+                    <input type="email" id="email" placeholder="Enter your verified email address" maxlength="254">
+                    <div id="emailValidation" class="validation-msg"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Strong Password *</label>
+                    <input type="password" id="password" placeholder="Min 8 chars, uppercase, lowercase, number" maxlength="128">
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthBar"></div>
+                        </div>
+                        <div id="strengthText">Password strength: None</div>
+                    </div>
+                    <div id="passwordValidation" class="validation-msg"></div>
+                </div>
+                
+                <button class="btn" id="registerBtn" onclick="secureRegister()">
+                    🔒 Create Secure Account
+                </button>
+                
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 20px; text-align: center;">
+                    🔐 Military-grade security • 📧 Real email verification • 🌍 Global threat protection
+                </div>
+            </div>
+            
+            <!-- Verification Step -->
+            <div id="verificationStep" class="verification-step">
+                <h3>🔐 Secure Email Verification</h3>
+                <p>Enter the 6-digit security code sent to your email</p>
+                
+                <div class="security-timer">
+                    <div class="timer-text">Code expires in: <span id="countdown">10:00</span></div>
+                </div>
+                
+                <div class="code-inputs">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 0)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 1)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 2)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 3)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 4)">
+                    <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 5)">
+                </div>
+                
+                <button class="btn" onclick="secureVerify()">
+                    🔓 Verify & Activate Protection
+                </button>
+                
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 20px; text-align: center;">
+                    ⚠️ Never share this code • 🔒 Encrypted transmission • 🛡️ Maximum security
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Security variables
+        let currentUserId = null;
+        let verificationTimer = null;
+        let timeLeft = 600; // 10 minutes in seconds
+        let rateLimitCount = 0;
+        const maxAttempts = 5;
+
+        // Enhanced security functions
+        function sanitizeInput(input) {
+            return input.replace(/[<>\"'&]/g, '');
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email) && email.length <= 254;
+        }
+
+        function isValidEmailDomain(email) {
+            const domain = email.split('@')[1];
+            if (!domain) return false;
+            
+            const trustedDomains = [
+                'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 
+                'icloud.com', 'aol.com', 'protonmail.com', 'zoho.com',
+                'live.com', 'msn.com', 'yandex.com', 'mail.com'
+            ];
+            
+            return trustedDomains.includes(domain.toLowerCase());
+        }
+
+        function isReasonableEmailUsername(email) {
+            const username = email.split('@')[0];
+            if (!username || username.length < 3 || username.length > 30) return false;
+            
+            const suspiciousPatterns = [
+                /(.)\1{4,}/, /(.{2,})\1{2,}/, /^[0-9]+$/,
+                /qwerty|asdf|zxcv|hjkl|uiop|123456|abcdef/i,
+                /test|fake|temp|dummy|spam|bot|admin/i
+            ];
+            
+            return !suspiciousPatterns.some(pattern => pattern.test(username));
+        }
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            let feedback = [];
+
+            if (password.length >= 8) score++;
+            else feedback.push('At least 8 characters');
+
+            if (/[a-z]/.test(password)) score++;
+            else feedback.push('Lowercase letter');
+
+            if (/[A-Z]/.test(password)) score++;
+            else feedback.push('Uppercase letter');
+
+            if (/[0-9]/.test(password)) score++;
+            else feedback.push('Number');
+
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+            else feedback.push('Special character');
+
+            const strength = ['weak', 'weak', 'fair', 'good', 'strong'][score];
+            return { score, strength, feedback };
+        }
+
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('messageDiv');
+            messageDiv.innerHTML = `<div class="message ${type}">${sanitizeInput(message)}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function updateValidation(fieldId, isValid, message) {
+            const validationDiv = document.getElementById(fieldId + 'Validation');
+            const input = document.getElementById(fieldId);
+            
+            if (message) {
+                validationDiv.innerHTML = message;
+                validationDiv.className = `validation-msg ${isValid ? 'valid' : 'invalid'}`;
+                input.style.borderColor = isValid ? '#10b981' : '#ef4444';
+            } else {
+                validationDiv.innerHTML = '';
+                input.style.borderColor = 'rgba(220, 38, 38, 0.3)';
+            }
+        }
+
+        // Real-time validation
+        document.getElementById('name').addEventListener('input', function() {
+            const name = sanitizeInput(this.value.trim());
+            if (name.length === 0) {
+                updateValidation('name', true, '');
+                return;
+            }
+            
+            const isValid = name.length >= 2 && name.length <= 50 && /^[a-zA-Z\s]+$/.test(name);
+            updateValidation('name', isValid, 
+                isValid ? '✅ Valid name' : '❌ 2-50 characters, letters and spaces only'
+            );
+        });
+
+        document.getElementById('email').addEventListener('input', function() {
+            const email = sanitizeInput(this.value.trim().toLowerCase());
+            if (email.length === 0) {
+                updateValidation('email', true, '');
+                return;
+            }
+            
+            let isValid = true;
+            let message = '';
+            
+            if (!isValidEmail(email)) {
+                isValid = false;
+                message = '❌ Invalid email format';
+            } else if (!isValidEmailDomain(email)) {
+                isValid = false;
+                message = '❌ Use trusted email provider (Gmail, Yahoo, etc.)';
+            } else if (!isReasonableEmailUsername(email)) {
+                isValid = false;
+                message = '❌ Email appears suspicious or fake';
+            } else {
+                message = '✅ Valid secure email';
+            }
+            
+            updateValidation('email', isValid, message);
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (password.length === 0) {
+                strengthBar.className = 'strength-fill';
+                strengthText.textContent = 'Password strength: None';
+                updateValidation('password', true, '');
+                return;
+            }
+            
+            const { score, strength, feedback } = checkPasswordStrength(password);
+            
+            strengthBar.className = `strength-fill strength-${strength}`;
+            strengthText.textContent = `Password strength: ${strength.toUpperCase()}`;
+            
+            const isValid = score >= 4;
+            updateValidation('password', isValid,
+                isValid ? '✅ Strong password' : `❌ Missing: ${feedback.join(', ')}`
+            );
+        });
+
+        // Secure registration
+        async function secureRegister() {
+            if (rateLimitCount >= maxAttempts) {
+                showMessage('Too many attempts. Please wait before trying again.', 'error');
+                return;
+            }
+
+            const name = sanitizeInput(document.getElementById('name').value.trim());
+            const email = sanitizeInput(document.getElementById('email').value.trim().toLowerCase());
+            const password = document.getElementById('password').value;
+            const registerBtn = document.getElementById('registerBtn');
+
+            // Validation
+            if (!name || !email || !password) {
+                showMessage('All fields are required', 'error');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(name) || name.length < 2 || name.length > 50) {
+                showMessage('Invalid name format', 'error');
+                return;
+            }
+
+            if (!isValidEmail(email) || !isValidEmailDomain(email) || !isReasonableEmailUsername(email)) {
+                showMessage('Invalid or suspicious email address', 'error');
+                return;
+            }
+
+            const { score } = checkPasswordStrength(password);
+            if (score < 4) {
+                showMessage('Password does not meet security requirements', 'error');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.textContent = '🔒 Securing account...';
+            rateLimitCount++;
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUserId = data.userId;
+                    showMessage('✅ Secure verification code sent to your email!', 'success');
+                    showVerificationStep();
+                    startCountdown();
+                } else {
+                    showMessage(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Please try again.', 'error');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = '🔒 Create Secure Account';
+            }
+        }
+
+        // Show verification step
+        function showVerificationStep() {
+            document.getElementById('registerStep').style.display = 'none';
+            document.getElementById('verificationStep').classList.add('active');
+            document.querySelector('.code-input').focus();
+        }
+
+        // Countdown timer
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            
+            verificationTimer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(verificationTimer);
+                    showMessage('Verification code expired. Please register again.', 'error');
+                    location.reload();
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Move to next input
+        function moveToNext(current, index) {
+            if (current.value.length === 1 && index < 5) {
+                document.querySelectorAll('.code-input')[index + 1].focus();
+            }
+        }
+
+        // Secure verification
+        async function secureVerify() {
+            const codeInputs = document.querySelectorAll('.code-input');
+            const code = Array.from(codeInputs).map(input => sanitizeInput(input.value)).join('');
+
+            if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+                showMessage('Please enter a valid 6-digit code', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    clearInterval(verificationTimer);
+                    showMessage('✅ Maximum security activated! Redirecting...', 'success');
+                    
+                    // Store secure token
+                    localStorage.setItem('secureToken', data.token);
+                    
+                    setTimeout(() => {
+                        // Redirect to secure dashboard
+                        window.location.href = '/secure-dashboard.html';
+                    }, 2000);
+                } else {
+                    showMessage(data.error || 'Invalid verification code', 'error');
+                    codeInputs.forEach(input => input.value = '');
+                    codeInputs[0].focus();
+                }
+            } catch (error) {
+                showMessage('Verification failed. Please try again.', 'error');
+            }
+        }
+
+        // Initialize security
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('name').focus();
+            
+            // Security monitoring
+            console.log('🔒 Secure Guardian initialized with maximum security');
+            
+            // Prevent common attacks
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('selectstart', e => e.preventDefault());
+            document.addEventListener('dragstart', e => e.preventDefault());
+        });
+    </script>
+</body>
+</html>

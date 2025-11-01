@@ -1,0 +1,138 @@
+{
+  "app_name": "Anti-Theft Protection",
+  "welcome": "Welcome",
+  "welcome_back": "Welcome Back",
+  
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "forgot_password": "Forgot Password?",
+    "sign_in_with_google": "Sign in with Google",
+    "dont_have_account": "Don't have an account?",
+    "already_have_account": "Already have an account?",
+    "create_account": "Create Account",
+    "verify_email": "Verify Your Email",
+    "please_login": "Please login first"
+  },
+  
+  "navigation": {
+    "dashboard": "Dashboard",
+    "tracking": "Tracking",
+    "alerts": "Alerts",
+    "devices": "Devices",
+    "settings": "Settings",
+    "map": "Map"
+  },
+  
+  "dashboard": {
+    "active_alerts": "Active Alerts",
+    "response_time": "Response Time",
+    "device_tracking": "Device Tracking",
+    "live_tracking": "Live Tracking",
+    "no_alerts": "No alerts",
+    "no_data": "No data",
+    "loading": "Loading",
+    "refresh": "Refresh"
+  },
+  
+  "devices": {
+    "connected_devices": "Connected Devices",
+    "no_devices": "No devices connected currently",
+    "install_app_hint": "Install the app on your device to start tracking",
+    "device_name": "Device Name",
+    "device_model": "Device Model",
+    "active": "Active",
+    "inactive": "Inactive",
+    "last_seen": "Last Seen",
+    "device_count": "Device Count"
+  },
+  
+  "map": {
+    "live_map": "Live Map",
+    "map_loading": "Map will appear here when app is connected",
+    "current_location": "Current Location",
+    "location_history": "Location History",
+    "accuracy": "Accuracy",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "show_on_map": "Show on Map"
+  },
+  
+  "pin": {
+    "enter_pin": "Enter 4-digit PIN",
+    "pin_confirmation": "Confirm Identity with PIN",
+    "pin_subtitle": "To confirm you are the app owner",
+    "wrong_pin": "Wrong PIN",
+    "pin_verified": "Verified Successfully",
+    "verifying": "Verifying"
+  },
+  
+  "connection": {
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "connecting": "Connecting",
+    "connection_status": "Connection Status"
+  },
+  
+  "alerts_page": {
+    "alert_detected": "Suspicious activity detected",
+    "intruder_detected": "Intruder detected",
+    "view_details": "View Details",
+    "alert_time": "Alert Time",
+    "alert_location": "Alert Location"
+  },
+  
+  "settings": {
+    "account_settings": "Account Settings",
+    "security": "Security",
+    "notifications": "Notifications",
+    "language": "Language",
+    "change_language": "Change Language",
+    "theme": "Theme",
+    "about": "About",
+    "version": "Version",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  
+  "time": {
+    "seconds": "seconds",
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days",
+    "ago": "ago",
+    "just_now": "just now"
+  },
+  
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  
+  "errors": {
+    "something_went_wrong": "Something went wrong",
+    "network_error": "Network error",
+    "try_again": "Try again",
+    "user_not_found": "User not found",
+    "invalid_credentials": "Invalid credentials",
+    "verification_error": "Verification error"
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "app_name": "Προστασία κατά της κλοπής",
+  "welcome": "Καλώς ήρθατε",
+  "welcome_back": "Καλώς ήρθατε πάλι",
+  
+  "auth": {
+    "login": "Σύνδεση",
+    "register": "Εγγραφή",
+    "logout": "Αποσύνδεση",
+    "email": "Email",
+    "password": "Κωδικός",
+    "confirm_password": "Επιβεβαίωση κωδικού",
+    "forgot_password": "Ξεχάσατε τον κωδικό;",
+    "sign_in_with_google": "Σύνδεση με Google",
+    "dont_have_account": "Δεν έχετε λογαριασμό;",
+    "already_have_account": "Έχετε ήδη λογαριασμό;",
+    "create_account": "Δημιουργία λογαριασμού",
+    "verify_email": "Επαληθεύστε το email σας",
+    "please_login": "Παρακαλώ συνδεθείτε πρώτα"
+  },
+  
+  "navigation": {
+    "dashboard": "Πίνακας ελέγχου",
+    "tracking": "Παρακολούθηση",
+    "alerts": "Ειδοποιήσεις",
+    "devices": "Συσκευές",
+    "settings": "Ρυθμίσεις",
+    "map": "Χάρτης"
+  },
+  
+  "dashboard": {
+    "active_alerts": "Ενεργές ειδοποιήσεις",
+    "response_time": "Χρόνος απόκρισης",
+    "device_tracking": "Παρακολούθηση συσκευής",
+    "live_tracking": "Ζωντανή παρακολούθηση",
+    "no_alerts": "Δεν υπάρχουν ειδοποιήσεις",
+    "no_data": "Δεν υπάρχουν δεδομένα",
+    "loading": "Φόρτωση",
+    "refresh": "Ανανέωση"
+  },
+  
+  "devices": {
+    "connected_devices": "Συνδεδεμένες συσκευές",
+    "no_devices": "Δεν υπάρχουν συνδεδεμένες συσκευές αυτή τη στιγμή",
+    "install_app_hint": "Εγκαταστήστε την εφαρμογή στη συσκευή σας για να ξεκινήσετε την παρακολούθηση",
+    "device_name": "Όνομα συσκευής",
+    "device_model": "Μοντέλο συσκευής",
+    "active": "Ενεργό",
+    "inactive": "Ανενεργό",
+    "last_seen": "Τελευταία προβολή",
+    "device_count": "Αριθμός συσκευών"
+  },
+  
+  "map": {
+    "live_map": "Ζωντανός χάρτης",
+    "map_loading": "Ο χάρτης θα εμφανιστεί εδώ όταν συνδεθεί η εφαρμογή",
+    "current_location": "Τρέχουσα τοποθεσία",
+    "location_history": "Ιστορικό τοποθεσιών",
+    "accuracy": "Ακρίβεια",
+    "latitude": "Γεωγραφικό πλάτος",
+    "longitude": "Γεωγραφικό μήκος",
+    "show_on_map": "Εμφάνιση στον χάρτη"
+  },
+  
+  "pin": {
+    "enter_pin": "Εισαγάγετε PIN 4 ψηφίων",
+    "pin_confirmation": "Επιβεβαίωση ταυτότητας με PIN",
+    "pin_subtitle": "Για να επιβεβαιώσετε ότι είστε ο κάτοχος της εφαρμογής",
+    "wrong_pin": "Λανθασμένο PIN",
+    "pin_verified": "Επιτυχής επαλήθευση",
+    "verifying": "Επαλήθευση"
+  },
+  
+  "connection": {
+    "connected": "Συνδεδεμένο",
+    "disconnected": "Αποσυνδεδεμένο",
+    "connecting": "Σύνδεση",
+    "connection_status": "Κατάσταση σύνδεσης"
+  },
+  
+  "alerts_page": {
+    "alert_detected": "Εντοπίστηκε ύποπτη δραστηριότητα",
+    "intruder_detected": "Εντοπίστηκε εισβολέας",
+    "view_details": "Προβολή λεπτομερειών",
+    "alert_time": "Ώρα ειδοποίησης",
+    "alert_location": "Τοποθεσία ειδοποίησης"
+  },
+  
+  "settings": {
+    "account_settings": "Ρυθμίσεις λογαριασμού",
+    "security": "Ασφάλεια",
+    "notifications": "Ειδοποιήσεις",
+    "language": "Γλώσσα",
+    "change_language": "Αλλαγή γλώσσας",
+    "theme": "Θέμα",
+    "about": "Σχετικά",
+    "version": "Έκδοση",
+    "save": "Αποθήκευση",
+    "cancel": "Ακύρωση"
+  },
+  
+  "time": {
+    "seconds": "δευτερόλεπτα",
+    "minutes": "λεπτά",
+    "hours": "ώρες",
+    "days": "ημέρες",
+    "ago": "πριν",
+    "just_now": "μόλις τώρα"
+  },
+  
+  "common": {
+    "yes": "Ναι",
+    "no": "Όχι",
+    "ok": "Εντάξει",
+    "close": "Κλείσιμο",
+    "delete": "Διαγραφή",
+    "edit": "Επεξεργασία",
+    "view": "Προβολή",
+    "add": "Προσθήκη",
+    "remove": "Αφαίρεση",
+    "search": "Αναζήτηση",
+    "filter": "Φιλτράρισμα",
+    "sort": "Ταξινόμηση",
+    "success": "Επιτυχία",
+    "error": "Σφάλμα",
+    "warning": "Προειδοποίηση",
+    "info": "Πληροφορίες"
+  },
+  
+  "errors": {
+    "something_went_wrong": "Κάτι πήγε στραβά",
+    "network_error": "Σφάλμα δικτύου",
+    "try_again": "Δοκιμάστε ξανά",
+    "user_not_found": "Ο χρήστης δεν βρέθηκε",
+    "invalid_credentials": "Μη έγκυρα διαπιστευτήρια",
+    "verification_error": "Σφάλμα επαλήθευσης"
+  }
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/set_pin"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="48dp" />
+
+    <TextView
+        android:id="@+id/textViewSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_pin"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/textViewPin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="○○○○"
+        android:textSize="48sp"
+        android:letterSpacing="0.3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitle"
+        android:layout_marginTop="32dp" />
+
+    <GridLayout
+        android:id="@+id/gridPinPad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewPin"
+        android:layout_marginTop="32dp">
+
+        <Button android:id="@+id/button1" android:layout_width="80dp" android:layout_height="80dp" android:text="1" android:layout_margin="8dp" />
+        <Button android:id="@+id/button2" android:layout_width="80dp" android:layout_height="80dp" android:text="2" android:layout_margin="8dp" />
+        <Button android:id="@+id/button3" android:layout_width="80dp" android:layout_height="80dp" android:text="3" android:layout_margin="8dp" />
+        <Button android:id="@+id/button4" android:layout_width="80dp" android:layout_height="80dp" android:text="4" android:layout_margin="8dp" />
+        <Button android:id="@+id/button5" android:layout_width="80dp" android:layout_height="80dp" android:text="5" android:layout_margin="8dp" />
+        <Button android:id="@+id/button6" android:layout_width="80dp" android:layout_height="80dp" android:text="6" android:layout_margin="8dp" />
+        <Button android:id="@+id/button7" android:layout_width="80dp" android:layout_height="80dp" android:text="7" android:layout_margin="8dp" />
+        <Button android:id="@+id/button8" android:layout_width="80dp" android:layout_height="80dp" android:text="8" android:layout_margin="8dp" />
+        <Button android:id="@+id/button9" android:layout_width="80dp" android:layout_height="80dp" android:text="9" android:layout_margin="8dp" />
+        <Button android:id="@+id/buttonClear" android:layout_width="80dp" android:layout_height="80dp" android:text="C" android:layout_margin="8dp" />
+        <Button android:id="@+id/button0" android:layout_width="80dp" android:layout_height="80dp" android:text="0" android:layout_margin="8dp" />
+        <Button android:id="@+id/buttonDelete" android:layout_width="80dp" android:layout_height="80dp" android:text="⌫" android:layout_margin="8dp" />
+
+    </GridLayout>
+
+    <Button
+        android:id="@+id/buttonSkip"
+        style="@style/SecondaryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gridPinPad"
+        android:layout_marginTop="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

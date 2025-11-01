@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار البريد الإلكتروني الحقيقي</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            color: #333;
+            text-align: center;
+        }
+        .logo { font-size: 3rem; margin-bottom: 20px; }
+        h1 { color: #1e3c72; margin-bottom: 30px; }
+        .info-box {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+            text-align: right;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { border-color: #1e3c72; outline: none; }
+        .btn {
+            background: #1e3c72;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn:hover { background: #2a5298; transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .hidden { display: none; }
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️</div>
+        <h1>اختبار البريد الإلكتروني الحقيقي</h1>
+        
+        <div class="info-box">
+            <h3>✅ نظام البريد الإلكتروني مُعد بنجاح!</h3>
+            <p><strong>البريد المُعد:</strong> hlia.hlias123@gmail.com</p>
+            <p><strong>الحالة:</strong> جاهز لإرسال رسائل حقيقية</p>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="register-step">
+            <div class="step">
+                <h3>الخطوة 1: إنشاء حساب جديد</h3>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">الاسم الكامل:</label>
+                <input type="text" id="name" placeholder="أدخل اسمك الكامل" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" value="hlia.hlias123@gmail.com" required>
+                <button type="button" onclick="generateTestEmail()" style="margin-top: 5px; padding: 5px 10px; font-size: 12px; background: #28a745;">
+                    🎲 بريد تجريبي عشوائي
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" placeholder="أدخل كلمة مرور قوية (8 أحرف على الأقل)" required>
+            </div>
+
+            <button class="btn" onclick="testRegister()">📧 إنشاء الحساب وإرسال رمز التحقق</button>
+        </div>
+
+        <!-- Verification Form -->
+        <div id="verify-step" class="hidden">
+            <div class="step">
+                <h3>الخطوة 2: التحقق من البريد الإلكتروني</h3>
+                <p>تم إرسال رمز التحقق إلى بريدك الإلكتروني</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="code">رمز التحقق (6 أرقام):</label>
+                <input type="text" id="code" placeholder="أدخل رمز التحقق" maxlength="6" required>
+            </div>
+
+            <button class="btn" onclick="testVerify()">✅ تحقق من الرمز</button>
+            <button class="btn" onclick="resendCode()" style="background: #28a745;">🔄 إعادة إرسال الرمز</button>
+        </div>
+
+        <!-- Success -->
+        <div id="success-step" class="hidden">
+            <div class="step" style="border-left-color: #28a745; background: #e8f5e8;">
+                <h3>🎉 تم التحقق بنجاح!</h3>
+                <p>يمكنك الآن تسجيل الدخول إلى التطبيق</p>
+            </div>
+            
+            <button class="btn" onclick="goToApp()" style="background: #28a745;">🚀 الانتقال للتطبيق الرئيسي</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+
+        function showResult(text, type) {
+            const result = document.getElementById('result');
+            result.className = 'result ' + type;
+            result.innerHTML = text;
+            result.style.display = 'block';
+            
+            setTimeout(() => {
+                result.style.display = 'none';
+            }, 5000);
+        }
+
+        async function testRegister() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!name || !email || !password) {
+                showResult('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                showResult('كلمة المرور يجب أن تكون 8 أحرف على الأقل', 'error');
+                return;
+            }
+
+            try {
+                console.log('📤 Sending registration request...');
+                
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+                console.log('📊 Registration response:', data);
+
+                if (response.ok && data.success) {
+                    currentUserId = data.userId;
+                    
+                    if (data.emailSent) {
+                        showResult('✅ تم إنشاء الحساب وإرسال رمز التحقق إلى بريدك الإلكتروني!', 'success');
+                    } else {
+                        showResult('✅ تم إنشاء الحساب! رمز التحقق: ' + data.verificationCode, 'success');
+                    }
+                    
+                    // Switch to verification step
+                    document.getElementById('register-step').classList.add('hidden');
+                    document.getElementById('verify-step').classList.remove('hidden');
+                    
+                } else {
+                    showResult('❌ ' + (data.error || 'فشل في إنشاء الحساب'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showResult('❌ خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        async function testVerify() {
+            const code = document.getElementById('code').value.trim();
+
+            if (!code || code.length !== 6) {
+                showResult('يرجى إدخال رمز التحقق المكون من 6 أرقام', 'error');
+                return;
+            }
+
+            try {
+                console.log('🔐 Verifying code...');
+                
+                const response = await fetch('/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, code })
+                });
+
+                const data = await response.json();
+                console.log('📊 Verification response:', data);
+
+                if (response.ok && data.success) {
+                    showResult('🎉 تم التحقق بنجاح! الحساب جاهز للاستخدام', 'success');
+                    
+                    // Switch to success step
+                    document.getElementById('verify-step').classList.add('hidden');
+                    document.getElementById('success-step').classList.remove('hidden');
+                    
+                } else {
+                    showResult('❌ ' + (data.error || 'رمز التحقق غير صحيح'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('Verification error:', error);
+                showResult('❌ خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        async function resendCode() {
+            if (!currentUserId) {
+                showResult('خطأ: معرف المستخدم غير موجود', 'error');
+                return;
+            }
+
+            try {
+                console.log('📤 Resending verification code...');
+                
+                const response = await fetch('/auth/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+
+                const data = await response.json();
+                console.log('📊 Resend response:', data);
+
+                if (response.ok && data.success) {
+                    if (data.emailSent) {
+                        showResult('✅ تم إعادة إرسال رمز التحقق إلى بريدك الإلكتروني', 'success');
+                    } else {
+                        showResult('✅ رمز التحقق الجديد: ' + data.verificationCode, 'success');
+                    }
+                } else {
+                    showResult('❌ ' + (data.error || 'فشل في إعادة الإرسال'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('Resend error:', error);
+                showResult('❌ خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        function goToApp() {
+            window.location.href = '/app.html';
+        }
+
+        function generateTestEmail() {
+            const randomId = Math.floor(Math.random() * 10000);
+            const email = `test${randomId}@example.com`;
+            document.getElementById('email').value = email;
+            showResult('✅ تم إنشاء بريد تجريبي: ' + email, 'success');
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Real email test page loaded');
+        });
+    </script>
+</body>
+</html>

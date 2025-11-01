@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Guardian - Beautiful Anti-Theft System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(30px);
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #f0f9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 1.6;
+        }   
+     /* Language Selector */
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .lang-btn {
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Security Features */
+        .security-panel {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(20px);
+            animation: slideDown 0.5s ease;
+        }
+
+        .security-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            padding: 8px 0;
+        }
+
+        .security-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Device Detection Panel */
+        .device-panel {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(20px);
+        }
+
+        .device-title {
+            color: #10b981;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .device-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .device-info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .device-info-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .device-info-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Authentication Forms */
+        .auth-section {
+            margin: 30px 0;
+        }
+
+        .auth-form {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            animation: slideDown 0.5s ease;
+        }
+
+        .auth-title {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️</div>
+        <h1 class="title" id="mainTitle">Secure Guardian</h1>
+        <p class="subtitle" id="mainSubtitle">Beautiful Device-Email Binding Security</p>
+        
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <button class="lang-btn active" onclick="setLanguage('en')">🇬🇧 English</button>
+            <button class="lang-btn" onclick="setLanguage('el')">🇬🇷 Ελληνικά</button>
+            <button class="lang-btn" onclick="setLanguage('ar')">🇸🇦 العربية</button>
+        </div>     
+   
+        <!-- Toggle Buttons -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="toggleSecurityProtocol()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.3s ease;">
+                <span id="toggleText">🔒 Show Security Protocol</span>
+            </button>
+            <button onclick="toggleDevicePanel()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.3s ease;">
+                <span id="toggleDeviceText">🔍 Show Device Info</span>
+            </button>
+        </div>
+
+        <!-- Security Panel (Hidden by default) -->
+        <div class="security-panel" id="securityPanel" style="display: none;">
+            <h3 class="security-title" id="securityTitle">🔒 Maximum Security Protocol</h3>
+            <div class="security-grid">
+                <div class="security-item">
+                    <div class="security-icon">✓</div>
+                    <span id="feature1">Device must be pre-registered via mobile app</span>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">✓</div>
+                    <span id="feature2">Email address must match device registration</span>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">✓</div>
+                    <span id="feature3">Binding verification required for access</span>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">✓</div>
+                    <span id="feature4">One device per email address policy</span>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon">✓</div>
+                    <span id="feature5">Permanent device-email linkage</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device Detection Panel (Hidden by default) -->
+        <div class="device-panel" id="devicePanel" style="display: none;">
+            <h3 class="device-title" id="deviceDetectionTitle">🔍 Auto-Detected Device</h3>
+            <div class="device-grid" id="deviceGrid">
+                <div class="device-info-item">
+                    <div class="device-info-value" id="detectedModel">Windows PC</div>
+                    <div class="device-info-label" id="modelLabel">Device</div>
+                </div>
+                <div class="device-info-item">
+                    <div class="device-info-value" id="detectedOS">Windows</div>
+                    <div class="device-info-label" id="osLabel">OS</div>
+                </div>
+                <div class="device-info-item">
+                    <div class="device-info-value" id="detectedBrowser">Firefox</div>
+                    <div class="device-info-label" id="browserLabel">Browser</div>
+                </div>
+                <div class="device-info-item">
+                    <div class="device-info-value" id="detectedType">Desktop</div>
+                    <div class="device-info-label" id="typeLabel">Type</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; font-size: 14px; color: rgba(255,255,255,0.9);">
+                <span id="tipText">💡 Make sure this matches your registered device</span>
+            </div>
+        </div>
+
+        <div id="messageDiv"></div>
+        
+        <!-- Authentication Forms -->
+        <div class="auth-section">
+            <!-- Login Form -->
+            <div class="auth-form" id="loginForm">
+                <h3 class="auth-title" id="loginTitle">🔐 Secure Login</h3>
+                
+                <div class="form-group">
+                    <label for="loginEmail" id="emailLabel">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword" id="passwordLabel">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter password">
+                </div>
+                
+                <button class="btn primary" onclick="loginUser()">
+                    <span id="loginBtn">🚀 Sign In</span>
+                </button>
+                
+                <button class="btn secondary" onclick="showRegisterForm()">
+                    <span id="switchToRegister">📝 Create New Account</span>
+                </button>
+            </div>
+            
+            <!-- Register Form -->
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <h3 class="auth-title" id="registerTitle">📝 Create Account</h3>
+                
+                <div class="form-group">
+                    <label for="registerName" id="nameLabel">Full Name</label>
+                    <input type="text" id="registerName" class="form-input" placeholder="Enter your name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerEmail" id="emailLabel2">Email Address</label>
+                    <input type="email" id="registerEmail" class="form-input" placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword" id="passwordLabel2">Password</label>
+                    <input type="password" id="registerPassword" class="form-input" placeholder="Create password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword" id="confirmPasswordLabel">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm password">
+                </div>
+                
+                <button class="btn primary" onclick="registerUser()">
+                    <span id="registerBtn">✨ Create Account</span>
+                </button>
+                
+                <button class="btn secondary" onclick="showLoginForm()">
+                    <span id="switchToLogin">🔐 Back to Login</span>
+                </button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 25px; text-align: center;">
+            <p style="font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 15px;" id="noDeviceText">
+                Don't have a registered device?
+            </p>
+            <a href="/device-register" style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);" id="registerDeviceBtn">
+                📱 Register Your Device First
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'en';
+
+        // Complete translations
+        const translations = {
+            en: {
+                mainTitle: "Secure Guardian",
+                mainSubtitle: "Beautiful Device-Email Binding Security",
+                toggleText: "🔒 Show Security Protocol",
+                toggleTextHide: "🔒 Hide Security Protocol",
+                toggleDeviceText: "🔍 Show Device Info",
+                toggleDeviceTextHide: "🔍 Hide Device Info",
+                securityTitle: "🔒 Maximum Security Protocol",
+                feature1: "Device must be pre-registered via mobile app",
+                feature2: "Email address must match device registration",
+                feature3: "Binding verification required for access", 
+                feature4: "One device per email address policy",
+                feature5: "Permanent device-email linkage",
+                deviceDetectionTitle: "🔍 Auto-Detected Device",
+                modelLabel: "Device",
+                osLabel: "OS", 
+                browserLabel: "Browser",
+                typeLabel: "Type",
+                tipText: "💡 Make sure this matches your registered device",
+                loginTitle: "🔐 Secure Login",
+                emailLabel: "Email Address",
+                passwordLabel: "Password",
+                loginBtn: "🚀 Sign In",
+                switchToRegister: "📝 Create New Account",
+                registerTitle: "📝 Create Account",
+                nameLabel: "Full Name",
+                emailLabel2: "Email Address",
+                passwordLabel2: "Password",
+                confirmPasswordLabel: "Confirm Password",
+                registerBtn: "✨ Create Account",
+                switchToLogin: "🔐 Back to Login",
+                noDeviceText: "Don't have a registered device?",
+                registerDeviceBtn: "📱 Register Your Device First"
+            },    
+        el: {
+                mainTitle: "Secure Guardian",
+                mainSubtitle: "Όμορφη Ασφάλεια Σύνδεσης Συσκευής-Email",
+                toggleText: "🔒 Εμφάνιση Πρωτοκόλλου Ασφαλείας",
+                toggleTextHide: "🔒 Απόκρυψη Πρωτοκόλλου Ασφαλείας",
+                toggleDeviceText: "🔍 Εμφάνιση Πληροφοριών Συσκευής",
+                toggleDeviceTextHide: "🔍 Απόκρυψη Πληροφοριών Συσκευής",
+                securityTitle: "🔒 Πρωτόκολλο Μέγιστης Ασφαλείας",
+                feature1: "Η συσκευή πρέπει να είναι προεγγεγραμμένη μέσω εφαρμογής κινητού",
+                feature2: "Η διεύθυνση email πρέπει να ταιριάζει με την εγγραφή συσκευής",
+                feature3: "Απαιτείται επαλήθευση σύνδεσης για πρόσβαση", 
+                feature4: "Πολιτική μίας συσκευής ανά διεύθυνση email",
+                feature5: "Μόνιμη σύνδεση συσκευής-email",
+                deviceDetectionTitle: "🔍 Αυτόματα Εντοπισμένη Συσκευή",
+                modelLabel: "Συσκευή",
+                osLabel: "Λειτουργικό", 
+                browserLabel: "Περιηγητής",
+                typeLabel: "Τύπος",
+                tipText: "💡 Βεβαιωθείτε ότι αυτό ταιριάζει με την εγγεγραμμένη συσκευή σας",
+                loginTitle: "🔐 Ασφαλής Σύνδεση",
+                emailLabel: "Διεύθυνση Email",
+                passwordLabel: "Κωδικός Πρόσβασης",
+                loginBtn: "🚀 Σύνδεση",
+                switchToRegister: "📝 Δημιουργία Νέου Λογαριασμού",
+                registerTitle: "📝 Δημιουργία Λογαριασμού",
+                nameLabel: "Πλήρες Όνομα",
+                emailLabel2: "Διεύθυνση Email",
+                passwordLabel2: "Κωδικός Πρόσβασης",
+                confirmPasswordLabel: "Επιβεβαίωση Κωδικού",
+                registerBtn: "✨ Δημιουργία Λογαριασμού",
+                switchToLogin: "🔐 Επιστροφή στη Σύνδεση",
+                noDeviceText: "Δεν έχετε εγγεγραμμένη συσκευή;",
+                registerDeviceBtn: "📱 Εγγράψτε Πρώτα τη Συσκευή σας"
+            },
+            ar: {
+                mainTitle: "الحارس الآمن",
+                mainSubtitle: "أمان جميل لربط الجهاز بالبريد الإلكتروني",
+                toggleText: "🔒 إظهار بروتوكول الأمان",
+                toggleTextHide: "🔒 إخفاء بروتوكول الأمان",
+                toggleDeviceText: "🔍 إظهار معلومات الجهاز",
+                toggleDeviceTextHide: "🔍 إخفاء معلومات الجهاز",
+                securityTitle: "🔒 بروتوكول الأمان الأقصى",
+                feature1: "يجب تسجيل الجهاز مسبقاً عبر تطبيق الهاتف المحمول",
+                feature2: "يجب أن يتطابق عنوان البريد الإلكتروني مع تسجيل الجهاز",
+                feature3: "مطلوب التحقق من الربط للوصول", 
+                feature4: "سياسة جهاز واحد لكل عنوان بريد إلكتروني",
+                feature5: "ربط دائم بين الجهاز والبريد الإلكتروني",
+                deviceDetectionTitle: "🔍 جهاز مكتشف تلقائياً",
+                modelLabel: "الجهاز",
+                osLabel: "النظام", 
+                browserLabel: "المتصفح",
+                typeLabel: "النوع",
+                tipText: "💡 تأكد من أن هذا يطابق جهازك المسجل",
+                loginTitle: "🔐 تسجيل دخول آمن",
+                emailLabel: "البريد الإلكتروني",
+                passwordLabel: "كلمة المرور",
+                loginBtn: "🚀 تسجيل الدخول",
+                switchToRegister: "📝 إنشاء حساب جديد",
+                registerTitle: "📝 إنشاء حساب",
+                nameLabel: "الاسم الكامل",
+                emailLabel2: "البريد الإلكتروني",
+                passwordLabel2: "كلمة المرور",
+                confirmPasswordLabel: "تأكيد كلمة المرور",
+                registerBtn: "✨ إنشاء الحساب",
+                switchToLogin: "🔐 العودة لتسجيل الدخول",
+                noDeviceText: "ليس لديك جهاز مسجل؟",
+                registerDeviceBtn: "📱 سجل جهازك أولاً"
+            }
+        };
+
+        // Set language
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update text direction
+            if (lang === 'ar') {
+                document.documentElement.dir = 'rtl';
+                document.body.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+            } else {
+                document.documentElement.dir = 'ltr';
+            }
+            
+            // Update all text
+            const t = translations[lang];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        // Detect device information
+        function detectDevice() {
+            const userAgent = navigator.userAgent;
+            let deviceModel = 'Unknown Device';
+            let deviceOS = 'Unknown OS';
+            let deviceBrowser = 'Unknown Browser';
+            let deviceType = 'Unknown';
+
+            // Detect OS
+            if (userAgent.indexOf('Windows') !== -1) {
+                deviceOS = 'Windows';
+                deviceModel = 'Windows PC';
+                deviceType = 'Desktop';
+            } else if (userAgent.indexOf('Mac') !== -1) {
+                deviceOS = 'macOS';
+                deviceModel = 'Mac';
+                deviceType = 'Desktop';
+            } else if (userAgent.indexOf('Linux') !== -1) {
+                deviceOS = 'Linux';
+                deviceModel = 'Linux PC';
+                deviceType = 'Desktop';
+            } else if (userAgent.indexOf('Android') !== -1) {
+                deviceOS = 'Android';
+                deviceModel = 'Android Device';
+                deviceType = 'Mobile';
+            } else if (userAgent.indexOf('iPhone') !== -1) {
+                deviceOS = 'iOS';
+                deviceModel = 'iPhone';
+                deviceType = 'Mobile';
+            } else if (userAgent.indexOf('iPad') !== -1) {
+                deviceOS = 'iOS';
+                deviceModel = 'iPad';
+                deviceType = 'Tablet';
+            }
+
+            // Detect Browser
+            if (userAgent.indexOf('Firefox') !== -1) {
+                deviceBrowser = 'Firefox';
+            } else if (userAgent.indexOf('Chrome') !== -1) {
+                deviceBrowser = 'Chrome';
+            } else if (userAgent.indexOf('Safari') !== -1) {
+                deviceBrowser = 'Safari';
+            } else if (userAgent.indexOf('Edge') !== -1) {
+                deviceBrowser = 'Edge';
+            }
+
+            // Update display
+            document.getElementById('detectedModel').textContent = deviceModel;
+            document.getElementById('detectedOS').textContent = deviceOS;
+            document.getElementById('detectedBrowser').textContent = deviceBrowser;
+            document.getElementById('detectedType').textContent = deviceType;
+        }
+
+        // Toggle security protocol visibility
+        let isSecurityVisible = false;
+        function toggleSecurityProtocol() {
+            const panel = document.getElementById('securityPanel');
+            const toggleBtn = document.getElementById('toggleText');
+            const t = translations[currentLanguage];
+            
+            if (isSecurityVisible) {
+                panel.style.display = 'none';
+                toggleBtn.textContent = t.toggleText;
+                isSecurityVisible = false;
+            } else {
+                panel.style.display = 'block';
+                toggleBtn.textContent = t.toggleTextHide;
+                isSecurityVisible = true;
+            }
+        }
+
+        // Toggle device panel visibility
+        let isDeviceVisible = false;
+        function toggleDevicePanel() {
+            const panel = document.getElementById('devicePanel');
+            const toggleBtn = document.getElementById('toggleDeviceText');
+            const t = translations[currentLanguage];
+            
+            if (isDeviceVisible) {
+                panel.style.display = 'none';
+                toggleBtn.textContent = t.toggleDeviceText;
+                isDeviceVisible = false;
+            } else {
+                panel.style.display = 'block';
+                toggleBtn.textContent = t.toggleDeviceTextHide;
+                isDeviceVisible = true;
+            }
+        }
+
+        // Show/Hide forms
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        // Show message
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('messageDiv');
+            const colors = {
+                success: 'rgba(16, 185, 129, 0.2)',
+                error: 'rgba(239, 68, 68, 0.2)',
+                info: 'rgba(59, 130, 246, 0.2)'
+            };
+            
+            messageDiv.innerHTML = `
+                <div style="background: ${colors[type]}; border: 1px solid rgba(255,255,255,0.3); padding: 15px; border-radius: 12px; margin: 15px 0; color: white; text-align: center;">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // Login user
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                const messages = {
+                    en: '⚠️ Please fill in all fields',
+                    el: '⚠️ Παρακαλώ συμπληρώστε όλα τα πεδία',
+                    ar: '⚠️ يرجى ملء جميع الحقول'
+                };
+                showMessage(messages[currentLanguage], 'error');
+                return;
+            }
+
+            // Simulate login process
+            showMessage('🔄 Logging in...', 'info');
+            
+            setTimeout(() => {
+                const messages = {
+                    en: '✅ Login successful! Welcome back!',
+                    el: '✅ Επιτυχής σύνδεση! Καλώς ήρθατε πίσω!',
+                    ar: '✅ تم تسجيل الدخول بنجاح! مرحباً بعودتك!'
+                };
+                showMessage(messages[currentLanguage], 'success');
+            }, 1500);
+        }
+
+        // Register user
+        async function registerUser() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!name || !email || !password || !confirmPassword) {
+                const messages = {
+                    en: '⚠️ Please fill in all fields',
+                    el: '⚠️ Παρακαλώ συμπληρώστε όλα τα πεδία',
+                    ar: '⚠️ يرجى ملء جميع الحقول'
+                };
+                showMessage(messages[currentLanguage], 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                const messages = {
+                    en: '⚠️ Passwords do not match',
+                    el: '⚠️ Οι κωδικοί δεν ταιριάζουν',
+                    ar: '⚠️ كلمات المرور غير متطابقة'
+                };
+                showMessage(messages[currentLanguage], 'error');
+                return;
+            }
+
+            // Simulate registration process
+            showMessage('🔄 Creating account...', 'info');
+            
+            setTimeout(() => {
+                const messages = {
+                    en: '✅ Account created successfully! Please check your email for verification.',
+                    el: '✅ Ο λογαριασμός δημιουργήθηκε επιτυχώς! Ελέγξτε το email σας για επαλήθευση.',
+                    ar: '✅ تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني للتأكيد.'
+                };
+                showMessage(messages[currentLanguage], 'success');
+                
+                // Switch back to login form after successful registration
+                setTimeout(() => {
+                    showLoginForm();
+                }, 2000);
+            }, 1500);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('en');
+            detectDevice();
+        });
+
+        // Add floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

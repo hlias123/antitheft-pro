@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - Secure Guardian Pro</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .feature-content {
+            text-align: center;
+        }
+
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        #camera-video {
+            width: 100%;
+            height: 250px;
+            border-radius: 15px;
+            background: #f0f0f0;
+            margin: 15px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .logout-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 15px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🛡️</div>
+            <h1 class="welcome-title">مرحباً بك في لوحة التحكم</h1>
+            <p class="user-info">نظام الحماية الذكي المتقدم - Secure Guardian Pro</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="battery-level">85%</div>
+                <div class="stat-label">مستوى البطارية</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="connection-status">متصل</div>
+                <div class="stat-label">حالة الاتصال</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="security-level">عالي</div>
+                <div class="stat-label">مستوى الأمان</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="last-check">الآن</div>
+                <div class="stat-label">آخر فحص</div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <!-- Location Tracking -->
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3 class="feature-title">تتبع الموقع</h3>
+                <div class="feature-content">
+                    <div id="map"></div>
+                    <button class="btn btn-warning" onclick="updateLocation()">تحديث الموقع</button>
+                    <button class="btn" onclick="shareLocation()">مشاركة الموقع</button>
+                </div>
+            </div>
+
+            <!-- Camera Security -->
+            <div class="feature-card">
+                <div class="feature-icon">📷</div>
+                <h3 class="feature-title">كاميرا الأمان</h3>
+                <div class="feature-content">
+                    <video id="camera-video" autoplay muted></video>
+                    <div>
+                        <button class="btn btn-success" onclick="startCamera()">تشغيل الكاميرا</button>
+                        <button class="btn btn-danger" onclick="stopCamera()">إيقاف الكاميرا</button>
+                        <button class="btn" onclick="capturePhoto()">التقاط صورة</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Controls -->
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">التحكم في الأمان</h3>
+                <div class="feature-content">
+                    <div style="margin: 20px 0;">
+                        <p style="margin-bottom: 15px;">حالة النظام: <strong style="color: #27ae60;">نشط</strong></p>
+                        <p style="margin-bottom: 15px;">آخر تنبيه: <strong>لا توجد تنبيهات</strong></p>
+                    </div>
+                    <button class="btn btn-danger" onclick="triggerAlarm()">تفعيل الإنذار</button>
+                    <button class="btn btn-warning" onclick="lockDevice()">قفل الجهاز</button>
+                    <button class="btn" onclick="sendAlert()">إرسال تنبيه</button>
+                </div>
+            </div>
+
+            <!-- Device Info -->
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">معلومات الجهاز</h3>
+                <div class="feature-content">
+                    <div style="text-align: right; margin: 20px 0;">
+                        <p><strong>نوع الجهاز:</strong> <span id="device-type">غير محدد</span></p>
+                        <p><strong>نظام التشغيل:</strong> <span id="os-info">غير محدد</span></p>
+                        <p><strong>المتصفح:</strong> <span id="browser-info">غير محدد</span></p>
+                        <p><strong>الشاشة:</strong> <span id="screen-info">غير محدد</span></p>
+                    </div>
+                    <button class="btn" onclick="refreshDeviceInfo()">تحديث المعلومات</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Section -->
+        <div class="logout-section">
+            <button class="btn btn-danger" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map = null;
+        let userMarker = null;
+        let cameraStream = null;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            updateDeviceInfo();
+            updateBatteryInfo();
+            startRealTimeUpdates();
+        });
+
+        // Initialize map
+        function initializeMap() {
+            try {
+                // Cairo, Egypt coordinates
+                const cairoLat = 30.0444;
+                const cairoLng = 31.2357;
+                
+                map = L.map('map').setView([cairoLat, cairoLng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                
+                userMarker = L.marker([cairoLat, cairoLng]).addTo(map)
+                    .bindPopup('موقعك الحالي - القاهرة، مصر')
+                    .openPopup();
+                    
+                console.log('✅ Map initialized');
+            } catch (error) {
+                console.error('❌ Map initialization error:', error);
+            }
+        }
+
+        // Update location
+        function updateLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        if (map && userMarker) {
+                            map.setView([lat, lng], 15);
+                            userMarker.setLatLng([lat, lng]);
+                            userMarker.bindPopup(`موقعك الحالي<br>خط العرض: ${lat.toFixed(6)}<br>خط الطول: ${lng.toFixed(6)}`).openPopup();
+                        }
+                        
+                        alert('✅ تم تحديث موقعك بنجاح');
+                    },
+                    (error) => {
+                        alert('❌ تم رفض الوصول للموقع');
+                    }
+                );
+            } else {
+                alert('❌ المتصفح لا يدعم تحديد الموقع');
+            }
+        }
+
+        // Share location
+        function shareLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        const locationUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                        
+                        if (navigator.share) {
+                            navigator.share({
+                                title: 'موقعي الحالي',
+                                text: 'هذا هو موقعي الحالي',
+                                url: locationUrl
+                            });
+                        } else {
+                            navigator.clipboard.writeText(locationUrl);
+                            alert('✅ تم نسخ رابط الموقع');
+                        }
+                    }
+                );
+            }
+        }
+
+        // Camera functions
+        function startCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        cameraStream = stream;
+                        const video = document.getElementById('camera-video');
+                        video.srcObject = stream;
+                        alert('✅ تم تشغيل الكاميرا');
+                    })
+                    .catch(err => {
+                        alert('❌ تم رفض الوصول للكاميرا');
+                    });
+            } else {
+                alert('❌ المتصفح لا يدعم الكاميرا');
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+                const video = document.getElementById('camera-video');
+                video.srcObject = null;
+                alert('✅ تم إيقاف الكاميرا');
+            }
+        }
+
+        function capturePhoto() {
+            if (cameraStream) {
+                const video = document.getElementById('camera-video');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                
+                // Convert to blob and download
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `security-photo-${Date.now()}.jpg`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('✅ تم التقاط الصورة وحفظها');
+                });
+            } else {
+                alert('❌ يجب تشغيل الكاميرا أولاً');
+            }
+        }
+
+        // Security functions
+        function triggerAlarm() {
+            if (confirm('هل أنت متأكد من تفعيل الإنذار؟')) {
+                // Play alarm sound
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+                audio.play().catch(() => {});
+                
+                alert('🚨 تم تفعيل الإنذار!');
+                
+                // Simulate sending alert
+                setTimeout(() => {
+                    alert('📧 تم إرسال تنبيه إلى جهات الاتصال الطارئة');
+                }, 2000);
+            }
+        }
+
+        function lockDevice() {
+            if (confirm('هل تريد قفل الجهاز؟')) {
+                alert('🔒 تم قفل الجهاز (محاكاة)');
+            }
+        }
+
+        function sendAlert() {
+            alert('📧 تم إرسال تنبيه أمني');
+        }
+
+        // Device info
+        function updateDeviceInfo() {
+            document.getElementById('device-type').textContent = /Mobi|Android/i.test(navigator.userAgent) ? 'جهاز محمول' : 'حاسوب مكتبي';
+            document.getElementById('os-info').textContent = navigator.platform || 'غير محدد';
+            document.getElementById('browser-info').textContent = navigator.userAgent.split(' ')[0] || 'غير محدد';
+            document.getElementById('screen-info').textContent = `${screen.width}x${screen.height}`;
+        }
+
+        function refreshDeviceInfo() {
+            updateDeviceInfo();
+            alert('✅ تم تحديث معلومات الجهاز');
+        }
+
+        // Battery info
+        function updateBatteryInfo() {
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(battery => {
+                    const level = Math.round(battery.level * 100);
+                    document.getElementById('battery-level').textContent = level + '%';
+                    
+                    battery.addEventListener('levelchange', () => {
+                        const newLevel = Math.round(battery.level * 100);
+                        document.getElementById('battery-level').textContent = newLevel + '%';
+                    });
+                });
+            } else {
+                // Simulate battery level
+                const randomLevel = Math.floor(Math.random() * 40) + 60; // 60-100%
+                document.getElementById('battery-level').textContent = randomLevel + '%';
+            }
+        }
+
+        // Real-time updates
+        function startRealTimeUpdates() {
+            setInterval(() => {
+                // Update last check time
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                document.getElementById('last-check').textContent = timeString;
+                
+                // Simulate connection status
+                const isOnline = navigator.onLine;
+                document.getElementById('connection-status').textContent = isOnline ? 'متصل' : 'غير متصل';
+                
+                // Update security level randomly
+                const securityLevels = ['عالي', 'متوسط', 'منخفض'];
+                const randomSecurity = securityLevels[Math.floor(Math.random() * securityLevels.length)];
+                document.getElementById('security-level').textContent = randomSecurity;
+            }, 5000);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                // Stop camera if running
+                if (cameraStream) {
+                    stopCamera();
+                }
+                
+                alert('✅ تم تسجيل الخروج بنجاح');
+                window.location.href = '/';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Anti-Theft Pro</string>
+    
+    <!-- Authentication -->
+    <string name="welcome">Καλώς ήρθατε στο Anti-Theft Pro</string>
+    <string name="protect_your_device">Προστατέψτε τη Συσκευή σας</string>
+    <string name="email">Email</string>
+    <string name="password">Κωδικός Πρόσβασης</string>
+    <string name="confirm_password">Επιβεβαίωση Κωδικού</string>
+    <string name="login">Σύνδεση</string>
+    <string name="register">Εγγραφή</string>
+    <string name="sign_in_with_google">Σύνδεση με Google</string>
+    <string name="dont_have_account">Δεν έχετε λογαριασμό;</string>
+    <string name="already_have_account">Έχετε ήδη λογαριασμό;</string>
+    <string name="create_account">Δημιουργία Λογαριασμού</string>
+    <string name="forgot_password">Ξεχάσατε τον Κωδικό;</string>
+    
+    <!-- Email Verification -->
+    <string name="verify_email">Επαληθεύστε το Email σας</string>
+    <string name="verification_sent">Το email επαλήθευσης στάλθηκε στο %s</string>
+    <string name="check_email">Ελέγξτε το email σας και κάντε κλικ στον σύνδεσμο επαλήθευσης</string>
+    <string name="resend_verification">Επαναποστολή Email Επαλήθευσης</string>
+    <string name="email_verified">Το Email επαληθεύτηκε επιτυχώς</string>
+    
+    <!-- PIN -->
+    <string name="enter_pin">Εισάγετε PIN</string>
+    <string name="set_pin">Ορισμός PIN</string>
+    <string name="confirm_pin">Επιβεβαίωση PIN</string>
+    <string name="pin_mismatch">Τα PIN δεν ταιριάζουν</string>
+    <string name="wrong_pin">Λάθος PIN. Απομένουν %d προσπάθειες</string>
+    <string name="too_many_attempts">Πάρα πολλές αποτυχημένες προσπάθειες. Η κάμερα ενεργοποιήθηκε.</string>
+    <string name="use_fingerprint">Χρήση Δακτυλικού Αποτυπώματος</string>
+    <string name="fingerprint_title">Έλεγχος Δακτυλικού Αποτυπώματος</string>
+    <string name="fingerprint_subtitle">Αγγίξτε τον αισθητήρα δακτυλικών αποτυπωμάτων</string>
+    <string name="fingerprint_success">Το δακτυλικό αποτύπωμα αναγνωρίστηκε</string>
+    <string name="fingerprint_failed">Το δακτυλικό αποτύπωμα δεν αναγνωρίστηκε. Δοκιμάστε ξανά</string>
+    <string name="fingerprint_error">Σφάλμα ελέγχου δακτυλικού αποτυπώματος</string>
+    <string name="biometric_title">Έλεγχος Δακτυλικού Αποτυπώματος</string>
+    <string name="biometric_subtitle">Τοποθετήστε το δάχτυλό σας στον αισθητήρα</string>
+    <string name="biometric_not_available">Το δακτυλικό αποτύπωμα δεν είναι διαθέσιμο</string>
+    <string name="biometric_failed">Ο έλεγχος ταυτότητας απέτυχε. Προσπαθήστε ξανά</string>
+    
+    <!-- Main Menu -->
+    <string name="dashboard">Πίνακας Ελέγχου</string>
+    <string name="tracking">Παρακολούθηση</string>
+    <string name="intruders">Εισβολείς</string>
+    <string name="settings">Ρυθμίσεις</string>
+    <string name="logout">Αποσύνδεση</string>
+    
+    <!-- Tracking -->
+    <string name="live_location">Ζωντανή Τοποθεσία</string>
+    <string name="location_history">Ιστορικό Τοποθεσιών</string>
+    <string name="current_location">Τρέχουσα Τοποθεσία</string>
+    <string name="last_seen">Τελευταία φορά: %s</string>
+    <string name="tracking_active">Η Παρακολούθηση είναι Ενεργή</string>
+    <string name="tracking_inactive">Η Παρακολούθηση είναι Ανενεργή</string>
+    
+    <!-- Intruders -->
+    <string name="captured_photos">Φωτογραφίες που Καταγράφηκαν</string>
+    <string name="intruder_detected">Εντοπίστηκε Εισβολέας</string>
+    <string name="no_intruders">Δεν εντοπίστηκαν εισβολείς ακόμα</string>
+    <string name="photo_taken_at">Η φωτογραφία τραβήχτηκε στις %s</string>
+    
+    <!-- Settings -->
+    <string name="general_settings">Γενικές Ρυθμίσεις</string>
+    <string name="security_settings">Ρυθμίσεις Ασφαλείας</string>
+    <string name="notification_settings">Ρυθμίσεις Ειδοποιήσεων</string>
+    <string name="enable_pin_lock">Ενεργοποίηση Κλειδώματος PIN</string>
+    <string name="enable_intruder_detection">Ενεργοποίηση Ανίχνευσης Εισβολέων</string>
+    <string name="enable_location_tracking">Ενεργοποίηση Παρακολούθησης Τοποθεσίας</string>
+    <string name="enable_wifi_scanner">Ενεργοποίηση Σαρωτή WiFi</string>
+    <string name="email_notifications">Ειδοποιήσεις Email</string>
+    <string name="notification_email">Email Ειδοποιήσεων</string>
+    <string name="language">Γλώσσα</string>
+    <string name="about">Σχετικά</string>
+    
+    <!-- WiFi -->
+    <string name="scanning_wifi">Αναζήτηση για δίκτυα WiFi...</string>
+    <string name="free_wifi_found">Βρέθηκε δωρεάν δίκτυο WiFi: %s</string>
+    <string name="connecting_wifi">Σύνδεση στο WiFi...</string>
+    <string name="wifi_connected">Συνδέθηκε στο WiFi</string>
+    <string name="no_free_wifi">Δεν βρέθηκαν δωρεάν δίκτυα WiFi</string>
+    
+    <!-- Data Sync -->
+    <string name="syncing_data">Συγχρονισμός δεδομένων...</string>
+    <string name="sync_complete">Ο συγχρονισμός ολοκληρώθηκε επιτυχώς</string>
+    <string name="sync_failed">Ο συγχρονισμός απέτυχε. Θα γίνει νέα προσπάθεια όταν είστε online</string>
+    <string name="data_stored_locally">Τα δεδομένα αποθηκεύτηκαν τοπικά</string>
+    <string name="pending_uploads">%d στοιχεία εκκρεμούν για μεταφόρτωση</string>
+    
+    <!-- Errors -->
+    <string name="error">Σφάλμα</string>
+    <string name="error_network">Σφάλμα δικτύου. Ελέγξτε τη σύνδεσή σας</string>
+    <string name="error_permission">Άρνηση άδειας</string>
+    <string name="error_camera">Σφάλμα κάμερας</string>
+    <string name="error_location">Σφάλμα τοποθεσίας</string>
+    <string name="error_unknown">Προέκυψε άγνωστο σφάλμα</string>
+    
+    <!-- Permissions -->
+    <string name="permission_location">Απαιτείται άδεια τοποθεσίας για παρακολούθηση</string>
+    <string name="permission_camera">Απαιτείται άδεια κάμερας για ανίχνευση εισβολέων</string>
+    <string name="permission_storage">Απαιτείται άδεια αποθήκευσης</string>
+    <string name="grant_permission">Παροχή Άδειας</string>
+    
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Ακύρωση</string>
+    <string name="save">Αποθήκευση</string>
+    <string name="delete">Διαγραφή</string>
+    <string name="confirm">Επιβεβαίωση</string>
+    <string name="close">Κλείσιμο</string>
+    <string name="loading">Φόρτωση...</string>
+    <string name="success">Επιτυχία</string>
+    <string name="failed">Αποτυχία</string>
+</resources>
