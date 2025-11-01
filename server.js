@@ -85,10 +85,10 @@ db.serialize(() => {
 
 // Email configuration
 let transporter = null;
-// Email service DISABLED for development - no personal email sending
+// Email service DISABLED - Show codes in UI instead
 transporter = null;
-console.log('📧 Email service DISABLED - Verification codes will be displayed in UI');
-console.log('🔍 All verification codes will be shown directly to users for testing');
+console.log('📧 Email service DISABLED - All verification codes will be displayed in UI');
+console.log('🎯 You can register with any email and get the code instantly');
 
 // Helper functions
 function generateVerificationCode() {
@@ -112,46 +112,49 @@ function cleanExpiredCodes() {
 setInterval(cleanExpiredCodes, 5 * 60 * 1000);
 
 async function sendVerificationEmail(email, code, type = 'login') {
-    const subject = type === 'login' ? 'Secure Guardian - Login Code' : 'Secure Guardian - Verification Code';
+    const subject = 'Secure Guardian Pro - Verification Code';
+    
+    // Simple and clean email template
     const html = `
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Secure Guardian Verification</title>
+            <title>Secure Guardian Pro</title>
         </head>
-        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
-                <tr>
-                    <td align="center">
-                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                            <tr>
-                                <td style="padding: 40px; text-align: center;">
-                                    <h1 style="color: #667eea; margin: 0 0 20px 0; font-size: 28px;">🛡️ Secure Guardian</h1>
-                                    <h2 style="color: #333; margin: 0 0 30px 0; font-size: 20px;">Your Verification Code</h2>
-                                    
-                                    <div style="background: #f8f9fa; padding: 30px; border-radius: 8px; margin: 20px 0;">
-                                        <div style="font-size: 36px; font-weight: bold; color: #667eea; letter-spacing: 8px; margin: 10px 0;">
-                                            ${code}
-                                        </div>
-                                    </div>
-                                    
-                                    <p style="color: #666; font-size: 16px; margin: 20px 0;">
-                                        This code is valid for 3 minutes only.
-                                    </p>
-                                    
-                                    <p style="color: #999; font-size: 14px; margin: 30px 0 0 0;">
-                                        If you didn't request this code, please ignore this email.
-                                    </p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
+        <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px;">
+            <div style="max-width: 500px; margin: 0 auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                
+                <!-- App Name -->
+                <h1 style="text-align: center; color: #2c3e50; margin: 0 0 30px 0; font-size: 24px;">
+                    🛡️ Secure Guardian Pro
+                </h1>
+                
+                <!-- Verification Code -->
+                <div style="text-align: center; background-color: #ecf0f1; padding: 25px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 0 0 10px 0; color: #34495e; font-size: 16px;">Your Verification Code:</p>
+                    <div style="font-size: 32px; font-weight: bold; color: #3498db; letter-spacing: 5px; margin: 10px 0;">
+                        ${code}
+                    </div>
+                </div>
+                
+                <!-- Simple message -->
+                <p style="text-align: center; color: #7f8c8d; font-size: 14px; margin: 20px 0 0 0;">
+                    This code expires in 3 minutes.
+                </p>
+                
+            </div>
         </body>
         </html>
+    `;
+    
+    // Simple text version
+    const textVersion = `
+Secure Guardian Pro
+
+Your Verification Code: ${code}
+
+This code expires in 3 minutes.
     `;
 
     if (transporter) {
@@ -161,7 +164,7 @@ async function sendVerificationEmail(email, code, type = 'login') {
                 to: email,
                 subject: subject,
                 html: html,
-                text: `Your Secure Guardian verification code is: ${code}. This code is valid for 3 minutes only.`,
+                text: textVersion.trim(),
                 headers: {
                     'X-Priority': '1',
                     'X-MSMail-Priority': 'High',
@@ -326,13 +329,13 @@ app.post('/auth/register', async (req, res) => {
 
                             res.json({
                                 success: true,
-                                message: 'Account created successfully! Verification code is displayed below.',
+                                message: emailSent ? 'Account created successfully! Verification code sent to your email.' : 'Account created successfully! Verification code is displayed below.',
                                 userId: userId,
                                 requiresVerification: true,
-                                emailSent: false,
-                                verificationCode: code,
-                                note: 'Email sending is disabled. Use the verification code shown above to verify your account.',
-                                spamWarning: false
+                                emailSent: emailSent,
+                                verificationCode: emailSent ? null : code,
+                                note: emailSent ? 'Check your email (and spam folder) for the verification code.' : 'Email service not configured. Use the verification code shown above.',
+                                spamWarning: emailSent
                             });
                         });
                 });
@@ -599,10 +602,10 @@ app.post('/auth/resend-verification', async (req, res) => {
 
                         res.json({
                             success: true,
-                            message: 'New verification code generated successfully',
-                            emailSent: false,
-                            verificationCode: code,
-                            note: 'Email sending is disabled. Use the verification code shown above.'
+                            message: emailSent ? 'New verification code sent to your email' : 'New verification code generated',
+                            emailSent: emailSent,
+                            verificationCode: emailSent ? null : code,
+                            note: emailSent ? 'Check your email for the new verification code.' : 'Email service not configured. Use the verification code shown above.'
                         });
                     });
             });
