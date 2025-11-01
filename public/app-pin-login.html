@@ -286,6 +286,25 @@
             box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.15);
         }
+
+        /* Fullscreen Map */
+        .map-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999 !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+        }
+
+        .map-fullscreen #map {
+            height: calc(100vh - 100px) !important;
+            margin-top: 50px !important;
+        }
     </style>
 </head>
 <body>
@@ -364,9 +383,14 @@
             </div>
 
             <!-- Live Map Section -->
-            <div class="info-panel" style="margin-bottom: 20px;">
-                <h4 id="mapTitle" style="margin-bottom: 15px;">🗺️ Live Device Location</h4>
-                <div id="map" style="width: 100%; height: 300px; border-radius: 12px; overflow: hidden;"></div>
+            <div class="info-panel" style="margin-bottom: 20px;" id="mapContainer">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 id="mapTitle">🗺️ Live Device Location</h4>
+                    <button onclick="toggleFullscreenMap()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 12px;">
+                        <span id="fullscreenBtn">🔍 Fullscreen</span>
+                    </button>
+                </div>
+                <div id="map" style="width: 100%; height: 500px; border-radius: 12px; overflow: hidden; transition: all 0.3s ease;"></div>
                 <div style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
                     <span id="mapInfo">📍 Last updated: Just now • Accuracy: ±5 meters</span>
                 </div>
@@ -444,6 +468,8 @@
                 alarmDesc: "Activate alarm",
                 mapTitle: "🗺️ Live Device Location",
                 mapInfo: "📍 Last updated: Just now • Accuracy: ±5 meters",
+                fullscreenBtn: "🔍 Fullscreen",
+                exitFullscreenBtn: "❌ Exit Fullscreen",
                 trackTitle: "Advanced Map",
                 trackDesc: "Full tracking system",
                 wipeTitle: "Wipe Data",
@@ -480,6 +506,8 @@
                 alarmDesc: "Ενεργοποίηση συναγερμού",
                 mapTitle: "🗺️ Ζωντανή Τοποθεσία Συσκευής",
                 mapInfo: "📍 Τελευταία ενημέρωση: Μόλις τώρα • Ακρίβεια: ±5 μέτρα",
+                fullscreenBtn: "🔍 Πλήρης Οθόνη",
+                exitFullscreenBtn: "❌ Έξοδος από Πλήρη Οθόνη",
                 trackTitle: "Προηγμένος Χάρτης",
                 trackDesc: "Πλήρες σύστημα παρακολούθησης",
                 wipeTitle: "Διαγραφή Δεδομένων",
@@ -516,6 +544,8 @@
                 alarmDesc: "تفعيل الإنذار",
                 mapTitle: "🗺️ موقع الجهاز المباشر",
                 mapInfo: "📍 آخر تحديث: الآن • الدقة: ±5 أمتار",
+                fullscreenBtn: "🔍 ملء الشاشة",
+                exitFullscreenBtn: "❌ إغلاق ملء الشاشة",
                 trackTitle: "الخريطة المتقدمة",
                 trackDesc: "نظام التتبع الكامل",
                 wipeTitle: "مسح البيانات",
@@ -758,6 +788,40 @@
                 ar: '👋 تم تسجيل الخروج بنجاح!'
             };
             showMessage(messages[currentLanguage], 'info');
+        }
+
+        // Fullscreen map toggle
+        let isMapFullscreen = false;
+        function toggleFullscreenMap() {
+            const mapContainer = document.getElementById('mapContainer');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const t = translations[currentLanguage];
+            
+            if (isMapFullscreen) {
+                // Exit fullscreen
+                mapContainer.classList.remove('map-fullscreen');
+                fullscreenBtn.textContent = t.fullscreenBtn;
+                isMapFullscreen = false;
+                
+                // Resize map after animation
+                setTimeout(() => {
+                    if (map) {
+                        map.invalidateSize();
+                    }
+                }, 300);
+            } else {
+                // Enter fullscreen
+                mapContainer.classList.add('map-fullscreen');
+                fullscreenBtn.textContent = t.exitFullscreenBtn;
+                isMapFullscreen = true;
+                
+                // Resize map after animation
+                setTimeout(() => {
+                    if (map) {
+                        map.invalidateSize();
+                    }
+                }, 300);
+            }
         }
 
         // Initialize
